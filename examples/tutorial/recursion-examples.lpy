@@ -1,0 +1,87 @@
+; Recursion Tutorial Examples
+; Run this file with: python bin/lispy_interpreter.py examples/tutorial/recursion-examples.lpy
+
+; === BASIC RECURSION ===
+
+; Factorial function
+(define factorial (fn [n]
+  (if (<= n 1)
+    1
+    (* n (factorial (- n 1))))))
+
+; Fibonacci sequence
+(define fib (fn [n]
+  (if (<= n 1)
+    n
+    (+ (fib (- n 1)) (fib (- n 2))))))
+
+; === RECURSION WITH VECTORS ===
+
+; Sum all numbers in a vector
+(define sum-vector (fn [vec]
+  (if (empty? vec)
+    0
+    (+ (first vec) (sum-vector (rest vec))))))
+
+; Count elements in a vector (without using count)
+(define vector-length (fn [vec]
+  (if (empty? vec)
+    0
+    (+ 1 (vector-length (rest vec))))))
+
+; Find maximum in a vector
+(define max-vector (fn [vec]
+  (if (empty? (rest vec))
+    (first vec)
+    (define rest-max (max-vector (rest vec)))
+    (if (> (first vec) rest-max)
+      (first vec)
+      rest-max))))
+
+; Check if all numbers in vector are positive
+(define all-positive? (fn [vec]
+  (if (empty? vec)
+    true
+    (if (> (first vec) 0)
+      (all-positive? (rest vec))
+      false))))
+
+; === MATHEMATICAL RECURSION ===
+
+; Power function (x^n)
+(define power (fn [x n]
+  (if (= n 0)
+    1
+    (* x (power x (- n 1))))))
+
+; Greatest Common Divisor (Euclidean algorithm)
+(define gcd (fn [a b]
+  (if (= b 0)
+    a
+    (gcd b (- a (* (/ a b) b))))))  ; Note: This is simplified
+
+; === TEST THE FUNCTIONS ===
+
+(define test-vector [3 7 2 9 1])
+(define positive-vector [1 2 3 4 5])
+(define mixed-vector [-1 2 3])
+
+; Test results
+(define fact-5 (factorial 5))
+(define fib-10 (fib 10))
+(define sum-result (sum-vector test-vector))
+(define length-result (vector-length test-vector))
+(define max-result (max-vector test-vector))
+(define all-pos-result (all-positive? positive-vector))
+(define mixed-pos-result (all-positive? mixed-vector))
+(define power-result (power 2 8))
+
+; Display results
+fact-5           ; => 120
+fib-10           ; => 55
+sum-result       ; => 22
+length-result    ; => 5
+max-result       ; => 9
+all-pos-result   ; => true
+mixed-pos-result ; => false
+power-result     ; => 256 

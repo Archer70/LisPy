@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Command to run tests
+alwaysApply: true
+---
+To run all unit tests for the LisPy project, execute the following command from the root of the workspace: `python -m unittest discover -s tests -p '*_test.py'`
+

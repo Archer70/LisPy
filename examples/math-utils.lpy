@@ -1,0 +1,22 @@
+; Math utilities module
+; Demonstrates LisPy module system with mathematical functions
+
+(define pi 3.14159265359)
+(define e 2.71828182846)
+
+; Basic mathematical functions
+(define square (fn [x] (* x x)))
+(define cube (fn [x] (* x x x)))
+(define abs (fn [x] (if (< x 0) (- x) x)))
+
+; Geometric functions
+(define circle-area (fn [r] (* pi (square r))))
+(define circle-circumference (fn [r] (* 2 pi r)))
+(define sphere-volume (fn [r] (* (/ 4 3) pi (cube r))))
+
+; Utility functions
+(define max (fn [a b] (if (> a b) a b)))
+(define min (fn [a b] (if (< a b) a b)))
+
+; Export public API
+(export pi e square cube abs circle-area circle-circumference sphere-volume max min) 

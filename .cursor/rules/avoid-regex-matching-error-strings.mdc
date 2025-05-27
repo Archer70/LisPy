@@ -1,0 +1,17 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Avoids using unnecessary regex matching, when a direct string match will work fine.
+alwaysApply: true
+---
+Avoid using `assertRaisesRegex` to match error/exception strings, unless absolutely necessary. Instead, prefer a direct string match like the following.
+```
+def test_count_arg_count_error_many(self):
+    with self.assertRaises(EvaluationError) as cm:
+        run_lispy_string('(count [] "")', self.env) # Vector and string as two args
+    self.assertEqual(str(cm.exception), "SyntaxError: 'count' expects 1 argument, got 2.")
+```
+

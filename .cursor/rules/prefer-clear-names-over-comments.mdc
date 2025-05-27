@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Prefer clearer, potentially longer function names to long comments explaining what a function does.
+alwaysApply: true
+---
+When writing or refactoring functions, choose names that accurately and comprehensively describe their purpose, even if it makes the name longer. Avoid relying on comments to explain complex or unclear function names.
+
+

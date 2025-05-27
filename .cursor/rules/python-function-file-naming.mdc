@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Guideline for naming Python files that define LisPy built-in functions.
+alwaysApply: true
+---
+When creating new files for built-in LisPy functions in the `lispy_project/lispy/functions/` directory, name the file `<function_name>.py` (e.g., `add.py`, `car.py`). 
+
+Avoid suffixes like `_fn.py` unless the function name itself conflicts with a Python keyword. For example, `not_fn.py` is an acceptable name because `not` is a Python keyword.
+
+

@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Code should consistently adhere to the PEP 8 style guide for Python.
+alwaysApply: true
+---
+Use an automated linter (like Flake8) and formatter (like Black or autopep8) to ensure your Python code follows PEP 8 conventions for naming, layout, and structure. Address linter warnings promptly.
+
+

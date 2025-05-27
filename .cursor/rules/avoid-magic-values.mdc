@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Avoid using unnamed 'magic' numbers or strings directly in code; use named constants instead.
+alwaysApply: true
+---
+Define constants for literal values that have a specific meaning, to improve readability and maintainability. For example, instead of checking `token_type == 0` (if 0 was a hypothetical type code), define `TOKEN_TYPE_NUMBER = 0` and use `token_type == TOKEN_TYPE_NUMBER`.
+
+

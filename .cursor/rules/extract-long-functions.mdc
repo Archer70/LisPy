@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: If a function gets long, extract units of work into smaller sub-functions to improve readability.
+alwaysApply: true
+---
+Monitor function length. If a function becomes too long or handles too many distinct tasks, identify logical units of work within it and extract them into separate, well-named private/helper functions. This enhances modularity and readability.
+

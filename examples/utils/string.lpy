@@ -1,0 +1,12 @@
+; String utility functions
+(define length (fn [s] (count s)))
+
+(define empty? (fn [s] (= (count s) 0)))
+
+(define non-empty? (fn [s] (not (empty? s))))
+
+; Private helper function (not exported)
+(define internal-trim (fn [s] s))
+
+; Export public string utilities
+(export length empty? non-empty?) 

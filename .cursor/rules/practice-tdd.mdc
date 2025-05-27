@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Practice TDD: write tests describing what we want the new code to do, and then write the code that implements the functionality.
+alwaysApply: true
+---
+For new features or bug fixes, start by writing one or more tests that define the expected behavior or outcome. Run these tests (they should fail initially). Then, write the minimum amount of code necessary to make the tests pass. Refactor the code if needed, ensuring tests continue to pass.
+
+

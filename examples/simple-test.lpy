@@ -1,0 +1,4 @@
+; Simple test file
+(define x 42)
+(define y (+ x 8))
+y 

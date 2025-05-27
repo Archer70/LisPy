@@ -1,0 +1,27 @@
+; Module system demonstration
+; Shows different import styles and usage patterns
+
+; 1. Basic import - all exports available directly
+(import "config")
+(import "math-utils")
+
+; 2. Prefixed import - namespace isolation
+(import "utils/string" :as "str")
+
+; 3. Selective import - only specific functions
+(import "string-utils" :only (length))
+
+; Use imported modules
+(define app-info {:name app-name :version version :debug debug-mode})
+
+; Use math utilities
+(define radius 3)
+(define area (circle-area radius))
+
+; Use string utilities with prefix
+(define test-string "hello")
+(define is-empty (str/empty? test-string))
+(define string-len (str/length test-string))
+
+; Show individual results
+area 

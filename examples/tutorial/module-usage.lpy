@@ -1,0 +1,57 @@
+; Module Usage Tutorial Example
+; Run this file with: python bin/lispy_interpreter.py -I examples/tutorial examples/tutorial/module-usage.lpy
+
+; === IMPORT STYLES DEMONSTRATION ===
+
+; 1. Basic import - all exports available directly
+(import "geometry-module")
+
+; Use imported functions directly
+(define room-area (rectangle-area 12 10))
+(define garden-area (circle-area 5))
+
+; 2. Prefixed import - namespace isolation
+(import "geometry-module" :as "geo")
+
+; Use with prefix
+(define table-area (geo/square-area 4))
+(define wheel-circumference (geo/circle-circumference 15))
+
+; 3. Selective import - only specific functions
+(import "geometry-module" :only (pi triangle-area))
+
+; Only imported functions available
+(define triangle-size (triangle-area 6 8))
+; (square-area 5)  ; This would cause an error - not imported
+
+; === PRACTICAL EXAMPLES ===
+
+; Calculate areas for a house renovation project
+(define living-room-area (rectangle-area 15 12))
+(define bedroom-area (rectangle-area 10 12))
+(define bathroom-area (rectangle-area 8 6))
+(define total-indoor-area (+ living-room-area bedroom-area bathroom-area))
+
+; Calculate outdoor areas
+(define patio-area (square-area 8))
+(define pool-area (circle-area 3))
+(define garden-bed-area (triangle-area 4 6))
+
+; Convert measurements
+(define room-area-cm (inches-to-cm room-area))
+(define metric-measurement (cm-to-inches 100))
+
+; === RESULTS ===
+
+; Display calculations
+room-area            ; => 120
+garden-area          ; => 78.53981633975
+table-area           ; => 16
+wheel-circumference  ; => 94.24777960769
+triangle-size        ; => 24
+total-indoor-area    ; => 288
+patio-area           ; => 64
+pool-area            ; => 28.27433388231
+garden-bed-area      ; => 12
+room-area-cm         ; => 304.8
+metric-measurement   ; => 39.37007874016 

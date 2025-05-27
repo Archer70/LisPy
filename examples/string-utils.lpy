@@ -1,0 +1,23 @@
+; String utilities module
+; Demonstrates string manipulation functions
+
+(define length (fn [s] (count s)))
+
+(define empty? (fn [s] (= (count s) 0)))
+
+(define concat (fn [s1 s2] 
+  ; Simple concatenation - in a real implementation this would use proper string functions
+  s1))  ; Simplified for demo
+
+(define repeat-char (fn [char n]
+  ; Create a string by repeating a character n times
+  ; Simplified implementation
+  char))
+
+; String formatting helpers
+(define quote-string (fn [s] (concat "\"" (concat s "\""))))
+
+(define bracket-string (fn [s] (concat "[" (concat s "]"))))
+
+; Export public API
+(export length empty? concat repeat-char quote-string bracket-string) 

@@ -1,0 +1,14 @@
+; Fibonacci sequence example
+(define fib (fn [n]
+  (if (<= n 1)
+    n
+    (+ (fib (- n 1)) (fib (- n 2))))))
+
+; Calculate individual fibonacci numbers
+(fib 0)   ; => 0
+(fib 1)   ; => 1
+(fib 5)   ; => 5
+(fib 10)  ; => 55
+
+; Return the 10th fibonacci number
+(fib 10) 

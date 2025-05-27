@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: After every change, run the test suite to be sure it still works.
+alwaysApply: true
+---
+Establish a habit of running the full test suite after any code modification, no matter how small. This helps catch regressions early and ensures the stability of the codebase. The command to run tests is: `python -m unittest discover -s lispy_project/tests -p '*_test.py' -t lispy_project` (run from the workspace root: C:\Users\scott\projects\LisPy). Consider integrating automated testing into your workflow if possible.
+

@@ -1,0 +1,65 @@
+; LisPy Immutability Demonstration
+; Run with: python bin/lispy_interpreter.py examples/immutability-demo.lpy
+
+; === HASH MAP IMMUTABILITY ===
+
+(define original-user {:name "Alice" :age 30 :role "user"})
+
+; All these operations return NEW maps, original is unchanged
+(define user-with-city (assoc original-user ':city "NYC"))
+(define user-with-updated-age (assoc original-user ':age 31))
+(define user-without-role (dissoc original-user ':role))
+(define admin-user (assoc original-user ':role "admin"))
+
+; Verify original is unchanged
+original-user        ; => {:name "Alice" :age 30 :role "user"}
+
+; Each operation created a new map
+user-with-city       ; => {:name "Alice" :age 30 :role "user" :city "NYC"}
+user-with-updated-age ; => {:name "Alice" :age 31 :role "user"}
+user-without-role    ; => {:name "Alice" :age 30}
+admin-user           ; => {:name "Alice" :age 30 :role "admin"}
+
+; === VECTOR IMMUTABILITY ===
+
+(define original-numbers [1 2 3])
+
+; All these operations return NEW vectors, original is unchanged
+(define with-four (conj original-numbers 4))
+(define with-zero (conj original-numbers 0))
+(define without-first (rest original-numbers))
+
+; Verify original is unchanged
+original-numbers     ; => [1 2 3]
+
+; Each operation created a new vector
+with-four           ; => [1 2 3 4]
+with-zero           ; => [1 2 3 0]
+without-first       ; => [2 3]
+
+; === SAFE FUNCTION PARAMETERS ===
+
+(define add-timestamp (fn [data]
+  (assoc data ':timestamp "2024-01-15")))
+
+(define my-data {:important "value"})
+(define timestamped-data (add-timestamp my-data))
+
+; Function didn't modify our original data!
+my-data             ; => {:important "value"}
+timestamped-data    ; => {:important "value" :timestamp "2024-01-15"}
+
+; === BUILDING DATA INCREMENTALLY ===
+
+(define empty-config {})
+(define with-theme (assoc empty-config ':theme "dark"))
+(define with-language (assoc with-theme ':language "en"))
+(define full-config (assoc with-language ':notifications true))
+
+; Each step builds on the previous, creating new structures
+empty-config        ; => {}
+with-theme          ; => {:theme "dark"}
+with-language       ; => {:theme "dark" :language "en"}
+full-config         ; => {:theme "dark" :language "en" :notifications true}
+
+; This is the power of immutability - safe, predictable data transformations! 
