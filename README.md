@@ -4,7 +4,7 @@
 
 LisPy brings the elegance of Lisp to the modern world with clean syntax, comprehensive data structures, and a robust module system that makes building real applications a joy.
 
-[![Tests](https://img.shields.io/badge/tests-359%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-367%20passing-brightgreen)](tests/)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
