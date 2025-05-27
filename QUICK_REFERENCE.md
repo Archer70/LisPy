@@ -157,6 +157,26 @@ This is a quick reference companion to the comprehensive [LisPy Tutorial](TUTORI
     (+ (first vec) (sum-vector (rest vec))))))
 ```
 
+### Tail Call Optimization
+
+**LisPy automatically optimizes tail calls!** Tail recursive functions can handle huge inputs without stack overflow.
+
+```lisp
+; Tail-recursive countdown (optimized automatically)
+(define countdown (fn [n]
+  (if (<= n 0) n (countdown (- n 1)))))
+(countdown 10000)  ; Works perfectly!
+
+; Tail-recursive factorial with accumulator
+(define factorial-tail (fn [n acc]
+  (if (<= n 1) acc (factorial-tail (- n 1) (* n acc)))))
+(define factorial (fn [n] (factorial-tail n 1)))
+(factorial 1000)  ; No stack overflow!
+
+; Key: tail call is the LAST operation in the function
+; LisPy detects and optimizes these automatically
+```
+
 ### Higher-Order Functions
 
 ```lisp

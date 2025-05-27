@@ -572,21 +572,106 @@ Recursion is a fundamental technique in functional programming where functions c
 (max-vector [3 7 2 9 1])  ; => 9
 ```
 
-### Tail Recursion (Conceptual)
+### Tail Call Optimization
 
-While LisPy doesn't optimize tail recursion yet, it's good to understand the pattern:
+**LisPy optimizes tail calls!** This means tail-recursive functions can handle very large inputs without stack overflow.
+
+#### What is Tail Recursion?
+
+A tail call is a function call that happens as the last operation in a function. LisPy automatically optimizes these calls to use constant stack space.
 
 ```lisp
-; Tail-recursive factorial (conceptual)
+; Tail-recursive factorial - OPTIMIZED by LisPy
 (define factorial-tail (fn [n acc]
   (if (<= n 1)
     acc
-    (factorial-tail (- n 1) (* n acc)))))
+    (factorial-tail (- n 1) (* n acc)))))  ; <- Tail call (last operation)
 
 (define factorial (fn [n] (factorial-tail n 1)))
+
+; This can handle very large numbers!
+(factorial 1000)    ; Works perfectly thanks to TCO
 ```
 
-**Exercise:** Write a recursive function to calculate the length of a vector without using `count`.
+#### Comparison: Tail vs Non-Tail
+
+```lisp
+; NON-tail recursive (limited by stack size)
+(define factorial-regular (fn [n]
+  (if (<= n 1)
+    1
+    (* n (factorial-regular (- n 1))))))  ; <- NOT tail call (multiplication after)
+
+; TAIL recursive (optimized by LisPy)
+(define factorial-tail (fn [n acc]
+  (if (<= n 1)
+    acc
+    (factorial-tail (- n 1) (* n acc)))))  ; <- Tail call (nothing after)
+```
+
+#### Deep Recursion Examples
+
+```lisp
+; Countdown - can handle huge numbers
+(define countdown (fn [n]
+  (if (<= n 0)
+    n
+    (countdown (- n 1)))))
+
+(countdown 10000)   ; => 0 (works thanks to TCO!)
+
+; Even/odd checker - tail recursive
+(define is-even (fn [n]
+  (if (= n 0)
+    true
+    (if (= n 1)
+      false
+      (is-even (- n 2))))))
+
+(is-even 9999)      ; => false (works with large numbers!)
+```
+
+#### Tail Calls in Conditionals
+
+LisPy optimizes tail calls in `if` branches:
+
+```lisp
+(define process-list (fn [lst result]
+  (if (empty? lst)
+    result                                    ; <- Tail position
+    (process-list (rest lst)                  ; <- Tail call
+                  (conj result (first lst))))))
+```
+
+#### Benefits of Tail Call Optimization
+
+1. **Constant Stack Space**: No stack overflow on deep recursion
+2. **Better Performance**: Faster than regular recursion
+3. **Functional Programming**: Enables idiomatic recursive algorithms
+4. **Large Data Processing**: Handle big datasets recursively
+
+#### Writing Tail-Recursive Functions
+
+**Pattern**: Accumulator parameter
+
+```lisp
+; Convert regular recursion to tail recursion using accumulator
+; Regular (not tail recursive):
+(define sum-list (fn [lst]
+  (if (empty? lst)
+    0
+    (+ (first lst) (sum-list (rest lst))))))
+
+; Tail recursive version:
+(define sum-list-tail (fn [lst acc]
+  (if (empty? lst)
+    acc
+    (sum-list-tail (rest lst) (+ acc (first lst))))))
+
+(define sum-list (fn [lst] (sum-list-tail lst 0)))
+```
+
+**Exercise:** Write a tail-recursive function to calculate the length of a vector without using `count`.
 
 ---
 

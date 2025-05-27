@@ -1,0 +1,106 @@
+; Tail Call Optimization Demo
+; This file demonstrates LisPy's tail call optimization capabilities
+; Run with: python bin/lispy_interpreter.py examples/tail_call_optimization_demo.lpy
+
+; === SIMPLE TAIL RECURSION ===
+
+; Countdown function - tail recursive
+(define countdown (fn [n]
+  (if (<= n 0)
+    n
+    (countdown (- n 1)))))
+
+; Test countdown with small values
+(countdown 5)        ; => 0
+(countdown 10)       ; => 0
+
+; Test countdown with large values that would cause stack overflow without TCO
+(countdown 5000)     ; => 0 (works thanks to TCO!)
+(countdown 10000)    ; => 0 (still works!)
+
+; === TAIL RECURSIVE FACTORIAL ===
+
+; Tail-recursive factorial helper
+(define factorial-tail (fn [n acc]
+  (if (<= n 1)
+    acc
+    (factorial-tail (- n 1) (* n acc)))))
+
+; Wrapper factorial function
+(define factorial (fn [n]
+  (factorial-tail n 1)))
+
+; Test factorial
+(factorial 5)        ; => 120
+(factorial 10)       ; => 3628800
+(factorial 20)       ; => 2432902008176640000
+
+; Large factorial that would cause stack overflow without TCO
+(factorial 100)      ; => very large number (works thanks to TCO!)
+
+; === COMPARISON: NON-TAIL RECURSION ===
+
+; Regular (non-tail) recursive factorial - NOT optimized
+(define factorial-regular (fn [n]
+  (if (<= n 1)
+    1
+    (* n (factorial-regular (- n 1))))))
+
+; This works for small values but would fail for large ones
+(factorial-regular 5)   ; => 120
+(factorial-regular 10)  ; => 3628800
+; factorial-regular 1000 would cause RecursionError without TCO
+
+; === TAIL CALLS IN CONDITIONAL BRANCHES ===
+
+; Even/odd checker using tail recursion
+(define is-even (fn [n]
+  (if (= n 0)
+    true
+    (if (= n 1)
+      false
+      (is-even (- n 2))))))
+
+; Test even/odd
+(is-even 4)          ; => true
+(is-even 5)          ; => false
+(is-even 1000)       ; => true (works with large numbers thanks to TCO)
+(is-even 9999)       ; => false
+
+; === TAIL RECURSIVE LIST PROCESSING ===
+
+; Sum all numbers in a vector using tail recursion
+(define sum-vector-tail (fn [vec acc]
+  (if (empty? vec)
+    acc
+    (sum-vector-tail (rest vec) (+ acc (first vec))))))
+
+(define sum-vector (fn [vec]
+  (sum-vector-tail vec 0)))
+
+; Test vector sum
+(sum-vector [1 2 3 4 5])           ; => 15
+(sum-vector [10 20 30 40 50])      ; => 150
+
+; === MULTIPLE PARAMETER TAIL RECURSION ===
+
+; Add two numbers by counting (demonstrates multiple parameters)
+(define add-by-counting (fn [a b]
+  (if (= b 0)
+    a
+    (add-by-counting (+ a 1) (- b 1)))))
+
+; Test addition by counting
+(add-by-counting 5 3)    ; => 8
+(add-by-counting 10 7)   ; => 17
+(add-by-counting 100 1000) ; => 1100 (large values work thanks to TCO)
+
+; === DEMONSTRATION SUMMARY ===
+
+; Print summary
+"=== Tail Call Optimization Demo Complete ==="
+"All functions above use tail recursion and can handle large inputs"
+"without stack overflow thanks to LisPy's tail call optimization!"
+
+; The key insight: tail calls are optimized to use constant stack space,
+; allowing recursive algorithms to run efficiently on large inputs. 

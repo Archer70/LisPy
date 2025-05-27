@@ -12,11 +12,12 @@ LisPy brings the elegance of Lisp to the modern world with clean syntax, compreh
 
 - **🎯 Simple yet Powerful**: Clean Lisp syntax with modern conveniences
 - **🔒 Immutable by Default**: All data operations return new structures - no accidental mutations!
+- **🚀 Tail Call Optimization**: Deep recursion without stack overflow - handle thousands of recursive calls!
 - **📦 Module System**: Organize code across files with imports and exports
 - **🏗️ Rich Data Types**: Vectors, hash maps, and more built-in
 - **⚡ Interactive REPL**: Instant feedback for rapid development
 - **🔧 Easy to Extend**: Add new functions and features effortlessly
-- **📚 Well Tested**: 359+ tests ensure reliability
+- **📚 Well Tested**: 367+ tests ensure reliability
 
 ## 🚀 Quick Start
 
@@ -234,6 +235,45 @@ project/
 (factorial 5)  ; => 120
 ```
 
+### Tail Call Optimization 🚀
+
+LisPy automatically optimizes tail calls, enabling deep recursion without stack overflow:
+
+```lisp
+; Tail-recursive countdown - can handle huge numbers!
+(define countdown (fn [n]
+  (if (<= n 0)
+    n
+    (countdown (- n 1)))))  ; <- Tail call (last operation)
+
+(countdown 10000)  ; => 0 (works perfectly!)
+
+; Tail-recursive factorial with accumulator
+(define factorial-tail (fn [n acc]
+  (if (<= n 1)
+    acc
+    (factorial-tail (- n 1) (* n acc)))))  ; <- Optimized tail call
+
+(define factorial (fn [n] (factorial-tail n 1)))
+(factorial 1000)  ; => huge number (no stack overflow!)
+
+; Even/odd checker using tail recursion
+(define is-even (fn [n]
+  (if (= n 0)
+    true
+    (if (= n 1)
+      false
+      (is-even (- n 2))))))  ; <- Tail call in conditional
+
+(is-even 9999)  ; => false (handles large numbers easily)
+```
+
+**Key Benefits:**
+- **🔄 Constant Stack Space**: Tail recursive functions use O(1) stack space
+- **📈 Handle Large Inputs**: Process thousands of recursive calls safely  
+- **⚡ Better Performance**: Faster than regular recursion
+- **🎯 Automatic**: No special syntax needed - LisPy detects and optimizes automatically
+
 ## 🛠️ Command Line Interface
 
 ```bash
@@ -297,6 +337,9 @@ python bin/lispy_interpreter.py examples/fibonacci.lpy
 
 # Immutability demonstration
 python bin/lispy_interpreter.py examples/immutability-demo.lpy
+
+# Tail call optimization in action
+python bin/lispy_interpreter.py examples/tail_call_optimization_demo.lpy
 ```
 
 ## 📁 Project Structure
