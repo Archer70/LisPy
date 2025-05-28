@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Provides information about builtin functions and special forms
+alwaysApply: true
+---
+
+- All core functions are located in the `lispy/functions/` directory
+- When adding, modifying, or removing a function, you must also check its reference in `lispy/functions/__init__.py`
+- Special Forms, such as `import`, `export`, `if`, `let`, etc, are located in `/lispy/special_forms/`
+- When adding, modifying or removing a special function, you must also check its reference in `/lispy/special_forms/__init__.py`
+
+- Tests for functions and special forms are located in their corresponding `/tests/[functions|special_forms]` folders

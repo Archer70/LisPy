@@ -7,6 +7,4 @@ alwaysApply: true
 description: Ingests the project context files so it knows what we're up to and the decisions we've made.
 alwaysApply: true
 ---
-Read the Requirements.md and Roadmap.md files in the project root.
-
-
+Read the Requirements.md file in the project root to gain context around the language ideals.
