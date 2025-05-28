@@ -6,7 +6,7 @@ LisPy brings the elegance of Lisp to the modern world with clean syntax, compreh
 
 [![Tests](https://img.shields.io/badge/tests-367%20passing-brightgreen)](tests/)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
 ## ✨ Why LisPy?
 
