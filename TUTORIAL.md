@@ -532,6 +532,9 @@ Recursion is a fundamental technique in functional programming where functions c
 
 (factorial 5)        ; => 120
 (factorial 0)        ; => 1
+
+; Note: This regular recursion is limited to prevent stack overflow
+; For large values, use the recur-based version below
 ```
 
 ### Fibonacci Sequence
@@ -547,6 +550,9 @@ Recursion is a fundamental technique in functional programming where functions c
 (fib 1)              ; => 1
 (fib 5)              ; => 5
 (fib 10)             ; => 55
+
+; Note: This is not tail-recursive and will be slow for large n
+; See the tail-recursive version with recur below
 ```
 
 ### Recursion with Lists
@@ -572,106 +578,162 @@ Recursion is a fundamental technique in functional programming where functions c
 (max-vector [3 7 2 9 1])  ; => 9
 ```
 
-### Tail Call Optimization
+### Explicit Tail Calls with `recur`
 
-**LisPy optimizes tail calls!** This means tail-recursive functions can handle very large inputs without stack overflow.
+**LisPy provides explicit tail call optimization using the `recur` special form!** This means functions using `recur` can handle very large inputs without stack overflow.
 
-#### What is Tail Recursion?
+#### What is `recur`?
 
-A tail call is a function call that happens as the last operation in a function. LisPy automatically optimizes these calls to use constant stack space.
+`recur` is a special form that performs an explicit tail call to the current function. It can only be used in tail position (the last expression to be evaluated) and restarts the function with new argument values.
 
 ```lisp
-; Tail-recursive factorial - OPTIMIZED by LisPy
+; Tail-recursive factorial using recur - OPTIMIZED by LisPy
 (define factorial-tail (fn [n acc]
   (if (<= n 1)
     acc
-    (factorial-tail (- n 1) (* n acc)))))  ; <- Tail call (last operation)
+    (recur (- n 1) (* n acc)))))  ; <- Explicit tail call with recur
 
 (define factorial (fn [n] (factorial-tail n 1)))
 
 ; This can handle very large numbers!
-(factorial 1000)    ; Works perfectly thanks to TCO
+(factorial 1000)    ; Works perfectly thanks to recur
 ```
 
-#### Comparison: Tail vs Non-Tail
+#### Comparison: Regular Recursion vs `recur`
 
 ```lisp
-; NON-tail recursive (limited by stack size)
+; Regular recursion (limited by stack size)
 (define factorial-regular (fn [n]
   (if (<= n 1)
     1
-    (* n (factorial-regular (- n 1))))))  ; <- NOT tail call (multiplication after)
+    (* n (factorial-regular (- n 1))))))  ; <- Regular recursion
 
-; TAIL recursive (optimized by LisPy)
+; Limited to prevent stack overflow
+(factorial-regular 5)    ; => 120 (works)
+; (factorial-regular 200) ; => RecursionError (hits depth limit)
+
+; Tail recursive with recur (optimized by LisPy)
 (define factorial-tail (fn [n acc]
   (if (<= n 1)
     acc
-    (factorial-tail (- n 1) (* n acc)))))  ; <- Tail call (nothing after)
+    (recur (- n 1) (* n acc)))))  ; <- Explicit tail call with recur
+
+(define factorial (fn [n] (factorial-tail n 1)))
+
+; Can handle very large numbers
+(factorial 200)     ; => huge number (works perfectly!)
 ```
 
-#### Deep Recursion Examples
+#### Deep Recursion Examples with `recur`
 
 ```lisp
-; Countdown - can handle huge numbers
+; Countdown using recur - can handle huge numbers
 (define countdown (fn [n]
   (if (<= n 0)
     n
-    (countdown (- n 1)))))
+    (recur (- n 1)))))
 
-(countdown 10000)   ; => 0 (works thanks to TCO!)
+(countdown 10000)   ; => 0 (works thanks to recur!)
 
-; Even/odd checker - tail recursive
+; Even/odd checker using recur
 (define is-even (fn [n]
   (if (= n 0)
     true
     (if (= n 1)
       false
-      (is-even (- n 2))))))
+      (recur (- n 2))))))
 
 (is-even 9999)      ; => false (works with large numbers!)
+
+; Tail-recursive Fibonacci using recur
+(define fib-tail (fn [n a b]
+  (if (= n 0)
+    a
+    (recur (- n 1) b (+ a b)))))
+
+(define fib-fast (fn [n] (fib-tail n 0 1)))
+
+(fib-fast 100)      ; => very large number (much faster than regular fib!)
 ```
 
-#### Tail Calls in Conditionals
+#### `recur` in Conditionals
 
-LisPy optimizes tail calls in `if` branches:
+`recur` works in any tail position, including conditional branches:
 
 ```lisp
 (define process-list (fn [lst result]
   (if (empty? lst)
     result                                    ; <- Tail position
-    (process-list (rest lst)                  ; <- Tail call
-                  (conj result (first lst))))))
+    (recur (rest lst)                         ; <- Explicit tail call with recur
+           (conj result (first lst))))))
+
+; Sum with early termination
+(define sum-until-negative (fn [lst acc]
+  (if (empty? lst)
+    acc
+    (define current (first lst))
+    (if (< current 0)
+      acc                                     ; <- Return early
+      (recur (rest lst) (+ acc current))))))  ; <- Continue with recur
 ```
 
-#### Benefits of Tail Call Optimization
+#### Benefits of `recur`
 
 1. **Constant Stack Space**: No stack overflow on deep recursion
 2. **Better Performance**: Faster than regular recursion
-3. **Functional Programming**: Enables idiomatic recursive algorithms
-4. **Large Data Processing**: Handle big datasets recursively
+3. **Explicit Control**: You decide when to use tail call optimization
+4. **Stack Safety**: Regular recursion is limited to prevent crashes
+5. **Functional Programming**: Enables idiomatic recursive algorithms
 
-#### Writing Tail-Recursive Functions
+#### Writing Functions with `recur`
 
 **Pattern**: Accumulator parameter
 
 ```lisp
-; Convert regular recursion to tail recursion using accumulator
+; Convert regular recursion to tail recursion using accumulator and recur
 ; Regular (not tail recursive):
 (define sum-list (fn [lst]
   (if (empty? lst)
     0
     (+ (first lst) (sum-list (rest lst))))))
 
-; Tail recursive version:
+; Tail recursive version with recur:
 (define sum-list-tail (fn [lst acc]
   (if (empty? lst)
     acc
-    (sum-list-tail (rest lst) (+ acc (first lst))))))
+    (recur (rest lst) (+ acc (first lst))))))
 
 (define sum-list (fn [lst] (sum-list-tail lst 0)))
 ```
 
-**Exercise:** Write a tail-recursive function to calculate the length of a vector without using `count`.
+#### `recur` Rules and Best Practices
+
+1. **Tail Position Only**: `recur` can only be used in tail position
+2. **Same Arity**: `recur` must be called with the same number of arguments as the function parameters
+3. **Current Function Only**: `recur` always calls the current function, not other functions
+4. **Use for Performance**: Use `recur` when you need to handle large recursive calls
+
+```lisp
+; ✅ Good: recur in tail position
+(define countdown (fn [n]
+  (if (<= n 0)
+    n
+    (recur (- n 1)))))
+
+; ❌ Bad: recur not in tail position
+(define bad-example (fn [n]
+  (if (<= n 0)
+    n
+    (+ 1 (recur (- n 1))))))  ; Error: recur not in tail position
+
+; ❌ Bad: wrong arity
+(define wrong-arity (fn [x y]
+  (if (= x 0)
+    y
+    (recur x))))  ; Error: function takes 2 args, recur called with 1
+```
+
+**Exercise:** Write a tail-recursive function using `recur` to calculate the length of a vector without using `count`.
 
 ---
 

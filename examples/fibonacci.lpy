@@ -1,14 +1,42 @@
-; Fibonacci sequence example
-(define fib (fn [n]
+; Fibonacci sequence examples - naive vs efficient with recur
+
+; === NAIVE FIBONACCI (SLOW FOR LARGE NUMBERS) ===
+; This is the classic recursive definition but exponentially slow
+(define fib-naive (fn [n]
   (if (<= n 1)
     n
-    (+ (fib (- n 1)) (fib (- n 2))))))
+    (+ (fib-naive (- n 1)) (fib-naive (- n 2))))))
 
-; Calculate individual fibonacci numbers
-(fib 0)   ; => 0
-(fib 1)   ; => 1
-(fib 5)   ; => 5
-(fib 10)  ; => 55
+; Calculate individual fibonacci numbers (small values only)
+(fib-naive 0)   ; => 0
+(fib-naive 1)   ; => 1
+(fib-naive 5)   ; => 5
+(fib-naive 10)  ; => 55
 
-; Return the 10th fibonacci number
-(fib 10) 
+; Don't try large numbers with naive version - it's very slow!
+; (fib-naive 40) ; => would take a very long time
+
+; === EFFICIENT FIBONACCI WITH RECUR ===
+; Tail-recursive version using accumulator pattern with recur
+(define fib-tail (fn [n a b]
+  (if (= n 0)
+    a
+    (recur (- n 1) b (+ a b)))))
+
+(define fib-fast (fn [n] (fib-tail n 0 1)))
+
+; This version can handle large numbers efficiently
+(fib-fast 0)    ; => 0
+(fib-fast 1)    ; => 1
+(fib-fast 5)    ; => 5
+(fib-fast 10)   ; => 55
+(fib-fast 20)   ; => 6765
+(fib-fast 50)   ; => 12586269025
+(fib-fast 100)  ; => very large number (works thanks to recur!)
+
+; === COMPARISON ===
+; Both give the same results, but fib-fast is much more efficient
+; for large numbers due to tail call optimization with recur
+
+; Return the 10th fibonacci number using the fast version
+(fib-fast 10) 

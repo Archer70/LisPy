@@ -4,7 +4,7 @@
 
 LisPy brings the elegance of Lisp to the modern world with clean syntax, comprehensive data structures, and a robust module system that makes building real applications a joy.
 
-[![Tests](https://img.shields.io/badge/tests-388%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-391%20passing-brightgreen)](tests/)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
@@ -12,12 +12,12 @@ LisPy brings the elegance of Lisp to the modern world with clean syntax, compreh
 
 - **🎯 Simple yet Powerful**: Clean Lisp syntax with modern conveniences
 - **🔒 Immutable by Default**: All data operations return new structures - no accidental mutations!
-- **🚀 Tail Call Optimization**: Deep recursion without stack overflow - handle thousands of recursive calls!
+- **🚀 Explicit Tail Calls with `recur`**: Deep recursion without stack overflow using explicit `recur` calls!
 - **📦 Module System**: Organize code across files with imports and exports
 - **🏗️ Rich Data Types**: Vectors, hash maps, and more built-in
 - **⚡ Interactive REPL**: Instant feedback for rapid development
 - **🔧 Easy to Extend**: Add new functions and features effortlessly
-- **📚 Well Tested**: 388+ tests ensure reliability
+- **📚 Well Tested**: 391+ tests ensure reliability
 
 ## 🚀 Quick Start
 
@@ -260,44 +260,54 @@ project/
 (factorial 5)  ; => 120
 ```
 
-### Tail Call Optimization 🚀
+### Explicit Tail Calls with `recur` 🚀
 
-LisPy automatically optimizes tail calls, enabling deep recursion without stack overflow:
+LisPy provides explicit tail call optimization using the `recur` special form, enabling deep recursion without stack overflow:
 
 ```lisp
-; Tail-recursive countdown - can handle huge numbers!
+; Tail-recursive countdown using recur - can handle huge numbers!
 (define countdown (fn [n]
   (if (<= n 0)
     n
-    (countdown (- n 1)))))  ; <- Tail call (last operation)
+    (recur (- n 1)))))  ; <- Explicit tail call with recur
 
 (countdown 10000)  ; => 0 (works perfectly!)
 
-; Tail-recursive factorial with accumulator
+; Tail-recursive factorial with accumulator using recur
 (define factorial-tail (fn [n acc]
   (if (<= n 1)
     acc
-    (factorial-tail (- n 1) (* n acc)))))  ; <- Optimized tail call
+    (recur (- n 1) (* n acc)))))  ; <- Explicit tail call with recur
 
 (define factorial (fn [n] (factorial-tail n 1)))
 (factorial 1000)  ; => huge number (no stack overflow!)
 
-; Even/odd checker using tail recursion
+; Even/odd checker using recur
 (define is-even (fn [n]
   (if (= n 0)
     true
     (if (= n 1)
       false
-      (is-even (- n 2))))))  ; <- Tail call in conditional
+      (recur (- n 2))))))  ; <- Explicit tail call with recur
 
 (is-even 9999)  ; => false (handles large numbers easily)
+
+; Regular recursion (without recur) is limited to prevent stack overflow
+(define factorial-regular (fn [n]
+  (if (<= n 1)
+    1
+    (* n (factorial-regular (- n 1))))))  ; <- Regular recursion
+
+(factorial-regular 5)    ; => 120 (works for small values)
+; (factorial-regular 200) ; => RecursionError (hits depth limit)
 ```
 
 **Key Benefits:**
-- **🔄 Constant Stack Space**: Tail recursive functions use O(1) stack space
+- **🔄 Constant Stack Space**: Functions using `recur` use O(1) stack space
 - **📈 Handle Large Inputs**: Process thousands of recursive calls safely  
 - **⚡ Better Performance**: Faster than regular recursion
-- **🎯 Automatic**: No special syntax needed - LisPy detects and optimizes automatically
+- **🎯 Explicit Control**: Use `recur` when you want tail call optimization
+- **🛡️ Stack Safety**: Regular recursion is limited to prevent stack overflow
 
 ## 🛠️ Command Line Interface
 
@@ -366,6 +376,9 @@ python bin/lispy_interpreter.py examples/immutability-demo.lpy
 # Tail call optimization in action
 python bin/lispy_interpreter.py examples/tail_call_optimization_demo.lpy
 
+# Recur best practices and patterns
+python bin/lispy_interpreter.py examples/recur-best-practices.lpy
+
 # Print functions demonstration
 python bin/lispy_interpreter.py examples/print-demo.lpy
 ```
@@ -396,16 +409,25 @@ LisPy/
 ### Fibonacci Sequence
 
 ```lisp
-(define fib (fn [n]
+; Naive version (slow for large numbers)
+(define fib-naive (fn [n]
   (if (<= n 1)
     n
-    (+ (fib (- n 1)) (fib (- n 2))))))
+    (+ (fib-naive (- n 1)) (fib-naive (- n 2))))))
 
-; Calculate individual fibonacci numbers
-(fib 0)   ; => 0
-(fib 1)   ; => 1
-(fib 5)   ; => 5
-(fib 10)  ; => 55
+; Efficient version using recur
+(define fib-tail (fn [n a b]
+  (if (= n 0)
+    a
+    (recur (- n 1) b (+ a b)))))
+
+(define fib-fast (fn [n] (fib-tail n 0 1)))
+
+; Calculate fibonacci numbers
+(fib-fast 0)   ; => 0
+(fib-fast 1)   ; => 1
+(fib-fast 10)  ; => 55
+(fib-fast 100) ; => very large number (works thanks to recur!)
 ```
 
 ### Data Processing (Immutable Operations)
@@ -565,4 +587,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 python bin/lispy_interpreter.py --repl
 ```
 
-*Start your functional programming journey today!* 🎉 
+*Start your functional programming journey today!* 🎉

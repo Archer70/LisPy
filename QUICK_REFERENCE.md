@@ -147,7 +147,7 @@ This is a quick reference companion to the comprehensive [LisPy Tutorial](TUTORI
 ### Recursion
 
 ```lisp
-; Factorial
+; Factorial (regular recursion - limited depth)
 (define factorial (fn [n]
   (if (<= n 1) 1 (* n (factorial (- n 1))))))
 
@@ -157,24 +157,24 @@ This is a quick reference companion to the comprehensive [LisPy Tutorial](TUTORI
     (+ (first vec) (sum-vector (rest vec))))))
 ```
 
-### Tail Call Optimization
+### Explicit Tail Calls with `recur`
 
-**LisPy automatically optimizes tail calls!** Tail recursive functions can handle huge inputs without stack overflow.
+**LisPy provides explicit tail call optimization using `recur`!** Functions using `recur` can handle huge inputs without stack overflow.
 
 ```lisp
-; Tail-recursive countdown (optimized automatically)
+; Tail-recursive countdown using recur
 (define countdown (fn [n]
-  (if (<= n 0) n (countdown (- n 1)))))
+  (if (<= n 0) n (recur (- n 1)))))
 (countdown 10000)  ; Works perfectly!
 
-; Tail-recursive factorial with accumulator
+; Tail-recursive factorial with accumulator using recur
 (define factorial-tail (fn [n acc]
-  (if (<= n 1) acc (factorial-tail (- n 1) (* n acc)))))
+  (if (<= n 1) acc (recur (- n 1) (* n acc)))))
 (define factorial (fn [n] (factorial-tail n 1)))
 (factorial 1000)  ; No stack overflow!
 
-; Key: tail call is the LAST operation in the function
-; LisPy detects and optimizes these automatically
+; Key: recur is explicit and must be in tail position
+; Regular recursion is limited to prevent stack overflow
 ```
 
 ### Higher-Order Functions

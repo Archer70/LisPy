@@ -1,0 +1,191 @@
+; Recur Best Practices and Common Patterns
+; This file demonstrates proper usage of the `recur` special form
+; Run with: python bin/lispy_interpreter.py examples/recur-best-practices.lpy
+
+; === BASIC RECUR RULES ===
+
+; ✅ GOOD: recur in tail position
+(define countdown (fn [n]
+  (if (<= n 0)
+    n
+    (recur (- n 1)))))  ; recur is the last expression
+
+; ✅ GOOD: recur with correct arity
+(define add-by-counting (fn [a b]
+  (if (= b 0)
+    a
+    (recur (+ a 1) (- b 1)))))  ; 2 args to match function parameters
+
+; ❌ BAD: recur not in tail position (this would cause an error)
+; (define bad-example (fn [n]
+;   (if (<= n 0)
+;     n
+;     (+ 1 (recur (- n 1))))))  ; Error: recur not in tail position
+
+; ❌ BAD: wrong arity (this would cause an error)
+; (define wrong-arity (fn [x y]
+;   (if (= x 0)
+;     y
+;     (recur x))))  ; Error: function takes 2 args, recur called with 1
+
+; === ACCUMULATOR PATTERN ===
+
+; Convert regular recursion to tail recursion using accumulator
+; Regular version (limited depth):
+(define sum-regular (fn [lst]
+  (if (empty? lst)
+    0
+    (+ (first lst) (sum-regular (rest lst))))))
+
+; Tail-recursive version with recur:
+(define sum-tail (fn [lst acc]
+  (if (empty? lst)
+    acc
+    (recur (rest lst) (+ acc (first lst))))))
+
+(define sum-list (fn [lst] (sum-tail lst 0)))
+
+; Test both versions
+(sum-regular [1 2 3 4 5])  ; => 15 (works for small lists)
+(sum-list [1 2 3 4 5])     ; => 15 (works for large lists too)
+
+; === MULTIPLE ACCUMULATORS ===
+
+; Find both minimum and maximum in one pass using recur
+(define min-max-tail (fn [lst min-val max-val]
+  (if (empty? lst)
+    {:min min-val :max max-val}
+    (recur (rest lst)
+           (if (< (first lst) min-val) (first lst) min-val)
+           (if (> (first lst) max-val) (first lst) max-val)))))
+
+(define min-max (fn [lst]
+  (if (empty? lst)
+    nil
+    (min-max-tail (rest lst) (first lst) (first lst)))))
+
+(min-max [3 7 1 9 2])  ; => {:min 1 :max 9}
+
+; === EARLY TERMINATION WITH RECUR ===
+
+; Find first element matching predicate
+(define find-first-tail (fn [lst predicate]
+  (if (empty? lst)
+    nil
+    (if (predicate (first lst))
+      (first lst)                       ; Found it - return early
+      (recur (rest lst) predicate)))))  ; Continue searching
+
+(define find-first (fn [lst predicate] (find-first-tail lst predicate)))
+
+; Test finding first even number
+(define even? (fn [n] 
+  (if (= n 0) 
+    true 
+    (if (= n 1) 
+      false 
+      (even? (- n 2))))))
+(find-first [1 3 5 8 9 10] even?)  ; => 8
+
+; === COUNTER PATTERN ===
+
+; Count elements matching a condition
+(define count-matching-tail (fn [lst predicate acc]
+  (if (empty? lst)
+    acc
+    (if (predicate (first lst))
+      (recur (rest lst) predicate (+ acc 1))
+      (recur (rest lst) predicate acc)))))
+
+(define count-matching (fn [lst predicate]
+  (count-matching-tail lst predicate 0)))
+
+; Count even numbers
+(count-matching [1 2 3 4 5 6] even?)  ; => 3
+
+; === TRANSFORMATION PATTERN ===
+
+; Transform each element and collect results
+(define map-tail (fn [lst transform acc]
+  (if (empty? lst)
+    acc
+    (recur (rest lst) 
+           transform 
+           (conj acc (transform (first lst)))))))
+
+(define map-list (fn [lst transform] (map-tail lst transform [])))
+
+; Double all numbers
+(define double (fn [x] (* x 2)))
+(map-list [1 2 3 4 5] double)  ; => [2 4 6 8 10]
+
+; === FILTERING PATTERN ===
+
+; Keep only elements matching predicate
+(define filter-tail (fn [lst predicate acc]
+  (if (empty? lst)
+    acc
+    (if (predicate (first lst))
+      (recur (rest lst) predicate (conj acc (first lst)))
+      (recur (rest lst) predicate acc)))))
+
+(define filter-list (fn [lst predicate] (filter-tail lst predicate [])))
+
+; Keep only even numbers
+(filter-list [1 2 3 4 5 6] even?)  ; => [2 4 6]
+
+; === ZERO-ARGUMENT RECUR ===
+
+; Simple zero-argument function that always returns a value
+(define simple-zero-arg (fn []
+  "zero-arg-result"))
+
+; Test zero-argument function
+(simple-zero-arg)  ; => "zero-arg-result"
+
+; Zero-argument recur with conditional logic
+(define countdown-zero-arg (fn [n]
+  (if (<= n 0)
+    "done"
+    (recur (- n 1)))))
+
+; Test zero-argument style countdown
+(countdown-zero-arg 5)   ; => "done"
+(countdown-zero-arg 100) ; => "done" (works with large numbers)
+
+; === PERFORMANCE COMPARISON ===
+
+; Create a large list for testing
+(define large-list [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20])
+
+; Regular recursion version (limited depth)
+(define length-regular (fn [lst]
+  (if (empty? lst)
+    0
+    (+ 1 (length-regular (rest lst))))))
+
+; Recur version (unlimited depth)
+(define length-tail (fn [lst acc]
+  (if (empty? lst)
+    acc
+    (recur (rest lst) (+ acc 1)))))
+
+(define length-fast (fn [lst] (length-tail lst 0)))
+
+; Both give same result, but recur version can handle much larger lists
+(length-regular large-list)  ; => 20
+(length-fast large-list)     ; => 20
+
+; === BEST PRACTICES SUMMARY ===
+
+"=== Recur Best Practices ==="
+"1. Use recur only in tail position (last expression)"
+"2. Match function arity exactly"
+"3. Use accumulator pattern to convert regular recursion"
+"4. Consider multiple accumulators for complex operations"
+"5. Use recur for performance-critical recursive algorithms"
+"6. Regular recursion is fine for small, bounded problems"
+"7. recur enables functional programming at scale"
+
+; Key insight: recur makes functional programming practical for large datasets
+; by providing constant stack space for recursive algorithms 
