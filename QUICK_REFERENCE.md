@@ -21,6 +21,7 @@ This is a quick reference companion to the comprehensive [LisPy Tutorial](TUTORI
 | Subtraction | `(- a b ...)` | `(- 10 3 2)` | `5` |
 | Multiplication | `(* a b ...)` | `(* 2 3 4)` | `24` |
 | Division | `(/ a b ...)` | `(/ 20 4 2)` | `2.5` |
+| Modulo | `(% a b ...)` | `(% 10 3)` | `1` |
 
 ## Comparison Operations
 
@@ -191,7 +192,7 @@ This is a quick reference companion to the comprehensive [LisPy Tutorial](TUTORI
 ## Built-in Functions Reference
 
 ### Arithmetic
-- `+`, `-`, `*`, `/` - Basic arithmetic
+- `+`, `-`, `*`, `/`, `%` - Basic arithmetic
 - `=`, `<`, `>`, `<=`, `>=` - Comparisons
 
 ### Logic

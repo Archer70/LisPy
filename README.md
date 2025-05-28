@@ -4,7 +4,7 @@
 
 LisPy brings the elegance of Lisp to the modern world with clean syntax, comprehensive data structures, and a robust module system that makes building real applications a joy.
 
-[![Tests](https://img.shields.io/badge/tests-391%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-400%20passing-brightgreen)](tests/)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
@@ -17,7 +17,7 @@ LisPy brings the elegance of Lisp to the modern world with clean syntax, compreh
 - **🏗️ Rich Data Types**: Vectors, hash maps, and more built-in
 - **⚡ Interactive REPL**: Instant feedback for rapid development
 - **🔧 Easy to Extend**: Add new functions and features effortlessly
-- **📚 Well Tested**: 391+ tests ensure reliability
+- **📚 Well Tested**: 400+ tests ensure reliability
 
 ## 🚀 Quick Start
 
@@ -378,6 +378,9 @@ python bin/lispy_interpreter.py examples/tail_call_optimization_demo.lpy
 
 # Recur best practices and patterns
 python bin/lispy_interpreter.py examples/recur-best-practices.lpy
+
+# Modulo function demonstration
+python bin/lispy_interpreter.py examples/modulo-demo.lpy
 
 # Print functions demonstration
 python bin/lispy_interpreter.py examples/print-demo.lpy

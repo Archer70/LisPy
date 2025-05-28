@@ -23,7 +23,7 @@ STRING_REGEX_WITH_ESCAPES = r'"((?:\\.|[^"\\])*)"'
 BOOLEAN_TRUE_REGEX = r"(?i)\btrue\b"
 BOOLEAN_FALSE_REGEX = r"(?i)\bfalse\b"
 NIL_REGEX = r"\bnil\b"
-SYMBOL_REGEX = r"[a-zA-Z_+\-*/<=>?!.:][a-zA-Z0-9_+\-*/<=>?!.:]*"
+SYMBOL_REGEX = r"[a-zA-Z_+\-*/%<=>?!.:][a-zA-Z0-9_+\-*/%<=>?!.:]*"
 LPAREN_REGEX = r"\("
 RPAREN_REGEX = r"\)"
 LBRACKET_REGEX = r"\["

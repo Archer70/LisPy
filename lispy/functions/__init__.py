@@ -7,6 +7,7 @@ from .add import builtin_add
 from .subtract import builtin_subtract
 from .multiply import builtin_multiply
 from .divide import builtin_divide
+from .modulo import builtin_modulo
 from .equals import builtin_equals
 from .greater_than import builtin_greater_than
 from .less_than import builtin_less_than
@@ -39,6 +40,7 @@ def create_global_env() -> Environment:
     env.define("-", builtin_subtract)
     env.define("*", builtin_multiply)
     env.define("/", builtin_divide)
+    env.define("%", builtin_modulo)
     env.define("=", builtin_equals)
     env.define(">", builtin_greater_than)
     env.define("<", builtin_less_than)
@@ -73,6 +75,7 @@ __all__ = [
     "builtin_subtract",
     "builtin_multiply",
     "builtin_divide",
+    "builtin_modulo",
     "builtin_equals",
     "builtin_greater_than",
     "builtin_less_than",
