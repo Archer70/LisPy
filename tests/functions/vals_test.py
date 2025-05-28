@@ -2,9 +2,6 @@ import unittest
 
 from lispy.types import Symbol, LispyList
 from lispy.functions import create_global_env
-from lispy.lexer import tokenize
-from lispy.parser import parse
-from lispy.evaluator import evaluate
 from lispy.exceptions import EvaluationError
 from lispy.utils import run_lispy_string
 
