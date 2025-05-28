@@ -4,7 +4,7 @@
 
 LisPy brings the elegance of Lisp to the modern world with clean syntax, comprehensive data structures, and a robust module system that makes building real applications a joy.
 
-[![Tests](https://img.shields.io/badge/tests-367%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-388%20passing-brightgreen)](tests/)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
@@ -17,7 +17,7 @@ LisPy brings the elegance of Lisp to the modern world with clean syntax, compreh
 - **🏗️ Rich Data Types**: Vectors, hash maps, and more built-in
 - **⚡ Interactive REPL**: Instant feedback for rapid development
 - **🔧 Easy to Extend**: Add new functions and features effortlessly
-- **📚 Well Tested**: 367+ tests ensure reliability
+- **📚 Well Tested**: 388+ tests ensure reliability
 
 ## 🚀 Quick Start
 
@@ -53,6 +53,31 @@ python bin/lispy_interpreter.py hello.lpy
 (if (> 10 5) "yes" "no")  ; => "yes"
 (and true false)          ; => false
 (or true false)           ; => true
+```
+
+### Console Output
+
+```lisp
+; Print without newline
+(print "Hello")
+(print " ")
+(print "World")  ; Output: Hello World
+
+; Print with newline
+(println "Hello, World!")  ; Output: Hello, World!\n
+
+; Print multiple values
+(println "Name:" "Alice" "Age:" 30)  ; Output: Name: Alice Age: 30
+
+; Print different data types
+(println "Number:" 42)           ; Output: Number: 42
+(println "Boolean:" true)        ; Output: Boolean: true
+(println "Vector:" [1 2 3])      ; Output: Vector: [1 2 3]
+(println "Nil value:" nil)       ; Output: Nil value: nil
+
+; Print with no arguments
+(print)    ; Prints nothing
+(println)  ; Prints just a newline
 ```
 
 ### Rich Data Structures (Immutable!)
@@ -340,6 +365,9 @@ python bin/lispy_interpreter.py examples/immutability-demo.lpy
 
 # Tail call optimization in action
 python bin/lispy_interpreter.py examples/tail_call_optimization_demo.lpy
+
+# Print functions demonstration
+python bin/lispy_interpreter.py examples/print-demo.lpy
 ```
 
 ## 📁 Project Structure

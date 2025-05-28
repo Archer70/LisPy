@@ -29,6 +29,8 @@ from .assoc import builtin_assoc
 from .dissoc import builtin_dissoc
 from .keys import builtin_keys
 from .vals import builtin_vals # Added vals
+from .print import builtin_print
+from .println import builtin_println
 
 def create_global_env() -> Environment:
     """Creates and returns the global environment with built-in functions."""
@@ -59,6 +61,8 @@ def create_global_env() -> Environment:
     env.define("dissoc", builtin_dissoc)
     env.define("keys", builtin_keys)
     env.define("vals", builtin_vals) # Added vals
+    env.define("print", builtin_print)
+    env.define("println", builtin_println)
     return env
 
 # Create a single global environment instance when the module is loaded.
@@ -91,6 +95,8 @@ __all__ = [
     "builtin_dissoc",
     "builtin_keys",
     "builtin_vals", # Added vals
+    "builtin_print",
+    "builtin_println",
     "create_global_env",
     "global_env",
 ] 
