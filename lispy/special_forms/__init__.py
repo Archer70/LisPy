@@ -17,6 +17,7 @@ from .bdd.it_form import it_form_handler
 from .bdd.given_form import given_form_handler
 from .bdd.when_form import when_form_handler
 from .bdd.then_form import then_form_handler
+from .bdd.assert_raises_q_form import assert_raises_q_form_handler
 
 # A registry for special form handlers
 # Maps the symbol (as a string) to the handler function
@@ -35,6 +36,7 @@ special_form_handlers = {
     "given": given_form_handler,
     "when": when_form_handler,
     "then": then_form_handler,
+    "assert-raises?": assert_raises_q_form_handler,
 }
 
 __all__ = ["special_form_handlers"] # Keep __all__ simple for now
