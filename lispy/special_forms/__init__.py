@@ -12,6 +12,11 @@ from .import_form import import_form
 from .export_form import export_form
 from .recur_form import handle_recur
 from .thread_first import handle_thread_first
+from .bdd.describe_form import describe_form_handler
+from .bdd.it_form import it_form_handler
+from .bdd.given_form import given_form_handler
+from .bdd.when_form import when_form_handler
+from .bdd.then_form import then_form_handler
 
 # A registry for special form handlers
 # Maps the symbol (as a string) to the handler function
@@ -25,6 +30,11 @@ special_form_handlers = {
     "export": export_form,
     "recur": handle_recur,
     "->": handle_thread_first,
+    "describe": describe_form_handler,
+    "it": it_form_handler,
+    "given": given_form_handler,
+    "when": when_form_handler,
+    "then": then_form_handler,
 }
 
 __all__ = ["special_form_handlers"] # Keep __all__ simple for now
