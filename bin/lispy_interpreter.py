@@ -24,12 +24,12 @@ from lispy.evaluator import evaluate
 from lispy.functions import create_global_env
 from lispy.module_system import get_module_loader, set_current_module, Module
 from lispy.exceptions import EvaluationError, ParseError, LexerError
-from lispy.utils import run_lispy_string
-from lispy_bdd_runner import run_bdd_tests # Added for BDD runner
+from lispy_bdd_runner import run_bdd_tests
+from lispy_repl import LispyRepl
 
 
 class LispyInterpreter:
-    """Main LisPy interpreter class."""
+    """Main LisPy interpreter class for file execution and BDD tests."""
     
     def __init__(self):
         self.env = create_global_env()
@@ -155,45 +155,9 @@ class LispyInterpreter:
             pos += 1
             
         if depth > 0:
-            raise EvaluationError(f"Unclosed {opening_token}")
+            raise ParseError(f"Unclosed {opening_token} starting at position {start_pos}")
             
         return result_tokens, pos
-        
-    def start_repl(self):
-        """Start an interactive Read-Eval-Print Loop."""
-        print("LisPy Interactive Interpreter")
-        print("Type expressions to evaluate them, or 'exit' to quit.")
-        print("Use (import \"module-name\") to load modules.")
-        print()
-        
-        while True:
-            try:
-                # Read input
-                user_input = input("lispy> ").strip()
-                
-                # Check for exit
-                if user_input.lower() in ['exit', 'quit', '(exit)', '(quit)']:
-                    print("Goodbye!")
-                    break
-                    
-                if not user_input:
-                    continue
-                    
-                # Evaluate and print result
-                result = run_lispy_string(user_input, self.env)
-                if result is not None:
-                    print(f"=> {result}")
-                    
-            except KeyboardInterrupt:
-                print("\nGoodbye!")
-                break
-            except EOFError:
-                print("\nGoodbye!")
-                break
-            except (LexerError, ParseError, EvaluationError) as e:
-                print(f"Error: {e}")
-            except Exception as e:
-                print(f"Unexpected error: {e}")
 
 
 def main():
@@ -255,7 +219,7 @@ Examples:
         print("Error: Cannot specify both --repl and --bdd option.", file=sys.stderr)
         return 1
     
-    # Create interpreter
+    # Create interpreter instance (used for file execution and BDD)
     interpreter = LispyInterpreter()
     
     # Add any additional include paths
@@ -273,7 +237,8 @@ Examples:
         return interpreter.run_file(args.file)
     else:
         # Start REPL (either explicitly requested or default behavior)
-        interpreter.start_repl()
+        repl_instance = LispyRepl(interpreter.env) 
+        repl_instance.start_repl()
         return 0
 
 
