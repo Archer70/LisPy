@@ -14,4 +14,8 @@ class EvaluationError(LisPyError):
 
 class LexerError(LisPyError):
     """Custom exception for lexer/tokenization errors."""
+    pass
+
+class AssertionFailure(LisPyError):
+    """Custom exception for BDD assertion failures."""
     pass 

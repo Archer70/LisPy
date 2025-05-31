@@ -1,4 +1,4 @@
-from lispy.exceptions import EvaluationError
+from lispy.exceptions import EvaluationError, AssertionFailure
 from lispy.bdd import registry
 from typing import List as TypingList, Any
 
@@ -35,7 +35,18 @@ def then_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) -
         # For now, allow it to be 'passed' if empty.
         return None 
 
-    for expr in body_expressions:
-        last_result = evaluate_fn(expr, env)
-    
-    return last_result 
+    try:
+        for expr in body_expressions:
+            last_result = evaluate_fn(expr, env)
+        return last_result
+    except AssertionFailure as af:
+        registry.mark_last_step_status("failed", str(af))
+        return None # Indicates handled assertion failure
+    except EvaluationError as ee:
+        registry.mark_last_step_status("failed", f"Step error: {str(ee)}")
+        return None
+    except Exception as e:
+        registry.mark_last_step_status("failed", f"Unexpected critical error: {str(e)}")
+        raise # Re-raise other critical errors
+
+# Removed the final unreachable: return last_result 

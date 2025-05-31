@@ -92,6 +92,25 @@ def add_step(keyword: str, description: str, status: str = "passed", details: Op
     current_scenario["steps"].append(step_details)
     # print(f"[REGISTRY]     Added Step: {keyword.title()} {description} ({status})")
 
+def mark_last_step_status(new_status: str, details: Optional[str] = None) -> None:
+    """Marks the status of the last added step in the current scenario."""
+    current_scenario = get_current_scenario()
+    if not current_scenario:
+        print("[REGISTRY_WARNING] mark_last_step_status called without an active scenario.")
+        return
+    
+    if not current_scenario["steps"]:
+        print("[REGISTRY_WARNING] mark_last_step_status called but no steps in current scenario.")
+        return
+        
+    last_step = current_scenario["steps"][-1]
+    last_step["status"] = new_status
+    if details:
+        last_step["details"] = details
+    else:
+        last_step.pop("details", None) # Remove details if new status doesn't have them
+    # print(f"[REGISTRY]     Updated Step: {last_step['keyword']} {last_step['description']} to {new_status}")
+
 # --- Functions for checking context (to be used by special form handlers) ---
 
 def is_feature_context_active() -> bool:

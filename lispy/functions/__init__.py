@@ -33,6 +33,8 @@ from .vals import builtin_vals # Added vals
 from .print import builtin_print
 from .println import builtin_println
 
+from .bdd_assertions import bdd_assertion_functions # Added
+
 def create_global_env() -> Environment:
     """Creates and returns the global environment with built-in functions."""
     env = Environment()
@@ -65,6 +67,11 @@ def create_global_env() -> Environment:
     env.define("vals", builtin_vals) # Added vals
     env.define("print", builtin_print)
     env.define("println", builtin_println)
+
+    # Add BDD assertion functions
+    for name, func in bdd_assertion_functions.items(): # Added loop
+        env.define(name, func)
+
     return env
 
 # Create a single global environment instance when the module is loaded.

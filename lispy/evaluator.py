@@ -1,7 +1,7 @@
 # LisPy Evaluator
 
 from .types import Symbol, Vector, LispyList
-from .exceptions import EvaluationError
+from .exceptions import EvaluationError, AssertionFailure
 from .environment import Environment
 from .closure import Function
 from .special_forms import special_form_handlers
@@ -75,9 +75,10 @@ def _execute_builtin_function(
     """Helper to execute a Python callable that is a built-in function."""
     fn_name_str = str(operator_expr) if isinstance(operator_expr, Symbol) else repr(operator_expr)
     try:
-        # Pass the list of evaluated arguments as a single argument
         return py_callable(evaluated_args)
-    except EvaluationError: # Allow EvaluationErrors (like syntax/type errors from builtins) to propagate
+    except AssertionFailure: # Added: Let AssertionFailure propagate directly
+        raise
+    except EvaluationError: 
         raise
     except Exception as e:
         # Catch other Python exceptions from the built-in and wrap them
