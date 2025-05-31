@@ -1,0 +1,39 @@
+(describe "Basic Vector Operations"
+    (it "should correctly count elements in a vector"
+        (given "a vector [1 2 3 4 5] is defined"
+            (define my-vec [1 2 3 4 5])
+        )
+        (when "we count its elements"
+            ; The actual count will be performed in the 'then' block's assertion
+            ; for this test, my-vec is now in the environment.
+        )
+        (then "the count should be 5"
+            (assert-equal? 5 (count my-vec))
+        )
+    )
+
+    (it "should correctly get the first element of a vector"
+        (given "a vector ['a' 'b' 'c'] is defined"
+            (define another-vec ["a" "b" "c"])
+        )
+        (when "we get its first element"
+            ; The actual 'first' operation will be in the 'then' block's assertion.
+        )
+        (then "the first element should be 'a'"
+            (assert-equal? "a" (first another-vec))
+        )
+    )
+
+    (it "should allow definition of variables for assertions"
+        (given "a test value is prepared"
+            (define test-val 99)
+        )
+        (when "the test value is used in a 'then' block"
+            ; No specific action code needed here for this particular test structure,
+            ; test-val is available in the environment.
+        )
+        (then "it should be usable in an assertion"
+            (assert-equal? 99 test-val)
+        )
+    )
+) 

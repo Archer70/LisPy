@@ -384,6 +384,9 @@ python bin/lispy_interpreter.py examples/modulo-demo.lpy
 
 # Print functions demonstration
 python bin/lispy_interpreter.py examples/print-demo.lpy
+
+# Run example BDD tests (feature specifications)
+python bin/lispy_interpreter.py --bdd "examples/test_examples/**/*.lpy"
 ```
 
 ## 📁 Project Structure
@@ -522,6 +525,74 @@ python -m unittest discover -s tests -p '*_test.py'
 python -m unittest tests.lexer_test
 python -m unittest tests.module_system_test
 ```
+
+## 📜 Behavior-Driven Development (BDD) in LisPy
+
+LisPy includes a lightweight BDD framework, allowing you to write executable specifications that describe the behavior of your programs in a natural language style. This helps ensure your code does what it's supposed to do and serves as living documentation.
+
+### Core BDD Keywords
+
+BDD tests in LisPy are structured using the following special forms:
+
+- `(describe "Feature description" ...scenarios)`: Defines a feature or a collection of related tests.
+- `(it "Scenario description" ...steps)`: Defines a specific test scenario within a feature.
+- `(given "Context or precondition" ...setup-code)`: Describes the initial state or setup for a scenario.
+- `(when "Action performed" ...action-code)`: Describes the action or event being tested.
+- `(then "Expected outcome" ...assertion-code)`: Describes the expected result and contains assertions to verify it.
+
+### Assertion Functions
+
+The primary assertion function available is:
+- `(assert-equal? expected actual)`: Checks if `actual` is equal to `expected`. If not, the step is marked as failed.
+
+### Writing BDD Tests
+
+BDD tests are written in regular `.lpy` files, typically in a dedicated test directory (e.g., `tests/features/` or `examples/test_examples/`).
+
+**Example (`example_bdd.lpy`):**
+```lisp
+(describe "User Authentication"
+    (it "should allow a valid user to log in"
+        (given "a registered user with username 'testuser' and password 'pass123'")
+        ; ... code to set up the user in a mock database ...
+
+        (when "the user attempts to log in with correct credentials")
+        (define login-result (attempt-login "testuser" "pass123"))
+
+        (then "the login should be successful"
+            (assert-equal? true (login-successful? login-result))
+        )
+    )
+
+    (it "should prevent login with incorrect password"
+        (given "a registered user 'testuser'")
+        ; ... setup ...
+        (when "the user attempts to log in with an incorrect password")
+        (define login-result (attempt-login "testuser" "wrongpass"))
+
+        (then "the login should fail"
+            (assert-equal? false (login-successful? login-result))
+        )
+    )
+)
+```
+
+### Running BDD Tests
+
+Use the `--bdd` flag with `lispy_interpreter.py`, providing a file path or a glob pattern to your BDD test files:
+
+```bash
+# Run a single BDD test file
+python bin/lispy_interpreter.py --bdd tests/features/authentication.lpy
+
+# Run all BDD tests in a directory (and its subdirectories)
+python bin/lispy_interpreter.py --bdd "tests/features/**/*.lpy"
+
+# Run the example BDD tests provided with LisPy
+python bin/lispy_interpreter.py --bdd "examples/test_examples/**/*.lpy"
+```
+
+The interpreter will execute these files and print a report summarizing the results of features, scenarios, and steps (passed or failed).
 
 ## 📖 Documentation
 

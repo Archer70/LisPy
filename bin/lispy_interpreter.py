@@ -6,6 +6,7 @@ Usage:
     python lispy_interpreter.py [file.lpy]           # Run a LisPy file
     python lispy_interpreter.py                      # Start REPL mode
     python lispy_interpreter.py --help               # Show help
+    python lispy_interpreter.py --bdd "tests/bdd_features/**/*.lpy" # Run BDD tests
 """
 
 import sys
@@ -24,6 +25,7 @@ from lispy.functions import create_global_env
 from lispy.module_system import get_module_loader, set_current_module, Module
 from lispy.exceptions import EvaluationError, ParseError, LexerError
 from lispy.utils import run_lispy_string
+from lispy_bdd_runner import run_bdd_tests # Added for BDD runner
 
 
 class LispyInterpreter:
@@ -38,7 +40,7 @@ class LispyInterpreter:
         abs_path = os.path.abspath(path)
         self.module_loader.add_load_path(abs_path)
         
-    def run_file(self, file_path: str):
+    def run_file(self, file_path: str, is_bdd_run: bool = False):
         """Execute a LisPy file as the main entry point."""
         file_path = os.path.abspath(file_path)
         
@@ -61,8 +63,8 @@ class LispyInterpreter:
             # Parse and evaluate all expressions
             result = self._execute_source(source_code, file_path)
             
-            # If the last expression returned a value, print it
-            if result is not None:
+            # If the last expression returned a value, print it, unless it's a BDD run
+            if result is not None and not is_bdd_run:
                 print(f"Program result: {result}")
             
             return 0
@@ -232,12 +234,25 @@ Examples:
         action='version',
         version='LisPy 1.0.0'
     )
+
+    parser.add_argument(
+        '--bdd',
+        nargs='+',  # Expect one or more arguments
+        metavar='PATTERN',
+        help='Run BDD tests. Accepts file paths or glob patterns (e.g., "features/**/*.lpy")'
+    )
     
     args = parser.parse_args()
     
     # Validate arguments
     if args.file and args.repl:
         print("Error: Cannot specify both a file and --repl option.", file=sys.stderr)
+        return 1
+    if args.file and args.bdd:
+        print("Error: Cannot specify both a file and --bdd option.", file=sys.stderr)
+        return 1
+    if args.repl and args.bdd:
+        print("Error: Cannot specify both --repl and --bdd option.", file=sys.stderr)
         return 1
     
     # Create interpreter
@@ -247,9 +262,14 @@ Examples:
     if args.include_paths:
         for path in args.include_paths:
             interpreter.add_load_path(path)
-    
-    # Determine mode: file execution or REPL
-    if args.file:
+
+    # Determine mode: BDD tests, file execution, or REPL
+    if args.bdd:
+        # Pass the project root as the base_dir for resolving glob patterns
+        # This assumes BDD test paths are specified relative to the project root.
+        bdd_passed = run_bdd_tests(args.bdd, interpreter, str(project_root))
+        return 0 if bdd_passed else 1
+    elif args.file:
         return interpreter.run_file(args.file)
     else:
         # Start REPL (either explicitly requested or default behavior)

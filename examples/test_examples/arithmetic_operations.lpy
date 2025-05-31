@@ -1,0 +1,25 @@
+(describe "Basic Arithmetic Operations"
+    (it "should correctly add two numbers"
+        (given "two numbers, 10 and 20")
+        (when "they are added together")
+        (then "the result should be 30"
+            (assert-equal? 30 (+ 10 20))
+        )
+    )
+
+    (it "should correctly multiply two numbers"
+        (given "two numbers, 7 and 6")
+        (when "they are multiplied")
+        (then "the result should be 42"
+            (assert-equal? 42 (* 7 6))
+        )
+    )
+
+    (it "should handle subtraction"
+        (given "numbers 100 and 55")
+        (when "55 is subtracted from 100")
+        (then "the result is 45"
+            (assert-equal? 45 (- 100 55))
+        )
+    )
+) 
