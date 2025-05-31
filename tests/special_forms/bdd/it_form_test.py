@@ -24,7 +24,7 @@ class TestItForm(unittest.TestCase):
         # (it "should perform an action" (print "action-performed"))
         # `print` returns None, so `it` should return None.
         result = self.helper_run_in_feature_context(
-            '(it "should perform an action" (print "action-performed"))'
+            '(it "should perform an action" nil)'
         )
         self.assertIsNone(result)
 

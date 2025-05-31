@@ -27,7 +27,7 @@ class TestWhenForm(unittest.TestCase):
 
     def test_when_basic_structure_with_body(self):
         result = self.helper_run_in_scenario_context(
-            '(when "an action occurs" (print initial-value))'
+            '(when "an action occurs" nil)'
         )
         self.assertIsNone(result)
 

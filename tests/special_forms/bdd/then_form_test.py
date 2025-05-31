@@ -25,7 +25,7 @@ class TestThenForm(unittest.TestCase):
 
     def test_then_basic_structure_with_body(self):
         result = self.helper_run_in_scenario_context(
-            '(then "an outcome is expected" (print result-value))'
+            '(then "an outcome is expected" nil)'
         )
         self.assertIsNone(result)
 

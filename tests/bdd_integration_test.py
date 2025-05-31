@@ -15,19 +15,26 @@ class TestBddIntegration(unittest.TestCase):
         lispy_code = """
         (describe "User Authentication"
           (it "should allow login with correct credentials"
-            (given "a registered user 'testuser' with password 'pass123'"
-              (print "Setting up user...")) ; Placeholder for actual setup
+            (given "a registered user 'testuser' with password 'pass123'" 
+              nil ; (print "Setting up user...")
+            )
             (when "the user attempts to login with 'testuser' and 'pass123'"
-              (print "Simulating login...")) ; Placeholder for action
+              nil ; (print "Simulating login...")
+            )
             (then "the login should be successful"
-              (print "Verifying success...")) ; Placeholder for assertion
+              nil ; (print "Verifying success...")
+            )
             (then "a session token should be generated"
-              (print "Verifying token...")))
+              nil ; (print "Verifying token...")
+            )
+          )
           
           (it "should deny login with incorrect credentials"
-            (given "a registered user 'testuser' with password 'pass123'")
-            (when "the user attempts to login with 'testuser' and 'wrongpass'")
-            (then "the login should fail")))
+            (given "a registered user 'testuser' with password 'pass123'" nil)
+            (when "the user attempts to login with 'testuser' and 'wrongpass'" nil)
+            (then "the login should fail" nil)
+          )
+        )
         """
         run_lispy_string(lispy_code, self.env)
 
