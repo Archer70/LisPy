@@ -50,6 +50,7 @@ class LispyCompleter(Completer):
         
         core_literals_and_keywords = {
             "true", "false", "nil",
+            "and", "or", # Added logical operators
             # BDD Keywords - kept here for now
             "describe", "feature", "it", "scenario", "given", "when", "then",
             "assert-equal?", "assert-true?", "assert-false?", "assert-nil?", "assert-not-nil?", "assert-raises?"

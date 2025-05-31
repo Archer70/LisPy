@@ -18,10 +18,12 @@ from .bdd.given_form import given_form_handler
 from .bdd.when_form import when_form_handler
 from .bdd.then_form import then_form_handler
 from .bdd.assert_raises_q_form import assert_raises_q_form_handler
+from .and_form import handle_and_form
+from .or_form import handle_or_form
 
 # A registry for special form handlers
 # Maps the symbol (as a string) to the handler function
-special_form_handlers = {
+special_form_handlers: Dict[str, Callable[[List[Any], Environment, Callable], Any]] = {
     "define": handle_define_form,
     "fn": handle_fn_form,
     "if": handle_if_form,
@@ -37,6 +39,8 @@ special_form_handlers = {
     "when": when_form_handler,
     "then": then_form_handler,
     "assert-raises?": assert_raises_q_form_handler,
+    "and": handle_and_form,
+    "or": handle_or_form,
 }
 
-__all__ = ["special_form_handlers"] # Keep __all__ simple for now
+__all__ = ["special_form_handlers"]
