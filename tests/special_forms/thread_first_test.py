@@ -7,7 +7,7 @@ from lispy.exceptions import EvaluationError
 
 
 # Helper Python function for string-append for testing purposes
-def _py_string_append(args):
+def _py_string_append(args, env):
     if not all(isinstance(arg, str) for arg in args):
         raise EvaluationError("TypeError: string-append expects all arguments to be strings.")
     if len(args) == 0:

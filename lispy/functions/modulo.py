@@ -1,10 +1,11 @@
 from typing import List, Any, Union
 from ..exceptions import EvaluationError
 from numbers import Number
+from ..environment import Environment
 
 Numeric = Union[int, float]
 
-def builtin_modulo(args: List[Any]) -> Numeric:
+def builtin_modulo(args: List[Any], env: Environment) -> Numeric:
     """Calculates the modulo (remainder) of division. (% dividend divisor)
     Returns the remainder when dividend is divided by divisor.
     For multiple arguments, applies modulo left-to-right: (% a b c) = (% (% a b) c)

@@ -1,10 +1,11 @@
 from typing import List, Any, Union
 from ..exceptions import EvaluationError
 from numbers import Number
+from ..environment import Environment
 
 Numeric = Union[int, float]
 
-def builtin_subtract(args: List[Any]) -> Numeric:
+def builtin_subtract(args: List[Any], env: Environment) -> Numeric:
     """Subtracts numbers. (- num1 num2 ...)
     If one argument, returns its negation (- num).
     If no arguments, raises error.

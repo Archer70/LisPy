@@ -1,6 +1,7 @@
 from typing import List, Any
+from ..environment import Environment
 
-def builtin_println(args: List[Any]) -> None:
+def builtin_println(args: List[Any], env: Environment) -> None:
     """Prints values to the console with a newline. (println value1 value2 ...)"""
     if not args:
         # Print just a newline if no arguments

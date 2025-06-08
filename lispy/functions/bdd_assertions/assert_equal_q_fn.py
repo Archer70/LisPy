@@ -1,7 +1,8 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError, AssertionFailure
+from ...environment import Environment
 
-def bdd_assert_equal_q(args: List[Any]) -> bool:
+def bdd_assert_equal_q(args: List[Any], env: Environment) -> bool:
     """(assert-equal? expected actual)
     Asserts that `actual` is equal to `expected`.
     Raises AssertionFailure if they are not equal. Returns true if equal.

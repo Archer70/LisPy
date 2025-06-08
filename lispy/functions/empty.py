@@ -1,8 +1,9 @@
 from typing import List, Any
 from ..types import Vector # For type checking
 from ..exceptions import EvaluationError
+from ..environment import Environment # Added Environment import
 
-def builtin_empty_q(args: List[Any]) -> bool:
+def builtin_empty_q(args: List[Any], env: Environment) -> bool: # Added env parameter
     """Checks if a collection (list, vector, map, string) or nil is empty. (empty? collection)"""
     if len(args) != 1:
         raise EvaluationError(f"SyntaxError: 'empty?' expects 1 argument, got {len(args)}.")

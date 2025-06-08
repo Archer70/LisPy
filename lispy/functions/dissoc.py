@@ -1,7 +1,9 @@
 from lispy.types import Symbol
 from lispy.exceptions import EvaluationError
+from ..environment import Environment
+from typing import List, Any
 
-def builtin_dissoc(args):
+def builtin_dissoc(args: List[Any], env: Environment):
     """Removes keys from a map.
     (dissoc map key & keys)
     Behaves like Clojure's dissoc.

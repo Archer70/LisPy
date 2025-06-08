@@ -1,7 +1,8 @@
 from typing import List, Any
 from ..exceptions import EvaluationError
+from ..environment import Environment
 
-def builtin_cons(args: List[Any]) -> List[Any]:
+def builtin_cons(args: List[Any], env: Environment) -> List[Any]:
     """Prepends an item to a list. (cons item list)"""
     if len(args) != 2:
         raise EvaluationError(f"SyntaxError: 'cons' expects 2 arguments (item list), got {len(args)}.")

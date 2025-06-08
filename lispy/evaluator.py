@@ -70,12 +70,14 @@ def _execute_user_defined_function(
 def _execute_builtin_function(
     py_callable: Callable, 
     evaluated_args: "TypingList[Any]", # typing.List for the Python list of args
-    operator_expr: Any # For error messages
+    operator_expr: Any, # For error messages
+    env: Environment  # Added env parameter
 ) -> Any:
     """Helper to execute a Python callable that is a built-in function."""
     fn_name_str = str(operator_expr) if isinstance(operator_expr, Symbol) else repr(operator_expr)
     try:
-        return py_callable(evaluated_args)
+        # Pass env to the built-in callable
+        return py_callable(evaluated_args, env)
     except AssertionFailure: # Added: Let AssertionFailure propagate directly
         raise
     except EvaluationError: 
@@ -103,7 +105,8 @@ def _apply_procedure(
         
         return _execute_user_defined_function(procedure, evaluated_args, operator_expr, evaluate_fn, recursion_depth + 1)
     elif callable(procedure):
-        return _execute_builtin_function(procedure, evaluated_args, operator_expr)
+        # Pass env to _execute_builtin_function
+        return _execute_builtin_function(procedure, evaluated_args, operator_expr, env)
     else:
         raise EvaluationError(f"Object '{procedure}' is not a function or a recognized callable procedure. (Called with operator: '{operator_expr}')")
 

@@ -1,8 +1,10 @@
 from lispy.types import Vector, Symbol
 from lispy.exceptions import EvaluationError
+from lispy.environment import Environment
+from typing import List, Any
 
 
-def get_fn(args):
+def get_fn(args: List[Any], env: Environment):
     """Accesses an element from a vector or a map.
 
     Usage: (get collection key [default])

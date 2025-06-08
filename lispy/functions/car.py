@@ -1,7 +1,8 @@
 from typing import List, Any
 from ..exceptions import EvaluationError
+from ..environment import Environment
 
-def builtin_car(args: List[Any]) -> Any:
+def builtin_car(args: List[Any], env: Environment) -> Any:
     """Returns the first element of a list. (car list)"""
     if len(args) != 1:
         raise EvaluationError(f"SyntaxError: 'car' expects 1 argument (a list), got {len(args)}.")

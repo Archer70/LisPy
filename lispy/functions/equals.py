@@ -1,8 +1,9 @@
 from typing import List, Any
 from ..exceptions import EvaluationError
+from ..environment import Environment
 
 
-def builtin_equals(args: List[Any]) -> bool:
+def builtin_equals(args: List[Any], env: Environment) -> bool:
     """Checks if all arguments are equal. (= item1 item2 ...)
     Requires at least two arguments.
     Currently only supports number comparison.

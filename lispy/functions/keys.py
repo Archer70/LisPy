@@ -1,7 +1,9 @@
 from lispy.types import LispyList, Symbol # Changed List to LispyList
 from lispy.exceptions import EvaluationError
+from lispy.environment import Environment # Added Environment import
+from typing import List, Any # Added typing imports
 
-def builtin_keys(args):
+def builtin_keys(args: List[Any], env: Environment): # Added env parameter and type hint for args
     """Implementation of the (keys map) LisPy function.
     Returns a list of the keys in a map.
     Usage: (keys map)

@@ -1,10 +1,11 @@
 from typing import List, Any, Union
 from ..exceptions import EvaluationError
 from numbers import Number
+from ..environment import Environment
 
 Numeric = Union[int, float]
 
-def builtin_divide(args: List[Any]) -> float:
+def builtin_divide(args: List[Any], env: Environment) -> float:
     """Divides numbers. (/ num1 num2 ...)
     If no arguments or one argument, raises error.
     All results are floats.

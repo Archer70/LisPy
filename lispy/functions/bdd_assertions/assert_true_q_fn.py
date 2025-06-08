@@ -1,7 +1,8 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError, AssertionFailure
+from ...environment import Environment
 
-def bdd_assert_true_q(args: List[Any]) -> bool:
+def bdd_assert_true_q(args: List[Any], env: Environment) -> bool:
     """(assert-true? expr)
     Asserts that the expression `expr` evaluates to true.
     Raises AssertionFailure if it is not true. Returns true if the assertion passes.

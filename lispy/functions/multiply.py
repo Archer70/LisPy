@@ -1,11 +1,12 @@
 from typing import List, Any, Union
 from ..exceptions import EvaluationError
 from numbers import Number
+from ..environment import Environment
 # import math # Not strictly needed for multiply, but good if using math.prod later
 
 Numeric = Union[int, float]
 
-def builtin_multiply(args: List[Any]) -> Numeric:
+def builtin_multiply(args: List[Any], env: Environment) -> Numeric:
     """Multiplies numbers. (* num1 num2 ...)
     If no arguments, returns 1 (identity for multiplication).
     """

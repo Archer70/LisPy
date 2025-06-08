@@ -1,7 +1,8 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError, AssertionFailure
+from ...environment import Environment
 
-def bdd_assert_not_nil_q(args: List[Any]) -> bool:
+def bdd_assert_not_nil_q(args: List[Any], env: Environment) -> bool:
     """(assert-not-nil? expr)
     Asserts that the expression `expr` does not evaluate to nil (None).
     Raises AssertionFailure if it is nil. Returns true if the assertion passes.

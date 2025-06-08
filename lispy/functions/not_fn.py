@@ -1,7 +1,9 @@
 from lispy.exceptions import EvaluationError
+from ..environment import Environment
+from typing import List, Any
 # from numbers import Number # Not strictly needed as no type check on value itself
 
-def builtin_not(args_list):
+def builtin_not(args_list: List[Any], env: Environment) -> bool:
     if len(args_list) != 1:
         raise EvaluationError("TypeError: not requires exactly one argument")
     val = args_list[0]

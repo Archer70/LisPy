@@ -1,7 +1,9 @@
 from lispy.types import Symbol
 from lispy.exceptions import EvaluationError
+from lispy.environment import Environment
+from typing import List, Any
 
-def builtin_hash_map(args):
+def builtin_hash_map(args: List[Any], env: Environment):
     """Implementation of the (hash-map ...) LisPy function.
     Creates a new map from the evaluated arguments, which are treated as key-value pairs.
     Usage: (hash-map key1 val1 key2 val2 ...)

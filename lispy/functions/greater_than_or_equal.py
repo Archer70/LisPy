@@ -1,7 +1,9 @@
 from lispy.exceptions import EvaluationError
 from numbers import Number
+from lispy.environment import Environment
+from typing import List, Any
 
-def builtin_greater_than_or_equal(args):
+def builtin_greater_than_or_equal(args: List[Any], env: Environment) -> bool:
     if len(args) != 2:
         raise EvaluationError("TypeError: >= requires exactly two arguments")
     

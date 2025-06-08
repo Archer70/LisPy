@@ -1,7 +1,9 @@
 from lispy.types import Symbol
 from lispy.exceptions import EvaluationError
+from ..environment import Environment
+from typing import List, Any
 
-def builtin_assoc(args):
+def builtin_assoc(args: List[Any], env: Environment):
     """Implementation of the (assoc map key val ...) LisPy function.
     Associates key-value pairs with a map, returning a new map.
     Usage: (assoc map key1 value1 [key2 value2 ...])

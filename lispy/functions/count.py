@@ -2,8 +2,9 @@
 from typing import List, Any
 from ..types import Vector # For type checking
 from ..exceptions import EvaluationError
+from ..environment import Environment # Added Environment import
 
-def builtin_count(args: List[Any]) -> int:
+def builtin_count(args: List[Any], env: Environment) -> int: # Added env parameter
     """Returns the number of items in a collection (list, vector, map, string) or 0 for nil. (count collection)"""
     if len(args) != 1:
         raise EvaluationError(f"SyntaxError: 'count' expects 1 argument, got {len(args)}.")

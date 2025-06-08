@@ -1,10 +1,11 @@
 from typing import List, Any, Union
 from ..exceptions import EvaluationError
 from numbers import Number
+from ..environment import Environment
 
 Numeric = Union[int, float]
 
-def builtin_add(args: List[Any]) -> Numeric:
+def builtin_add(args: List[Any], env: Environment) -> Numeric:
     """Adds a list of numbers. (+ num1 num2 ...)"""
     # args is now a list of the evaluated arguments
     if not args: # Handles (+)

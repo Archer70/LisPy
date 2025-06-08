@@ -1,7 +1,9 @@
 from lispy.types import LispyList, Vector
 from lispy.exceptions import EvaluationError
+from ..environment import Environment
+from typing import List, Any
 
-def builtin_conj(args):
+def builtin_conj(args: List[Any], env: Environment):
     """Implementation of the (conj coll item ...) LisPy function.
     Adds item(s) to a collection (list or vector).
     - For lists, items are prepended (like cons), effectively reversing the order of added items.

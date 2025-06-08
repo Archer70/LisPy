@@ -1,7 +1,8 @@
 from typing import List, Any
 from ..exceptions import EvaluationError
+from ..environment import Environment
 
-def builtin_cdr(args: List[Any]) -> List[Any]:
+def builtin_cdr(args: List[Any], env: Environment) -> List[Any]:
     """Returns all elements of a list except the first. (cdr list)"""
     if len(args) != 1:
         raise EvaluationError(f"SyntaxError: 'cdr' expects 1 argument (a list), got {len(args)}.")
