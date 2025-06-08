@@ -14,6 +14,7 @@ from .recur_form import handle_recur
 from .thread_first import handle_thread_first
 from .cond_form import handle_cond
 from .when_form import handle_when_form
+from .loop_form import handle_loop_form
 from .bdd.describe_form import describe_form_handler
 from .bdd.it_form import it_form_handler
 from .bdd.given_form import given_form_handler
@@ -37,6 +38,7 @@ special_form_handlers: Dict[str, Callable[[List[Any], Environment, Callable], An
     "->": handle_thread_first,
     "cond": handle_cond,
     "when": handle_when_form,
+    "loop": handle_loop_form,
     "action": action_form_handler,
     "describe": describe_form_handler,
     "it": it_form_handler,
