@@ -39,6 +39,7 @@ from .filter import builtin_filter # Added filter
 from .sort import sort_fn # Added sort
 from .reverse import reverse_fn # Added reverse
 from .concat import concat_fn # Added concat
+from .merge import merge_fn # Added merge
 
 from .bdd_assertions import bdd_assertion_functions # Added
 
@@ -81,6 +82,7 @@ def create_global_env() -> Environment:
     env.define("sort", sort_fn) # Added sort
     env.define("reverse", reverse_fn) # Added reverse
     env.define("concat", concat_fn) # Added concat
+    env.define("merge", merge_fn) # Added merge
 
     # Add BDD assertion functions
     for name, func in bdd_assertion_functions.items(): # Added loop
@@ -128,6 +130,7 @@ __all__ = [
     "sort_fn", # Added sort
     "reverse_fn", # Added reverse
     "concat_fn", # Added concat
+    "merge_fn", # Added merge
     "create_global_env",
     "global_env",
 ] 
