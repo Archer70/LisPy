@@ -6,17 +6,23 @@ from lispy.environment import Environment  # Added import for Environment
 
 
 def builtin_map(args, env):
-    """Implementation of the (map proc vec) LisPy function.
-    Applies proc to each element of vec and returns a new vector of the results.
-    Usage: (map procedure vector)
+    """Implementation of the (map vector procedure) LisPy function.
+    Applies procedure to each element of vector and returns a new vector of the results.
+    Usage: (map vector procedure)
     """
     if len(args) != 2:
         raise EvaluationError(
-            f"SyntaxError: 'map' expects 2 arguments (procedure, vector), got {len(args)}."
+            f"SyntaxError: 'map' expects 2 arguments, got {len(args)}."
         )
 
-    proc_arg = args[0]
-    vec_arg = args[1]
+    vec_arg = args[0]
+    proc_arg = args[1]
+
+    # Validate vec_arg type
+    if not isinstance(vec_arg, Vector):
+        raise EvaluationError(
+            f"TypeError: First argument to 'map' must be a vector, got {type(vec_arg)}."
+        )
 
     # Validate proc_arg type
     is_user_defined_fn = isinstance(proc_arg, Function)
@@ -25,13 +31,7 @@ def builtin_map(args, env):
 
     if not (is_user_defined_fn or is_builtin_fn):
         raise EvaluationError(
-            f"TypeError: First argument to 'map' must be a procedure, got {type(proc_arg)}."
-        )
-
-    # Validate vec_arg type
-    if not isinstance(vec_arg, Vector):
-        raise EvaluationError(
-            f"TypeError: Second argument to 'map' must be a vector, got {type(vec_arg)}."
+            f"TypeError: Second argument to 'map' must be a procedure, got {type(proc_arg)}."
         )
 
     # Arity check for user-defined functions: they must accept exactly one argument for map
