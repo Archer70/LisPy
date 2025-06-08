@@ -28,7 +28,9 @@ def handle_thread_first(expression, env, evaluate_fn):
         if isinstance(step_form, Symbol):
             # If the step is a symbol, it's a function call with no other arguments.
             # Construct (function_symbol current_value)
-            new_expr_to_eval = LispyList([step_form, current_value])
+            # We need to quote the current_value to prevent re-evaluation
+            quoted_value = LispyList([Symbol('quote'), current_value])
+            new_expr_to_eval = LispyList([step_form, quoted_value])
         elif isinstance(step_form, LispyList):
             # If the step is a list (func arg1 arg2 ...),
             # insert current_value as the first argument to that function call.
@@ -36,7 +38,9 @@ def handle_thread_first(expression, env, evaluate_fn):
             if not step_form: # Empty list in pipeline is invalid
                 raise EvaluationError("SyntaxError: Invalid empty list () found in '->' pipeline.")
             
-            new_expr_to_eval = LispyList([step_form[0]] + [current_value] + step_form[1:])
+            # We need to quote the current_value to prevent re-evaluation
+            quoted_value = LispyList([Symbol('quote'), current_value])
+            new_expr_to_eval = LispyList([step_form[0]] + [quoted_value] + step_form[1:])
         else:
             # The step is not a recognized form (Symbol or List for a function call)
             raise EvaluationError(

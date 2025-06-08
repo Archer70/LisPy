@@ -12,6 +12,10 @@ class EvaluationError(LisPyError):
     """Custom exception for evaluation errors."""
     pass
 
+class ArityError(EvaluationError):
+    """Custom exception for function arity errors."""
+    pass
+
 class LexerError(LisPyError):
     """Custom exception for lexer/tokenization errors."""
     pass

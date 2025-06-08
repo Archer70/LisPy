@@ -33,6 +33,8 @@ from .vals import builtin_vals # Added vals
 from .print import builtin_print
 from .println import builtin_println
 from .map import builtin_map # Added map
+from .reduce import builtin_reduce # Added reduce
+from .filter import builtin_filter # Added filter
 
 from .bdd_assertions import bdd_assertion_functions # Added
 
@@ -69,6 +71,8 @@ def create_global_env() -> Environment:
     env.define("print", builtin_print)
     env.define("println", builtin_println)
     env.define("map", builtin_map) # Added map
+    env.define("reduce", builtin_reduce) # Added reduce
+    env.define("filter", builtin_filter) # Added filter
 
     # Add BDD assertion functions
     for name, func in bdd_assertion_functions.items(): # Added loop
@@ -110,6 +114,8 @@ __all__ = [
     "builtin_print",
     "builtin_println",
     "builtin_map", # Added map
+    "builtin_reduce", # Added reduce
+    "builtin_filter", # Added filter
     "create_global_env",
     "global_env",
 ] 
