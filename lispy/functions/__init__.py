@@ -2,11 +2,94 @@
 
 from ..environment import Environment  # Import Environment from parent package
 
-# Function imports (alphabetized)
-from .abs import builtin_abs, documentation_abs
-from .add import builtin_add, documentation_add
-from .append import append_fn, documentation_append
-from .assoc import builtin_assoc, documentation_assoc
+# Math functions
+from .math import (
+    builtin_abs, documentation_abs,
+    builtin_add, documentation_add,
+    builtin_divide, documentation_divide,
+    builtin_equals, documentation_equals,
+    builtin_max, documentation_max,
+    builtin_min, documentation_min,
+    builtin_modulo, documentation_modulo,
+    builtin_multiply, documentation_multiply,
+    builtin_subtract, documentation_subtract,
+)
+
+# Logical functions
+from .logical import (
+    builtin_equal_q, documentation_equal_q,
+    builtin_greater_than, documentation_greater_than,
+    builtin_greater_than_or_equal, documentation_greater_than_or_equal,
+    builtin_less_than, documentation_less_than,
+    builtin_less_than_or_equal, documentation_less_than_or_equal,
+    builtin_not, documentation_not,
+)
+
+# Type checking functions
+from .type_check import (
+    builtin_is_boolean_q, documentation_is_boolean_q,
+    builtin_is_function_q, documentation_is_function_q,
+    builtin_is_list_q, documentation_is_list_q,
+    builtin_is_map_q, documentation_is_map_q,
+    builtin_is_nil_q, documentation_is_nil_q,
+    builtin_is_number_q, documentation_is_number_q,
+    builtin_is_string_q, documentation_is_string_q,
+    builtin_is_vector_q, documentation_is_vector_q,
+)
+
+# Collection functions
+from .collection import (
+    append_fn, documentation_append,
+    builtin_conj, documentation_conj,
+    builtin_count, documentation_count,
+    builtin_empty_q, documentation_empty_q,
+    builtin_every_q, documentation_every_q,
+    builtin_filter, documentation_filter,
+    builtin_first, documentation_first,
+    builtin_map, documentation_map,
+    builtin_reduce, documentation_reduce,
+    builtin_rest, documentation_rest,
+    builtin_some, documentation_some,
+    concat_fn, documentation_concat,
+    nth_fn, documentation_nth,
+    reverse_fn, documentation_reverse,
+    sort_fn, documentation_sort,
+)
+
+# Map/Dictionary functions
+from .map import (
+    builtin_assoc, documentation_assoc,
+    builtin_dissoc, documentation_dissoc,
+    builtin_hash_map, documentation_hash_map,
+    builtin_keys, documentation_keys,
+    builtin_vals, documentation_vals,
+    get_fn, documentation_get,
+    merge_fn, documentation_merge,
+)
+
+# List/Sequence functions
+from .list import (
+    builtin_car, documentation_car,
+    builtin_cdr, documentation_cdr,
+    builtin_cons, documentation_cons,
+    builtin_list, documentation_list,
+    builtin_vector, documentation_vector,
+)
+
+# I/O functions
+from .io import (
+    builtin_print, documentation_print,
+    builtin_println, documentation_println,
+)
+
+# String functions
+from .string import (
+    join_fn, documentation_join,
+    split_fn, documentation_split,
+    str_fn, documentation_str,
+)
+
+# Other function imports (alphabetized)
 from .bdd_assertions import (
     bdd_assertion_functions,
     documentation_assert_equal_q,
@@ -15,59 +98,8 @@ from .bdd_assertions import (
     documentation_assert_nil_q,
     documentation_assert_not_nil_q
 )
-from .is_boolean_q import builtin_is_boolean_q, documentation_is_boolean_q
-from .car import builtin_car, documentation_car
-from .cdr import builtin_cdr, documentation_cdr
-from .concat import concat_fn, documentation_concat
-from .conj import builtin_conj, documentation_conj
-from .cons import builtin_cons, documentation_cons
-from .count import builtin_count, documentation_count
-from .dissoc import builtin_dissoc, documentation_dissoc
-from .divide import builtin_divide, documentation_divide
 from .doc import builtin_doc, documentation_doc, register_documentation
-from .empty import builtin_empty_q, documentation_empty_q
-from .equals import builtin_equals, documentation_equals
-from .equal_q import builtin_equal_q, documentation_equal_q
-from .every_q import builtin_every_q, documentation_every_q
-from .filter import builtin_filter, documentation_filter
-from .first import builtin_first, documentation_first
-from .is_function_q import builtin_is_function_q, documentation_is_function_q
-from .get import get_fn, documentation_get
-from .greater_than import builtin_greater_than, documentation_greater_than
-from .greater_than_or_equal import builtin_greater_than_or_equal, documentation_greater_than_or_equal
-from .hash_map import builtin_hash_map, documentation_hash_map
-from .join import join_fn, documentation_join
-from .keys import builtin_keys, documentation_keys
-from .less_than import builtin_less_than, documentation_less_than
-from .less_than_or_equal import builtin_less_than_or_equal, documentation_less_than_or_equal
-from .list import builtin_list, documentation_list
-from .is_list_q import builtin_is_list_q, documentation_is_list_q
-from .map import builtin_map, documentation_map
-from .is_map_q import builtin_is_map_q, documentation_is_map_q
-from .max import builtin_max, documentation_max
-from .merge import merge_fn, documentation_merge
-from .min import builtin_min, documentation_min
-from .modulo import builtin_modulo, documentation_modulo
-from .multiply import builtin_multiply, documentation_multiply
-from .is_nil_q import builtin_is_nil_q, documentation_is_nil_q
-from .not_fn import builtin_not, documentation_not
-from .nth import nth_fn, documentation_nth
-from .is_number_q import builtin_is_number_q, documentation_is_number_q
-from .print import builtin_print, documentation_print
 from .print_doc import builtin_print_doc, documentation_print_doc
-from .println import builtin_println, documentation_println
-from .reduce import builtin_reduce, documentation_reduce
-from .rest import builtin_rest, documentation_rest
-from .reverse import reverse_fn, documentation_reverse
-from .some import builtin_some, documentation_some
-from .sort import sort_fn, documentation_sort
-from .split import split_fn, documentation_split
-from .str import str_fn, documentation_str
-from .is_string_q import builtin_is_string_q, documentation_is_string_q
-from .subtract import builtin_subtract, documentation_subtract
-from .vals import builtin_vals, documentation_vals
-from .vector import builtin_vector, documentation_vector
-from .is_vector_q import builtin_is_vector_q, documentation_is_vector_q
 
 
 def create_global_env() -> Environment:
