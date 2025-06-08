@@ -51,7 +51,7 @@ class TestAssertNilQFn(unittest.TestCase):
         scenario = registry.BDD_RESULTS[0]["scenarios"][0]
         step = scenario["steps"][0]
         self.assertEqual(step["status"], "failed")
-        self.assertIn("Expected [nil] but got [[]]", step["details"])
+        self.assertIn("Expected [nil] but got [()]", step["details"])
 
     def test_assert_nil_q_arity_error_no_args(self):
         self.run_in_then_context('(assert-nil?)')
