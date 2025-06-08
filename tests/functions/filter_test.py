@@ -139,7 +139,7 @@ class FilterFnTest(unittest.TestCase):
         self.assertEqual(str(cm.exception), "Procedure <UserDefinedFunction params:(a, b)> passed to 'filter' expects 1 argument, got 2.")
 
     def test_filter_with_thread_first(self):
-        """Test filter used with the -> (thread-first) macro."""
+        """Test filter used with the -> (thread-first) special form."""
         result = run_lispy_string("(-> [1 2 3 4 5] (filter odd?))", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 3, 5]))

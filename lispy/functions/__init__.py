@@ -21,6 +21,7 @@ from .cdr import builtin_cdr
 from .empty import builtin_empty_q
 from .count import builtin_count
 from .get import get_fn # Import the new get function
+from .nth import nth_fn # Import the new nth function
 from .vector import builtin_vector # Changed from vector_fn and renamed function
 from .hash_map import builtin_hash_map # Changed from hash_map_fn and renamed function
 from .first import builtin_first
@@ -35,6 +36,9 @@ from .println import builtin_println
 from .map import builtin_map # Added map
 from .reduce import builtin_reduce # Added reduce
 from .filter import builtin_filter # Added filter
+from .sort import sort_fn # Added sort
+from .reverse import reverse_fn # Added reverse
+from .concat import concat_fn # Added concat
 
 from .bdd_assertions import bdd_assertion_functions # Added
 
@@ -59,6 +63,7 @@ def create_global_env() -> Environment:
     env.define("empty?", builtin_empty_q)
     env.define("count", builtin_count)
     env.define("get", get_fn) # Add get to the environment
+    env.define("nth", nth_fn) # Add nth to the environment
     env.define("vector", builtin_vector) # Renamed from builtin_vector_fn
     env.define("hash-map", builtin_hash_map) # Renamed from builtin_hash_map_fn
     env.define("first", builtin_first)
@@ -73,6 +78,9 @@ def create_global_env() -> Environment:
     env.define("map", builtin_map) # Added map
     env.define("reduce", builtin_reduce) # Added reduce
     env.define("filter", builtin_filter) # Added filter
+    env.define("sort", sort_fn) # Added sort
+    env.define("reverse", reverse_fn) # Added reverse
+    env.define("concat", concat_fn) # Added concat
 
     # Add BDD assertion functions
     for name, func in bdd_assertion_functions.items(): # Added loop
@@ -102,6 +110,7 @@ __all__ = [
     "builtin_empty_q",
     "builtin_count",
     "get_fn", # Add get_fn to __all__
+    "nth_fn", # Add nth_fn to __all__
     "builtin_vector", # Renamed from builtin_vector_fn
     "builtin_hash_map", # Renamed from builtin_hash_map_fn
     "builtin_first",
@@ -116,6 +125,9 @@ __all__ = [
     "builtin_map", # Added map
     "builtin_reduce", # Added reduce
     "builtin_filter", # Added filter
+    "sort_fn", # Added sort
+    "reverse_fn", # Added reverse
+    "concat_fn", # Added concat
     "create_global_env",
     "global_env",
 ] 

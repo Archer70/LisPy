@@ -1,4 +1,4 @@
-from ..types import Symbol, LispyList
+from ..types import Symbol, LispyList, Vector
 from ..exceptions import EvaluationError
 
 def handle_thread_first(expression, env, evaluate_fn):
@@ -25,12 +25,19 @@ def handle_thread_first(expression, env, evaluate_fn):
 
     # Sequentially apply each step in the pipeline
     for step_form in pipeline_steps:
+        # If current_value is a data structure that would be re-evaluated as code, 
+        # we need to protect it with a quote
+        if isinstance(current_value, (LispyList, list)) and current_value:
+            # Wrap in quote to prevent re-evaluation
+            protected_value = LispyList([Symbol('quote'), current_value])
+        else:
+            # Safe to use directly (primitives, vectors, etc.)
+            protected_value = current_value
+            
         if isinstance(step_form, Symbol):
             # If the step is a symbol, it's a function call with no other arguments.
             # Construct (function_symbol current_value)
-            # We need to quote the current_value to prevent re-evaluation
-            quoted_value = LispyList([Symbol('quote'), current_value])
-            new_expr_to_eval = LispyList([step_form, quoted_value])
+            new_expr_to_eval = LispyList([step_form, protected_value])
         elif isinstance(step_form, LispyList):
             # If the step is a list (func arg1 arg2 ...),
             # insert current_value as the first argument to that function call.
@@ -38,9 +45,7 @@ def handle_thread_first(expression, env, evaluate_fn):
             if not step_form: # Empty list in pipeline is invalid
                 raise EvaluationError("SyntaxError: Invalid empty list () found in '->' pipeline.")
             
-            # We need to quote the current_value to prevent re-evaluation
-            quoted_value = LispyList([Symbol('quote'), current_value])
-            new_expr_to_eval = LispyList([step_form[0]] + [quoted_value] + step_form[1:])
+            new_expr_to_eval = LispyList([step_form[0]] + [protected_value] + step_form[1:])
         else:
             # The step is not a recognized form (Symbol or List for a function call)
             raise EvaluationError(

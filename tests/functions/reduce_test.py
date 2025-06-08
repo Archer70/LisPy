@@ -157,7 +157,7 @@ class ReduceFnTest(unittest.TestCase):
         self.assertEqual(str(cm.exception), "Procedure <UserDefinedFunction params:(a, b, c)> passed to 'reduce' expects 2 arguments, got 3.")
 
     def test_reduce_with_thread_first(self):
-        """Test reduce used with the -> (thread-first) macro."""
+        """Test reduce used with the -> (thread-first) special form."""
         result1 = run_lispy_string("(-> [1 2 3 4] (reduce +))", self.env)
         self.assertEqual(result1, 10)
         result2 = run_lispy_string("(-> [1 2 3 4] (reduce + 0))", self.env)
