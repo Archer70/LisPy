@@ -26,3 +26,25 @@ def builtin_equals(args: List[Any], env: Environment) -> bool:
         if first_item != current_item:
             return False
     return True
+
+
+def documentation_equals() -> str:
+    """Returns documentation for the = function."""
+    return """Function: =
+Arguments: (= number1 number2 ...)
+Description: Tests if all numbers are equal.
+
+Examples:
+  (= 5 5)           ; => true
+  (= 5.0 5)         ; => true
+  (= 10 10 10)      ; => true
+  (= 5 6)           ; => false
+  (= 10 10 6 10)    ; => false
+  (= -5 -5.0)       ; => true
+
+Notes:
+  - Requires at least two arguments
+  - Returns true only if ALL arguments are equal
+  - Works with both integers and floating-point numbers
+  - 5 and 5.0 are considered equal
+  - Currently only supports numeric comparison"""

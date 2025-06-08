@@ -31,3 +31,26 @@ def builtin_divide(args: List[Any], env: Environment) -> float:
     for i in range(1, len(args)):
         result /= float(args[i])
     return result
+
+
+def documentation_divide() -> str:
+    """Returns documentation for the / function."""
+    return """Function: /
+Arguments: (/ number1 number2 ...)
+Description: Divides numbers sequentially, always returning a float.
+
+Examples:
+  (/ 10 2)      ; => 5.0
+  (/ 100 2 5)   ; => 10.0  (100 / 2 / 5)
+  (/ 9 2)       ; => 4.5
+  (/ 5.0 2.0)   ; => 2.5
+  (/ -10 2)     ; => -5.0
+  (/ 10 -2)     ; => -5.0
+  (/ -10 -2)    ; => 5.0
+
+Notes:
+  - Always returns a float, even when dividing integers
+  - Requires at least two arguments
+  - Divides the first number by the second, then by the third, etc.
+  - Division by zero raises an error
+  - Works with both integers and floating-point numbers"""

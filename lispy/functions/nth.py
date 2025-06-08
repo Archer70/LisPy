@@ -40,3 +40,30 @@ def nth_fn(args: List[Any], env: Environment):
         raise EvaluationError(
             f"IndexError: {index} out of bounds for collection of size {len(collection)}."
         )
+
+
+def documentation_nth() -> str:
+    """Returns documentation for the nth function."""
+    return """Function: nth
+Arguments: (nth collection index [default])
+Description: Retrieves the element at the specified index from a vector or list.
+
+Examples:
+  (nth [10 20 30] 0)            ; => 10 (first element)
+  (nth [10 20 30] 1)            ; => 20 (second element)
+  (nth [10 20 30] 2)            ; => 30 (third element)
+  (nth '(a b c) 1)              ; => b (works with lists too)
+  (nth [10 20 30] 5)            ; => IndexError (out of bounds)
+  (nth [10 20 30] 5 "default")  ; => "default" (with default value)
+  (nth [] 0 nil)                ; => nil (empty collection)
+  (nth [1 "hi" true] 1)         ; => "hi" (mixed types)
+
+Notes:
+  - Collection must be a vector or list
+  - Index must be a non-negative integer (0-based)
+  - Returns element at index position
+  - Throws IndexError if index out of bounds and no default provided
+  - Returns default value if index out of bounds and default provided
+  - Supports both vectors and lists uniformly
+  - Essential for random access to indexed collections
+  - Requires 2 or 3 arguments (collection, index, optional default)"""

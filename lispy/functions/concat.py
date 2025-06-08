@@ -50,3 +50,29 @@ def concat_fn(args, env):
         all_elements.extend(collection)
 
     return result_type(all_elements)
+
+
+def documentation_concat() -> str:
+    """Returns documentation for the concat function."""
+    return """Function: concat
+Arguments: (concat collection1 collection2 ...)
+Description: Concatenates multiple collections into a single collection.
+
+Examples:
+  (concat)                      ; => [] (empty returns empty vector)
+  (concat [1 2] [3 4])          ; => [1 2 3 4]
+  (concat '(1 2) '(3 4))        ; => (1 2 3 4)
+  (concat [1] [2 3] [4 5 6])    ; => [1 2 3 4 5 6]
+  (concat [1 2] '(3 4) [5])     ; => [1 2 3 4 5] (mixed types)
+  (concat [] [1 2] [])          ; => [1 2] (empty collections ignored)
+  (concat ["a" "b"] ["c"])      ; => ["a" "b" "c"]
+
+Notes:
+  - Accepts zero or more collection arguments
+  - All arguments must be vectors or lists
+  - Result type matches the type of first argument (vector or list)
+  - Empty concat returns empty vector []
+  - Original collections are not modified (immutable operation)
+  - Mixed collection types allowed, result follows first argument type
+  - Empty collections in arguments are simply ignored
+  - Essential for building larger collections from smaller parts"""

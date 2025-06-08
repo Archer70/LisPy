@@ -35,3 +35,26 @@ def merge_fn(args, env):
         result_map.update(hash_map)
 
     return result_map
+
+
+def documentation_merge() -> str:
+    """Returns documentation for the merge function."""
+    return """Function: merge
+Arguments: (merge map1 map2 ...)
+Description: Merges multiple hash maps into a single new hash map.
+
+Examples:
+  (merge)                       ; => {}
+  (merge {:a 1})                ; => {:a 1}
+  (merge {:a 1} {:b 2})         ; => {:a 1 :b 2}
+  (merge {:a 1} {:a 2 :b 3})    ; => {:a 2 :b 3} (later overrides)
+  (merge {:a 1} {} {:b 2})      ; => {:a 1 :b 2}
+  (merge {:x 1} {:y 2} {:z 3})  ; => {:x 1 :y 2 :z 3}
+
+Notes:
+  - Accepts zero or more hash map arguments
+  - All arguments must be hash maps
+  - Returns a new hash map, does not modify originals
+  - Later maps override earlier maps for duplicate keys
+  - Empty merge returns empty map {}
+  - Empty maps are ignored in the merge"""

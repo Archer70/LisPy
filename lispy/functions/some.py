@@ -79,4 +79,30 @@ def builtin_some(args: List[Any], env: Environment) -> Any:
             return result
     
     # No element satisfied the predicate
-    return None 
+    return None
+
+
+def documentation_some() -> str:
+    """Returns documentation for the some function."""
+    return """Function: some
+Arguments: (some collection predicate)
+Description: Returns the first truthy value from applying predicate to collection elements, or nil.
+
+Examples:
+  (some [1 2 3] is_number?)             ; => true
+  (some ["a" 1 "b"] is_number?)         ; => true
+  (some ["a" "b"] is_number?)           ; => nil
+  (some [nil false 42] (fn [x] x))      ; => 42 (first truthy value)
+  (some [1 2 3] (fn [x] (> x 2)))       ; => true
+  (some [] is_number?)                  ; => nil
+  (some [-1 0 5] (fn [x] (> x 0)))      ; => true
+
+Notes:
+  - Collection must be a list or vector
+  - Predicate must be a function that takes 1 argument
+  - Returns the actual truthy value returned by predicate, not just true
+  - Short-circuits on first truthy result (doesn't evaluate rest)
+  - False and nil are considered falsy, everything else is truthy
+  - Empty collection returns nil
+  - Useful for finding if any element satisfies a condition
+  - Can return different types depending on predicate return values""" 

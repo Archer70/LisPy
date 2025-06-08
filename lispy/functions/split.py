@@ -47,3 +47,30 @@ def split_fn(args, env):
     # Split the string
     parts = string.split(separator)
     return Vector(parts)
+
+
+def documentation_split() -> str:
+    """Returns documentation for the split function."""
+    return """Function: split
+Arguments: (split string separator)
+Description: Splits a string into a vector of substrings using a separator.
+
+Examples:
+  (split "a,b,c" ",")           ; => ["a" "b" "c"]
+  (split "hello world" " ")     ; => ["hello" "world"]
+  (split "one-two-three" "-")   ; => ["one" "two" "three"]
+  (split "hello" "")            ; => ["h" "e" "l" "l" "o"] (split into chars)
+  (split "" ",")                ; => [""] (empty string gives one empty element)
+  (split "no-separator" "x")    ; => ["no-separator"] (separator not found)
+
+Notes:
+  - Requires exactly 2 arguments
+  - First argument must be a string
+  - Second argument must be a string (the separator)
+  - Empty separator splits into individual characters
+  - Returns vector of string parts
+  - Empty string returns vector with one empty string
+  - Missing separator returns vector with original string
+  - Essential for parsing delimited data
+  - Useful for CSV processing, path parsing, etc.
+  - Complement of the join function"""

@@ -21,3 +21,25 @@ def builtin_cdr(args: List[Any], env: Environment) -> List[Any]:
         raise EvaluationError("RuntimeError: 'cdr' cannot operate on an empty list.")
 
     return list_arg[1:]
+
+
+def documentation_cdr() -> str:
+    """Returns documentation for the cdr function."""
+    return """Function: cdr
+Arguments: (cdr list)
+Description: Returns all elements of a list except the first (the tail).
+
+Examples:
+  (cdr (list 1 2 3))    ; => (2 3)
+  (cdr '(a b c))        ; => (b c)
+  (cdr (list "x" "y"))  ; => ("y")
+  (cdr (list 10))       ; => ()
+  (cdr '(1 2 3 4))      ; => (2 3 4)
+
+Notes:
+  - Returns the tail of the list (everything except the first element)
+  - Cannot operate on empty lists - raises an error
+  - Classic Lisp function name (Contents of Decrement Register)
+  - For a single-element list, returns an empty list
+  - Use with 'car' to process lists recursively
+  - Expects exactly one argument which must be a non-empty list"""

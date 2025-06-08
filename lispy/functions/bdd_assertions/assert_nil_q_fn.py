@@ -21,3 +21,32 @@ def bdd_assert_nil_q(args: List[Any], env: Environment) -> bool:
         )
 
     return True  # Assertion passed
+
+
+def documentation_assert_nil_q() -> str:
+    """Returns documentation for the assert-nil? function."""
+    return """Function: assert-nil?
+Arguments: (assert-nil? expression)
+Description: BDD assertion that verifies an expression evaluates to nil.
+
+Examples:
+  (assert-nil? nil)             ; => true (assertion passes)
+  (assert-nil? (get {:a 1} ':b)) ; => true (missing key returns nil)
+  (assert-nil? (first '()))     ; => true (first of empty list is nil)
+  (assert-nil? (rest [1]))      ; => true (rest of single element is nil)
+  
+  ; Assertion failures raise AssertionFailure:
+  (assert-nil? 0)               ; => AssertionFailure: Expected [nil] but got [0]
+  (assert-nil? false)           ; => AssertionFailure: Expected [nil] but got [False]
+  (assert-nil? "")              ; => AssertionFailure: Expected [nil] but got [""]
+  (assert-nil? [])              ; => AssertionFailure: Expected [nil] but got [[]]
+
+Notes:
+  - Requires exactly 1 argument
+  - Only accepts the literal nil value (Python None)
+  - Not based on LisPy falsiness - requires actual nil value
+  - Returns true if assertion passes
+  - Raises AssertionFailure with detailed message for any non-nil value
+  - Essential for BDD testing workflows
+  - Used within 'then' steps for nil verification
+  - Useful for testing optional values and missing data"""

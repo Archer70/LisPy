@@ -4,7 +4,7 @@
 
 LisPy brings the elegance of Lisp to the modern world with clean syntax, comprehensive data structures, and a robust module system that makes building real applications a joy.
 
-[![Tests](https://img.shields.io/badge/tests-703%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/tests-1066%20passing-brightgreen)](tests/)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
@@ -17,6 +17,7 @@ LisPy brings the elegance of Lisp to the modern world with clean syntax, compreh
 - **🏗️ Rich Data Types**: Vectors, hash maps, and more built-in
 - **⚡ Interactive REPL**: Instant feedback for rapid development
 - **🔧 Easy to Extend**: Add new functions and features effortlessly
+- **📖 Self-Documenting**: All built-in functions have comprehensive documentation via `doc` and `print-doc`
 - **📚 Well Tested**: High test coverage to ensure reliability
 
 ## 🚀 Quick Start
@@ -53,6 +54,24 @@ python bin/lispy_interpreter.py hello.lpy
 (if (> 10 5) "yes" "no")  ; => "yes"
 (and true false)          ; => false
 (or true false)           ; => true
+```
+
+### Built-in Documentation
+
+Every function in LisPy comes with comprehensive built-in documentation:
+
+```lisp
+; Get documentation for any function
+(doc +)          ; Shows detailed documentation for addition
+(doc map)        ; Shows how to use the map function
+(doc vector)     ; Documentation for vector creation
+
+; Print documentation directly to console
+(print-doc +)    ; Prints documentation with examples
+(print-doc conj) ; Shows collection building documentation
+
+; Explore all available functions
+(doc doc)        ; Learn about the documentation system itself
 ```
 
 ### Console Output

@@ -28,3 +28,28 @@ def builtin_first(args: List[Any], env: Environment):
         raise EvaluationError(
             f"TypeError: 'first' expects {EXPECTED_TYPES_MSG}, got {type(collection)}."
         )
+
+
+def documentation_first() -> str:
+    """Returns documentation for the first function."""
+    return """Function: first
+Arguments: (first collection)
+Description: Returns the first element of a collection, or nil if empty.
+
+Examples:
+  (first (list 1 2 3))      ; => 1
+  (first [1 2 3])           ; => 1
+  (first "hello")           ; => "h"
+  (first (list))            ; => nil
+  (first [])                ; => nil
+  (first "")                ; => nil
+  (first nil)               ; => nil
+  (first '((1 2) 3))        ; => (1 2)
+
+Notes:
+  - Requires exactly one argument
+  - Works with lists, vectors, strings, and nil
+  - Returns nil for empty collections or nil input
+  - Alternative to car function for lists
+  - For strings, returns first character as string
+  - Safe alternative to indexing (no errors on empty)"""

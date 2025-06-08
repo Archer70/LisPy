@@ -48,3 +48,29 @@ def join_fn(args, env):
 
     # Join the strings
     return separator.join(collection)
+
+
+def documentation_join() -> str:
+    """Returns documentation for the join function."""
+    return """Function: join
+Arguments: (join collection separator)
+Description: Joins a collection of strings into a single string using a separator.
+
+Examples:
+  (join ["a" "b" "c"] " ")      ; => "a b c"
+  (join '("apple" "banana") ", ") ; => "apple, banana"
+  (join ["h" "e" "l" "l" "o"] "") ; => "hello"
+  (join [] "-")                 ; => "" (empty collection)
+  (join ["single"] "|")         ; => "single"
+  (join ["1" "2" "3"] "-")      ; => "1-2-3"
+
+Notes:
+  - Requires exactly 2 arguments
+  - First argument must be a list or vector of strings
+  - Second argument must be a string (the separator)
+  - All elements in collection must be strings
+  - Empty collection returns empty string
+  - Single element returns that element (no separator added)
+  - Essential for building formatted output strings
+  - Useful for CSV generation, path building, etc.
+  - Complement of the split function"""

@@ -29,3 +29,29 @@ def builtin_println(args: List[Any], env: Environment) -> None:
     print(output)
 
     return None
+
+
+def documentation_println() -> str:
+    """Returns documentation for the println function."""
+    return """Function: println
+Arguments: (println value1 value2 ...)
+Description: Prints values to console separated by spaces, with a trailing newline.
+
+Examples:
+  (println "Hello")                     ; prints: Hello\\n
+  (println "Hello" "World")             ; prints: Hello World\\n
+  (println "Number:" 42)                ; prints: Number: 42\\n
+  (println true false nil)              ; prints: true false nil\\n
+  (println [1 2 3])                     ; prints: [1 2 3]\\n
+  (println {:a 1})                      ; prints: {:a 1}\\n
+  (println)                             ; prints: \\n
+
+Notes:
+  - Accepts zero or more arguments
+  - Arguments are separated by single spaces
+  - Always adds a newline at the end
+  - Strings are printed without quotes
+  - Booleans printed as "true"/"false", nil as "nil"
+  - Always returns nil
+  - Empty call prints just a newline
+  - Most common print function for line-by-line output"""

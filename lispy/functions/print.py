@@ -30,3 +30,29 @@ def builtin_print(args: List[Any], env: Environment) -> None:
     sys.stdout.flush()  # Ensure immediate output
 
     return None
+
+
+def documentation_print() -> str:
+    """Returns documentation for the print function."""
+    return """Function: print
+Arguments: (print value1 value2 ...)
+Description: Prints values to console separated by spaces, without a trailing newline.
+
+Examples:
+  (print "Hello")                       ; prints: Hello
+  (print "Hello" "World")               ; prints: Hello World
+  (print "Number:" 42)                  ; prints: Number: 42
+  (print true false nil)                ; prints: true false nil
+  (print [1 2 3])                       ; prints: [1 2 3]
+  (print {:a 1})                        ; prints: {:a 1}
+  (print)                               ; prints nothing
+
+Notes:
+  - Accepts zero or more arguments
+  - Arguments are separated by single spaces
+  - No newline is added at the end (use println for newlines)
+  - Strings are printed without quotes
+  - Booleans printed as "true"/"false", nil as "nil"
+  - Always returns nil
+  - Output is immediately flushed to console
+  - Useful for building output on same line"""

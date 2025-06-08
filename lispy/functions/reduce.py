@@ -103,3 +103,29 @@ def builtin_reduce(args: List[Any], env: Environment):
         )
 
     return accumulator
+
+
+def documentation_reduce() -> str:
+    """Returns documentation for the reduce function."""
+    return """Function: reduce
+Arguments: (reduce collection function [initial-value])
+Description: Reduces collection to a single value by applying function cumulatively.
+
+Examples:
+  (reduce [1 2 3 4] +)                  ; => 10 (sum without initial)
+  (reduce [1 2 3 4] + 0)                ; => 10 (sum with initial)
+  (reduce [1 2 3] * 1)                  ; => 6 (product)
+  (reduce ["a" "b" "c"] str "")         ; => "abc" (concatenation)
+  (reduce [5] + 10)                     ; => 15 (single element)
+  (reduce [] + 42)                      ; => 42 (empty with initial)
+  (reduce [1 2 3] (fn [acc x] (cons x acc)) '()) ; => (3 2 1) (reverse)
+
+Notes:
+  - Collection must be a list or vector
+  - Function must take exactly 2 arguments (accumulator, current-element)
+  - With initial-value: starts with initial, processes all elements
+  - Without initial-value: uses first element as initial, processes rest
+  - Empty collection without initial-value raises error
+  - Empty collection with initial-value returns initial-value
+  - Single element without initial-value returns that element
+  - Function is called left-to-right through the collection"""

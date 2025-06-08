@@ -20,3 +20,26 @@ def builtin_less_than_or_equal(args: List[Any], env: Environment) -> bool:
         )
 
     return arg1 <= arg2
+
+
+def documentation_less_than_or_equal() -> str:
+    """Returns documentation for the <= function."""
+    return """Function: <=
+Arguments: (<= number1 number2)
+Description: Tests if the first number is less than or equal to the second.
+
+Examples:
+  (<= 5 6)          ; => true
+  (<= 5 5)          ; => true (equal counts!)
+  (<= -1 0)         ; => true
+  (<= 5.0 5)        ; => true
+  (<= 5 5.1)        ; => true
+  (<= 6 5)          ; => false
+  (<= 0 -1)         ; => false
+
+Notes:
+  - Requires exactly two arguments
+  - Returns true if first number <= second number
+  - Works with both integers and floating-point numbers
+  - Inclusive inequality (5 <= 5 is true)
+  - Combines < and = operations"""

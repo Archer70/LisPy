@@ -35,3 +35,28 @@ def builtin_rest(args: List[Any], env: Environment):
         raise EvaluationError(
             f"TypeError: 'rest' expects a list, vector, or nil, got {type(collection)}."
         )  # Updated error message
+
+
+def documentation_rest() -> str:
+    """Returns documentation for the rest function."""
+    return """Function: rest
+Arguments: (rest collection)
+Description: Returns all elements of a collection except the first.
+
+Examples:
+  (rest (list 1 2 3))       ; => (2 3)
+  (rest [10 20 30])         ; => [20 30]
+  (rest (list 1))           ; => ()
+  (rest [77])               ; => []
+  (rest (list))             ; => ()
+  (rest [])                 ; => []
+  (rest nil)                ; => ()
+
+Notes:
+  - Requires exactly one argument
+  - Works with lists, vectors, and nil (but not strings)
+  - Returns same collection type as input
+  - Returns empty collection for single-element or empty inputs
+  - Alternative to cdr function for lists
+  - For nil input, returns empty list
+  - Preserves original collection type (list vs vector)"""

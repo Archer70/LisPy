@@ -25,3 +25,31 @@ def bdd_assert_equal_q(args: List[Any], env: Environment) -> bool:
         )
 
     return True  # Assertion passed
+
+
+def documentation_assert_equal_q() -> str:
+    """Returns documentation for the assert-equal? function."""
+    return """Function: assert-equal?
+Arguments: (assert-equal? expected actual)
+Description: BDD assertion that verifies two values are equal.
+
+Examples:
+  (assert-equal? 5 5)           ; => true (assertion passes)
+  (assert-equal? "hello" "hello") ; => true (strings equal)
+  (assert-equal? [1 2] [1 2])   ; => true (vectors equal)
+  (assert-equal? nil nil)       ; => true (nil values equal)
+  
+  ; Assertion failures raise AssertionFailure:
+  (assert-equal? 5 6)           ; => AssertionFailure: Expected [5] but got [6]
+  (assert-equal? "5" 5)         ; => AssertionFailure: Different types
+  (assert-equal? true false)    ; => AssertionFailure: Expected [true] but got [false]
+
+Notes:
+  - Requires exactly 2 arguments (expected, actual)
+  - Uses Python's equality semantics (==)
+  - Returns true if assertion passes
+  - Raises AssertionFailure with detailed message if values differ
+  - Error message includes both values and their types
+  - Essential for BDD testing workflows
+  - Used within 'then' steps for test verification
+  - Supports all LisPy data types (numbers, strings, lists, vectors, maps, etc.)"""

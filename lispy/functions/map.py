@@ -84,3 +84,27 @@ def builtin_map(args, env):
                 )
 
     return Vector(result_vector_elements)
+
+
+def documentation_map() -> str:
+    """Returns documentation for the map function."""
+    return """Function: map
+Arguments: (map vector function)
+Description: Applies function to each element of vector, returning a new vector of results.
+
+Examples:
+  (map [1 2 3] (fn [x] (* x 2)))        ; => [2 4 6]
+  (map [1 2 3 4] (fn [x] (+ x 1)))      ; => [2 3 4 5]
+  (map ["a" "b"] (fn [s] (str s "!")))  ; => ["a!" "b!"]
+  (map [] (fn [x] x))                   ; => []
+  (map [1 -2 3] abs)                    ; => [1 2 3]
+  (map [true false] (fn [b] (not b)))   ; => [false true]
+
+Notes:
+  - First argument must be a vector (not lists - use filter for lists)
+  - Function must take exactly 1 argument
+  - Returns a new vector, does not modify original
+  - Function is applied to each element in order
+  - Result vector has same length as input vector
+  - Can use built-in functions or user-defined functions
+  - Empty vector returns empty vector"""

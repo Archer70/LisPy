@@ -19,4 +19,22 @@ def builtin_abs(args: List[Any], env: Environment) -> Numeric:
             f"TypeError: Argument to 'abs' must be a number, got {type(arg).__name__}: '{arg}'"
         )
 
-    return abs(arg) 
+    return abs(arg)
+
+
+def documentation_abs() -> str:
+    """Returns documentation for the abs function."""
+    return """Function: abs
+Arguments: (abs number)
+Description: Returns the absolute value of a number.
+
+Examples:
+  (abs 5)       ; => 5
+  (abs -5)      ; => 5
+  (abs 0)       ; => 0
+  (abs -3.14)   ; => 3.14
+  (abs (- 2 7)) ; => 5
+
+Notes:
+  - Always returns a non-negative number
+  - Preserves the type (int or float) of the input""" 

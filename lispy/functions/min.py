@@ -24,4 +24,24 @@ def builtin_min(args: List[Any], env: Environment) -> Numeric:
         if minimum is None or arg < minimum:
             minimum = arg
 
-    return minimum 
+    return minimum
+
+
+def documentation_min() -> str:
+    """Returns documentation for the min function."""
+    return """Function: min
+Arguments: (min number1 number2 ...)
+Description: Returns the smallest of the given numbers.
+
+Examples:
+  (min 5)           ; => 5
+  (min 3 7)         ; => 3
+  (min 10 3 7 1 9)  ; => 1
+  (min -5 -2 -8)    ; => -8
+  (min 5 -3 2)      ; => -3
+  (min 3.14 2.71)   ; => 2.71
+
+Notes:
+  - Requires at least one argument
+  - Works with both integers and floating-point numbers
+  - All arguments must be numbers""" 

@@ -31,3 +31,26 @@ def append_fn(args, env):
 
     # Concatenate all strings
     return "".join(args)
+
+
+def documentation_append() -> str:
+    """Returns documentation for the append function."""
+    return """Function: append
+Arguments: (append string1 string2 ...)
+Description: Concatenates zero or more strings into a single string.
+
+Examples:
+  (append)                  ; => ""
+  (append "Hello")          ; => "Hello"
+  (append "Hello" " " "World")  ; => "Hello World"
+  (append "a" "b" "c")      ; => "abc"
+  (append "start" "" "end") ; => "startend"
+  (append "123" "456")      ; => "123456"
+
+Notes:
+  - Accepts zero or more string arguments
+  - All arguments must be strings
+  - Returns empty string if no arguments provided
+  - Creates a new string without modifying originals
+  - Useful for building strings dynamically
+  - Works well with thread-first macro"""

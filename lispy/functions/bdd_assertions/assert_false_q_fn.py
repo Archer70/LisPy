@@ -21,3 +21,32 @@ def bdd_assert_false_q(args: List[Any], env: Environment) -> bool:
         )
 
     return True  # Assertion passed
+
+
+def documentation_assert_false_q() -> str:
+    """Returns documentation for the assert-false? function."""
+    return """Function: assert-false?
+Arguments: (assert-false? expression)
+Description: BDD assertion that verifies an expression evaluates to false.
+
+Examples:
+  (assert-false? false)         ; => true (assertion passes)
+  (assert-false? (= 5 6))       ; => true (inequality check passes)
+  (assert-false? (> 5 10))      ; => true (comparison passes)
+  (assert-false? (not true))    ; => true (logical operation passes)
+  
+  ; Assertion failures raise AssertionFailure:
+  (assert-false? true)          ; => AssertionFailure: Expected [False] but got [True]
+  (assert-false? nil)           ; => AssertionFailure: Expected [False] but got [nil]
+  (assert-false? 0)             ; => AssertionFailure: Expected [False] but got [0]
+  (assert-false? "")            ; => AssertionFailure: Expected [False] but got [""]
+
+Notes:
+  - Requires exactly 1 argument
+  - Only accepts the literal boolean false value
+  - Not based on LisPy falsiness - requires actual false value
+  - Returns true if assertion passes
+  - Raises AssertionFailure with detailed message for any non-false value
+  - Essential for BDD testing workflows
+  - Used within 'then' steps for negative boolean verification
+  - Stricter than general falsiness checks"""

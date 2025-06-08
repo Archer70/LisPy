@@ -22,3 +22,26 @@ def builtin_multiply(args: List[Any], env: Environment) -> Numeric:
             )
         product *= arg
     return product
+
+
+def documentation_multiply() -> str:
+    """Returns documentation for the * function."""
+    return """Function: *
+Arguments: (* number1 number2 ...)
+Description: Multiplies zero or more numbers together.
+
+Examples:
+  (*)           ; => 1
+  (* 5)         ; => 5
+  (* 2 3)       ; => 6
+  (* 2 3 4)     ; => 24
+  (* 5 0)       ; => 0
+  (* 5 1)       ; => 5
+  (* 5 0.5)     ; => 2.5
+  (* 2.5 2.0)   ; => 5.0
+
+Notes:
+  - With no arguments, returns 1 (multiplicative identity)
+  - With one argument, returns that number
+  - Works with both integers and floating-point numbers
+  - All arguments must be numbers"""

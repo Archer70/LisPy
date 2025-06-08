@@ -52,3 +52,26 @@ def get_fn(args: List[Any], env: Environment):
         raise EvaluationError(
             f"TypeError: 'get' first argument must be a vector or map, got {type(collection)}."
         )
+
+
+def documentation_get() -> str:
+    """Returns documentation for the get function."""
+    return """Function: get
+Arguments: (get collection key [default])
+Description: Retrieves a value from a vector or map by key/index.
+
+Examples:
+  (get [10 20 30] 1)           ; => 20
+  (get {:a 1 :b 2} ':a)        ; => 1
+  (get {:a 1 :b 2} ':c)        ; => nil
+  (get {:a 1 :b 2} ':c "not found") ; => "not found"
+  (get [10 20] 5)              ; => IndexError (no default)
+  (get [10 20] 5 "out of bounds") ; => "out of bounds"
+
+Notes:
+  - For vectors: key must be integer index (0-based)
+  - For maps: key must be a symbol
+  - Returns nil for missing map keys (if no default provided)
+  - Throws IndexError for out-of-bounds vector access (if no default)
+  - Optional third argument provides default value
+  - Works with vectors, maps, and requires 2-3 arguments"""

@@ -59,3 +59,33 @@ def str_fn(args, env):
     else:
         # Fallback to Python's str() for any other types
         return str(value)
+
+
+def documentation_str() -> str:
+    """Returns documentation for the str function."""
+    return """Function: str
+Arguments: (str value)
+Description: Converts a value to its string representation.
+
+Examples:
+  (str 42)                              ; => "42"
+  (str 3.14)                            ; => "3.14"
+  (str true)                            ; => "true"
+  (str false)                           ; => "false"
+  (str nil)                             ; => "nil"
+  (str "hello")                         ; => "hello" (unchanged)
+  (str 'symbol)                         ; => "symbol"
+  (str ':keyword)                       ; => ":keyword"
+  (str [1 2 3])                         ; => "[1 2 3]"
+  (str '(a b c))                        ; => "(a b c)"
+  (str {:a 1 :b 2})                     ; => "{:a 1 :b 2}"
+
+Notes:
+  - Requires exactly one argument
+  - Strings are returned unchanged (no quotes added)
+  - Numbers converted to their decimal representation
+  - Booleans become "true"/"false", nil becomes "nil"
+  - Symbols return their name without quotes
+  - Collections return bracketed representations
+  - Useful for string interpolation and building messages
+  - Compatible with append function for concatenation"""

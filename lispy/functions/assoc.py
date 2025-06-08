@@ -42,3 +42,26 @@ def builtin_assoc(args: List[Any], env: Environment):
         new_map[key] = value
 
     return new_map
+
+
+def documentation_assoc() -> str:
+    """Returns documentation for the assoc function."""
+    return """Function: assoc
+Arguments: (assoc map key1 value1 [key2 value2 ...])
+Description: Associates key-value pairs with a map, returning a new map.
+
+Examples:
+  (assoc {} ':a 1)              ; => {:a 1}
+  (assoc {:a 1} ':b 2)          ; => {:a 1 :b 2}
+  (assoc {:a 1} ':a 10)         ; => {:a 10} (updates existing)
+  (assoc {} ':x 1 ':y 2 ':z 3)  ; => {:x 1 :y 2 :z 3}
+  (assoc nil ':a 1)             ; => {:a 1} (nil treated as empty map)
+
+Notes:
+  - First argument must be a map or nil
+  - Requires at least 3 arguments (map, key, value)
+  - Additional key-value pairs can be provided
+  - Keys must be symbols (like ':a, ':name, etc.)
+  - Values can be any type
+  - Returns a new map, does not modify original
+  - Later keys override earlier keys in same call"""

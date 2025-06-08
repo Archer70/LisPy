@@ -85,3 +85,27 @@ def builtin_filter(args: List[Any], env: Environment):
         return Vector(filtered_items)
     else:  # LispyList
         return LispyList(filtered_items)
+
+
+def documentation_filter() -> str:
+    """Returns documentation for the filter function."""
+    return """Function: filter
+Arguments: (filter collection predicate)
+Description: Returns a new collection containing only elements that satisfy the predicate.
+
+Examples:
+  (filter [1 2 3 4 5] (fn [x] (> x 3)))     ; => [4 5]
+  (filter '(1 2 3 4 5) is_number?)          ; => (1 2 3 4 5)
+  (filter ["a" 1 "b" 2] is_string?)         ; => ["a" "b"]
+  (filter [1 2 3] (fn [x] (= (% x 2) 0)))   ; => [2] (even numbers)
+  (filter [] is_number?)                    ; => []
+  (filter '(-1 0 1 2) (fn [x] (> x 0)))     ; => (1 2)
+
+Notes:
+  - Collection must be a list or vector
+  - Predicate must be a function that takes 1 argument
+  - Returns same collection type as input (vector -> vector, list -> list)
+  - Predicate should return truthy/falsy values
+  - False and nil are considered falsy, everything else is truthy
+  - Original collection is not modified
+  - Empty collections return empty collections of same type"""

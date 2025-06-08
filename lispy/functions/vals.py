@@ -25,3 +25,25 @@ def builtin_vals(args: List[Any], env: Environment):
 
     # dict.values() returns a view object, convert it to a list for Lispy
     return LispyList(list(target_map.values()))
+
+
+def documentation_vals() -> str:
+    """Returns documentation for the vals function."""
+    return """Function: vals
+Arguments: (vals map)
+Description: Returns a list of all values in a map.
+
+Examples:
+  (vals {:a 1 :b 2 :c 3})       ; => (1 2 3) (order may vary)
+  (vals {})                     ; => ()
+  (vals nil)                    ; => ()
+  (vals {:name "LisPy" :version 1.0}) ; => ("LisPy" 1.0)
+
+Notes:
+  - Requires exactly one argument
+  - Argument must be a map or nil
+  - nil is treated as empty map, returns empty list
+  - Returns a LisPy list of values
+  - Value order in result is not guaranteed
+  - For empty maps, returns empty list ()
+  - Values can be any type (numbers, strings, lists, etc.)"""

@@ -28,3 +28,25 @@ def builtin_keys(
     # dict.keys() returns a view object, convert it to a list for Lispy
     # The elements are already Symbols as stored in our maps.
     return LispyList(list(target_map.keys()))  # Changed List to LispyList
+
+
+def documentation_keys() -> str:
+    """Returns documentation for the keys function."""
+    return """Function: keys
+Arguments: (keys map)
+Description: Returns a list of all keys in a map.
+
+Examples:
+  (keys {:a 1 :b 2 :c 3})       ; => (:a :b :c) (order may vary)
+  (keys {})                     ; => ()
+  (keys nil)                    ; => ()
+  (keys {:name "LisPy" :version 1.0}) ; => (:name :version)
+
+Notes:
+  - Requires exactly one argument
+  - Argument must be a map or nil
+  - nil is treated as empty map, returns empty list
+  - Returns a LisPy list of symbol keys
+  - Key order in result is not guaranteed
+  - For empty maps, returns empty list ()
+  - Keys are always symbols in LisPy maps"""

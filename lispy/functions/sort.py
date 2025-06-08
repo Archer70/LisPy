@@ -124,3 +124,35 @@ def sort_fn(args: List[Any], env: Environment):
         elements.sort(key=cmp_to_key(compare_wrapper))
 
     return Vector(elements)
+
+
+def documentation_sort() -> str:
+    """Returns documentation for the sort function."""
+    return """Function: sort
+Arguments: (sort vector [compare-fn])
+Description: Returns a new sorted vector. Optionally accepts a comparison function.
+
+Examples:
+  (sort [3 1 4 1 5])            ; => [1 1 3 4 5] (ascending default)
+  (sort [])                     ; => []
+  (sort ["zebra" "apple"])      ; => ["apple" "zebra"] (alphabetical)
+  (sort [3.14 2 1.5 4])         ; => [1.5 2 3.14 4] (mixed numbers)
+  
+  ; Custom comparison functions:
+  (sort [1 3 2 5] (fn [a b] (> a b)))     ; => [5 3 2 1] (descending)
+  (sort [1 3 2 5] (fn [a b] (- b a)))     ; => [5 3 2 1] (numeric comparison)
+  (sort [-3 1 -2] (fn [a b] (< (abs a) (abs b))))  ; => [1 -2 -3] (by absolute)
+
+Notes:
+  - First argument must be a vector (not lists)
+  - Optional second argument must be a comparison function
+  - Returns new vector, original is not modified
+  - Default sort is ascending order for numbers, alphabetical for strings
+  - Comparison function takes 2 arguments, returns:
+    * Negative number if first < second
+    * Zero if first == second  
+    * Positive number if first > second
+    * Boolean where true means first < second
+  - Comparison function must have exactly 2 parameters
+  - Handles mixed numeric types (int/float) gracefully
+  - Uses string representation fallback for incomparable types"""

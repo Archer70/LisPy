@@ -83,4 +83,30 @@ def builtin_every_q(args: List[Any], env: Environment) -> bool:
             return False
     
     # All elements satisfied the predicate
-    return True 
+    return True
+
+
+def documentation_every_q() -> str:
+    """Returns documentation for the every? function."""
+    return """Function: every?
+Arguments: (every? collection predicate)
+Description: Returns true if all elements in collection satisfy the predicate, false otherwise.
+
+Examples:
+  (every? [1 2 3] is_number?)           ; => true
+  (every? [1 "a" 3] is_number?)         ; => false
+  (every? [2 4 6] (fn [x] (= (% x 2) 0))) ; => true (all even)
+  (every? [1 3 5] (fn [x] (> x 0)))     ; => true (all positive)
+  (every? [] is_number?)                ; => true (vacuously true)
+  (every? [true true false] (fn [x] x)) ; => false
+  (every? [-1 2 3] (fn [x] (> x 0)))    ; => false
+
+Notes:
+  - Collection must be a list or vector
+  - Predicate must be a function that takes 1 argument
+  - Returns true or false (boolean result)
+  - Short-circuits on first falsy result (doesn't evaluate rest)
+  - False and nil are considered falsy, everything else is truthy
+  - Empty collection returns true (vacuous truth)
+  - Complement of some: every? tests all, some tests any
+  - Useful for validating that all elements meet criteria""" 

@@ -26,3 +26,28 @@ def builtin_count(args: List[Any], env: Environment) -> int:  # Added env parame
         raise EvaluationError(
             f"TypeError: 'count' expects a list, vector, map, string, or nil. Got {type_name}"
         )
+
+
+def documentation_count() -> str:
+    """Returns documentation for the count function."""
+    return """Function: count
+Arguments: (count collection)
+Description: Returns the number of items in a collection.
+
+Examples:
+  (count (list 1 2 3))      ; => 3
+  (count [1 2 3])           ; => 3
+  (count {:a 1 :b 2})       ; => 2
+  (count "hello")           ; => 5
+  (count "")                ; => 0
+  (count (list))            ; => 0
+  (count [])                ; => 0
+  (count nil)               ; => 0
+
+Notes:
+  - Requires exactly one argument
+  - Works with lists, vectors, maps, strings, and nil
+  - For maps, counts key-value pairs
+  - For strings, counts characters
+  - nil always returns 0
+  - Empty collections return 0"""

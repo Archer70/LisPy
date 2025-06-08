@@ -1,10 +1,10 @@
 """LisPy BDD Assertion Functions"""
 
-from .assert_equal_q_fn import bdd_assert_equal_q
-from .assert_true_q_fn import bdd_assert_true_q
-from .assert_false_q_fn import bdd_assert_false_q
-from .assert_nil_q_fn import bdd_assert_nil_q
-from .assert_not_nil_q_fn import bdd_assert_not_nil_q
+from .assert_equal_q_fn import bdd_assert_equal_q, documentation_assert_equal_q
+from .assert_true_q_fn import bdd_assert_true_q, documentation_assert_true_q
+from .assert_false_q_fn import bdd_assert_false_q, documentation_assert_false_q
+from .assert_nil_q_fn import bdd_assert_nil_q, documentation_assert_nil_q
+from .assert_not_nil_q_fn import bdd_assert_not_nil_q, documentation_assert_not_nil_q
 
 # This dictionary will be merged into the global environment
 bdd_assertion_functions = {
