@@ -40,6 +40,10 @@ from .sort import sort_fn # Added sort
 from .reverse import reverse_fn # Added reverse
 from .concat import concat_fn # Added concat
 from .merge import merge_fn # Added merge
+from .append import append_fn # Added append
+from .str import str_fn # Added str
+from .join import join_fn # Added join
+from .split import split_fn # Added split
 
 from .bdd_assertions import bdd_assertion_functions # Added
 
@@ -83,6 +87,10 @@ def create_global_env() -> Environment:
     env.define("reverse", reverse_fn) # Added reverse
     env.define("concat", concat_fn) # Added concat
     env.define("merge", merge_fn) # Added merge
+    env.define("append", append_fn) # Added append
+    env.define("str", str_fn) # Added str
+    env.define("join", join_fn) # Added join
+    env.define("split", split_fn) # Added split
 
     # Add BDD assertion functions
     for name, func in bdd_assertion_functions.items(): # Added loop
@@ -131,6 +139,10 @@ __all__ = [
     "reverse_fn", # Added reverse
     "concat_fn", # Added concat
     "merge_fn", # Added merge
+    "append_fn", # Added append
+    "str_fn", # Added str
+    "join_fn", # Added join
+    "split_fn", # Added split
     "create_global_env",
     "global_env",
 ] 
