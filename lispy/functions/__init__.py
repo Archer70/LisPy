@@ -27,6 +27,7 @@ from .divide import builtin_divide, documentation_divide
 from .doc import builtin_doc, documentation_doc, register_documentation
 from .empty import builtin_empty_q, documentation_empty_q
 from .equals import builtin_equals, documentation_equals
+from .equal_q import builtin_equal_q, documentation_equal_q
 from .every_q import builtin_every_q, documentation_every_q
 from .filter import builtin_filter, documentation_filter
 from .first import builtin_first, documentation_first
@@ -84,6 +85,7 @@ def create_global_env() -> Environment:
     env.define("<", builtin_less_than)
     env.define("<=", builtin_less_than_or_equal)
     env.define("=", builtin_equals)
+    env.define("equal?", builtin_equal_q)
     env.define(">", builtin_greater_than)
     env.define(">=", builtin_greater_than_or_equal)
 
@@ -155,6 +157,7 @@ def setup_documentation_registry():
     register_documentation("<", documentation_less_than)
     register_documentation("<=", documentation_less_than_or_equal)
     register_documentation("=", documentation_equals)
+    register_documentation("equal?", documentation_equal_q)
     register_documentation(">", documentation_greater_than)
     register_documentation(">=", documentation_greater_than_or_equal)
     register_documentation("abs", documentation_abs)
@@ -230,6 +233,7 @@ __all__ = [
     "builtin_doc",
     "builtin_empty_q",
     "builtin_equals",
+    "builtin_equal_q", 
     "builtin_every_q",
     "builtin_filter",
     "builtin_first",
