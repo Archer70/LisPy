@@ -3,7 +3,7 @@
         (given "a vector [1 2 3 4 5] is defined"
             (define my-vec [1 2 3 4 5])
         )
-        (when "we count its elements"
+        (action "we count its elements"
             ; The actual count will be performed in the 'then' block's assertion
             ; for this test, my-vec is now in the environment.
         )
@@ -16,7 +16,7 @@
         (given "a vector ['a' 'b' 'c'] is defined"
             (define another-vec ["a" "b" "c"])
         )
-        (when "we get its first element"
+        (action "we get its first element"
             ; The actual 'first' operation will be in the 'then' block's assertion.
         )
         (then "the first element should be 'a'"
@@ -28,7 +28,7 @@
         (given "a test value is prepared"
             (define test-val 99)
         )
-        (when "the test value is used in a 'then' block"
+        (action "the test value is used in a 'then' block"
             ; No specific action code needed here for this particular test structure,
             ; test-val is available in the environment.
         )

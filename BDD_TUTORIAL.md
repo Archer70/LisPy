@@ -58,7 +58,7 @@ Let's jump right in!
           (define a 5))
         (given "I also have the number 7"
           (define b 7))
-        (when "I add them together"
+        (action "I add them together"
           (define result (+ a b)))
         (then "the result should be 12"
           (assert-equal? 12 result))))
@@ -114,23 +114,23 @@ LisPy provides a set of special forms (keywords) to structure your BDD tests. Th
         (define widget {:name "Super Widget" :price 10})))
     ```
 
-### `when`: The Action Happens! 💥
+### `action`: The Action Happens! 💥
 
 *   **Purpose**: Describes the key action or event that occurs, the behavior you're testing.
-*   **Syntax**: `(when "The action/event description as a string" ... lispy-code-for-action ...)`
+*   **Syntax**: `(action "The action/event description as a string" ... lispy-code-for-action ...)`
 *   **Context**: Must be used inside an `it` block, usually after `given` steps.
 *   **Example**:
     ```lisp
-    (when "I add the 'Super Widget' to the cart"
+    (action "I add the 'Super Widget' to the cart"
       (set! cart (conj cart widget))) ; Assuming 'set!' or a way to update 'cart' if needed
                                       ; Or, more functionally: (define new-cart (conj cart widget))
     ```
 
 ### `then`: The Grand Reveal & Assertions! 🕵️‍♀️✅
 
-*   **Purpose**: Specifies the expected outcome or result after the `when` action. This is where you make your assertions!
+*   **Purpose**: Specifies the expected outcome or result after the `action` step. This is where you make your assertions!
 *   **Syntax**: `(then "The expected outcome description as a string" ... lispy-code-with-assertions ...)`
-*   **Context**: Must be used inside an `it` block, usually after a `when` step.
+*   **Context**: Must be used inside an `it` block, usually after an `action` step.
 *   **Example**:
     ```lisp
     (then "the cart should contain 1 item"
@@ -210,12 +210,12 @@ Inside your `then` blocks, you'll use LisPy's BDD assertion functions to verify 
     (describe "Division"
       (it "handles division by zero"
         (given "I have the number 10" (define x 10))
-        (when "I attempt to divide it by zero" nil) ; The action is in the 'then' for this kind of test
+        (action "I attempt to divide it by zero" nil) ; The action is in the 'then' for this kind of test
         (then "it should raise a 'Division by zero' error"
           (assert-raises? "Division by zero" (/ x 0))))) ; Error occurs here
 
     (it "handles invalid argument types for +"
-      (when "I attempt to add a number and a string" nil)
+              (action "I attempt to add a number and a string" nil)
       (then "it should raise a TypeError"
         (assert-raises? "TypeError: unsupported operand type(s) for +" (+ 1 "oops"))))
     ```
@@ -283,7 +283,7 @@ Let's put it all together with a more complete example.
   (it "correctly adds two positive numbers"
     (given "I have a calculator" 
       (define calc-add +)) ; Using LisPy's built-in +
-    (when "I input 5 and 7"
+            (action "I input 5 and 7"
       (define num1 5)
       (define num2 7)
       (define result (calc-add num1 num2)))
@@ -293,7 +293,7 @@ Let's put it all together with a more complete example.
   (it "correctly subtracts a larger number from a smaller number"
     (given "I have a calculator"
       (define calc-subtract -))
-    (when "I input 3 and 10 for subtraction"
+            (action "I input 3 and 10 for subtraction"
       (define num1 3)
       (define num2 10)
       (define result (calc-subtract num1 num2)))
@@ -313,7 +313,7 @@ Let's put it all together with a more complete example.
   (it "intentionally failing scenario for demonstration"
     (given "a simple setup"
       (define value true))
-    (when "I check a condition that will fail"
+            (action "I check a condition that will fail"
       nil) ; No action needed, the check is in 'then'
     (then "the condition should be false, but it's true"
       (assert-false? value))) ; This will fail as value is true

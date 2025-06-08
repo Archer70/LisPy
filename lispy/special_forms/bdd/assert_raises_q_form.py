@@ -8,7 +8,7 @@ from lispy.environment import Environment
 # One common way is to have lispy.evaluator pass itself (or a reference) if truly needed,
 # or to structure calls so this isn't an issue.
 
-# For now, let's assume that when this handler is called by the main `evaluate` function
+# For now, let's assume that action this handler is called by the main `evaluate` function
 # in lispy.evaluator, that `evaluate` is in a scope that can be resolved.
 # Python's LEGB rule (Local, Enclosing function locals, Global, Built-in)
 # If `evaluate` is imported at the top of `lispy.special_forms.bdd` or `lispy.special_forms`
@@ -19,7 +19,7 @@ from lispy.environment import Environment
 # However, `evaluate` is central. 
 
 # Let's try relying on the fact that `evaluate` is in the global scope of the `lispy.evaluator` module,
-# and when `assert_raises_q_form_handler` is executed, that `evaluate` will be found.
+# and action `assert_raises_q_form_handler` is executed, that `evaluate` will be found.
 # This means the `evaluate` calls inside this function will implicitly refer to `lispy.evaluator.evaluate`.
 
 

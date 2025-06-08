@@ -537,7 +537,7 @@ BDD tests in LisPy are structured using the following special forms:
 - `(describe "Feature description" ...scenarios)`: Defines a feature or a collection of related tests.
 - `(it "Scenario description" ...steps)`: Defines a specific test scenario within a feature.
 - `(given "Context or precondition" ...setup-code)`: Describes the initial state or setup for a scenario.
-- `(when "Action performed" ...action-code)`: Describes the action or event being tested.
+- `(action "Action performed" ...action-code)`: Describes the action or event being tested.
 - `(then "Expected outcome" ...assertion-code)`: Describes the expected result and contains assertions to verify it.
 
 ### Assertion Functions
@@ -556,7 +556,7 @@ BDD tests are written in regular `.lpy` files, typically in a dedicated test dir
         (given "a registered user with username 'testuser' and password 'pass123'")
         ; ... code to set up the user in a mock database ...
 
-        (when "the user attempts to log in with correct credentials")
+        (action "the user attempts to log in with correct credentials")
         (define login-result (attempt-login "testuser" "pass123"))
 
         (then "the login should be successful"
@@ -567,7 +567,7 @@ BDD tests are written in regular `.lpy` files, typically in a dedicated test dir
     (it "should prevent login with incorrect password"
         (given "a registered user 'testuser'")
         ; ... setup ...
-        (when "the user attempts to log in with an incorrect password")
+        (action "the user attempts to log in with an incorrect password")
         (define login-result (attempt-login "testuser" "wrongpass"))
 
         (then "the login should fail"

@@ -3,7 +3,7 @@
         (given "a simple setup that will lead to a failure")
         (define a 10)
         (define b 20)
-        (when "an assertion is made that is incorrect")
+        (action "an assertion is made that is incorrect")
         ; No specific action needed in 'when' if 'given' sets up for 'then'
         (then "the step should be marked as FAILED"
             (assert-equal? a b) ; This will fail as 10 is not equal to 20
@@ -13,7 +13,7 @@
     (it "should demonstrate another passing scenario in the same feature"
         (given "a simple setup for a passing test")
         (define x 5)
-        (when "a correct assertion is made")
+        (action "a correct assertion is made")
         (then "this step should PASS"
             (assert-equal? 5 x)
         )

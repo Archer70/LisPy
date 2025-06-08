@@ -12,10 +12,12 @@ from .import_form import import_form
 from .export_form import export_form
 from .recur_form import handle_recur
 from .thread_first import handle_thread_first
+from .cond_form import handle_cond
+from .when_form import handle_when_form
 from .bdd.describe_form import describe_form_handler
 from .bdd.it_form import it_form_handler
 from .bdd.given_form import given_form_handler
-from .bdd.when_form import when_form_handler
+from .bdd.action_form import action_form_handler
 from .bdd.then_form import then_form_handler
 from .bdd.assert_raises_q_form import assert_raises_q_form_handler
 from .and_form import handle_and_form
@@ -33,10 +35,12 @@ special_form_handlers: Dict[str, Callable[[List[Any], Environment, Callable], An
     "export": export_form,
     "recur": handle_recur,
     "->": handle_thread_first,
+    "cond": handle_cond,
+    "when": handle_when_form,
+    "action": action_form_handler,
     "describe": describe_form_handler,
     "it": it_form_handler,
     "given": given_form_handler,
-    "when": when_form_handler,
     "then": then_form_handler,
     "assert-raises?": assert_raises_q_form_handler,
     "and": handle_and_form,

@@ -18,7 +18,7 @@ class TestBddIntegration(unittest.TestCase):
             (given "a registered user 'testuser' with password 'pass123'" 
               nil ; (print "Setting up user...")
             )
-            (when "the user attempts to login with 'testuser' and 'pass123'"
+            (action "the user attempts to login with 'testuser' and 'pass123'"
               nil ; (print "Simulating login...")
             )
             (then "the login should be successful"
@@ -31,7 +31,7 @@ class TestBddIntegration(unittest.TestCase):
           
           (it "should deny login with incorrect credentials"
             (given "a registered user 'testuser' with password 'pass123'" nil)
-            (when "the user attempts to login with 'testuser' and 'wrongpass'" nil)
+            (action "the user attempts to login with 'testuser' and 'wrongpass'" nil)
             (then "the login should fail" nil)
           )
         )
@@ -48,7 +48,7 @@ class TestBddIntegration(unittest.TestCase):
         self.assertEqual(len(scenario1["steps"]), 4)
         self.assertEqual(scenario1["steps"][0]["keyword"], "Given")
         self.assertEqual(scenario1["steps"][0]["description"], "a registered user 'testuser' with password 'pass123'")
-        self.assertEqual(scenario1["steps"][1]["keyword"], "When")
+        self.assertEqual(scenario1["steps"][1]["keyword"], "Action")
         self.assertEqual(scenario1["steps"][2]["keyword"], "Then")
         self.assertEqual(scenario1["steps"][3]["keyword"], "Then")
 
@@ -56,7 +56,7 @@ class TestBddIntegration(unittest.TestCase):
         self.assertEqual(scenario2["description"], "should deny login with incorrect credentials")
         self.assertEqual(len(scenario2["steps"]), 3)
         self.assertEqual(scenario2["steps"][0]["keyword"], "Given")
-        self.assertEqual(scenario2["steps"][1]["keyword"], "When")
+        self.assertEqual(scenario2["steps"][1]["keyword"], "Action")
         self.assertEqual(scenario2["steps"][2]["keyword"], "Then")
 
     def test_nested_describes_not_supported_yet(self):
@@ -64,7 +64,7 @@ class TestBddIntegration(unittest.TestCase):
         lispy_code = """
         (describe "Outer Feature"
             (describe "Inner Feature - treated as new top-level"
-                (it "inner it" (given "g" ) (when "w") (then "t"))))
+                (it "inner it" (given "g" ) (action "w") (then "t"))))
         """
         run_lispy_string(lispy_code, self.env)
         self.assertEqual(len(registry.BDD_RESULTS), 2)

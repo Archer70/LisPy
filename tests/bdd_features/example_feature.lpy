@@ -1,7 +1,7 @@
 (describe "Example Feature"
     (it "Scenario 1: Basic Arithmetic"
         (given "we have two numbers, 5 and 10")
-        (when "we add them together")
+        (action "we add them together")
         (then "the result should be 15"
             (assert-equal? 15 (+ 5 10))
         )
@@ -9,7 +9,7 @@
 
     (it "Scenario 2: Failing Assertion"
         (given "an expected value of \"hello\"")
-        (when "we compare it to \"world\"")
+        (action "we compare it to \"world\"")
         (then "the assertion should fail"
             (assert-equal? "hello" "world")
         )
@@ -17,7 +17,7 @@
 
     (it "Scenario 3: Arity Error in Step"
         (given "a setup")
-        (when "an action occurs")
+        (action "an action occurs")
         (then "an arity error happens in an assertion"
             (assert-equal? 1) ; Missing second argument
         )
@@ -25,7 +25,7 @@
     
     (it "Scenario 4: All steps pass"
         (given "initial condition A")
-        (when "action B occurs")
+        (action "action B occurs")
         (then "outcome C is verified" (assert-equal? true true))
         (then "outcome D is also verified" (assert-equal? 100 100))
     )

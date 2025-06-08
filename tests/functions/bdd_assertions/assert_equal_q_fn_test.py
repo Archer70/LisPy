@@ -68,11 +68,11 @@ class TestAssertEqualQFn(unittest.TestCase):
         (describe "Feature with multiple scenarios"
             (it "Scenario 1 - fails"
                 (given "g1")
-                (when "w1")
+                (action "w1")
                 (then "t1 fails" (assert-equal? 1 0)))
             (it "Scenario 2 - passes"
                 (given "g2")
-                (when "w2")
+                (action "w2")
                 (then "t2 passes" (assert-equal? 1 1))))
         """
         run_lispy_string(lispy_code, self.env)
