@@ -18,6 +18,7 @@ from .dissoc import builtin_dissoc
 from .divide import builtin_divide
 from .empty import builtin_empty_q
 from .equals import builtin_equals
+from .every_q import builtin_every_q
 from .filter import builtin_filter
 from .first import builtin_first
 from .is_function_q import builtin_is_function_q
@@ -45,6 +46,7 @@ from .println import builtin_println
 from .reduce import builtin_reduce
 from .rest import builtin_rest
 from .reverse import reverse_fn
+from .some import builtin_some
 from .sort import sort_fn
 from .split import split_fn
 from .str import str_fn
@@ -85,6 +87,7 @@ def create_global_env() -> Environment:
     env.define("count", builtin_count)
     env.define("dissoc", builtin_dissoc)
     env.define("empty?", builtin_empty_q)
+    env.define("every?", builtin_every_q)
     env.define("filter", builtin_filter)
     env.define("first", builtin_first)
     env.define("get", get_fn)
@@ -106,6 +109,7 @@ def create_global_env() -> Environment:
     env.define("reduce", builtin_reduce)
     env.define("rest", builtin_rest)
     env.define("reverse", reverse_fn)
+    env.define("some", builtin_some)
     env.define("sort", sort_fn)
     env.define("split", split_fn)
     env.define("str", str_fn)
@@ -138,6 +142,7 @@ __all__ = [
     "builtin_divide",
     "builtin_empty_q",
     "builtin_equals",
+    "builtin_every_q",
     "builtin_filter",
     "builtin_first",
     "builtin_is_function_q",
@@ -160,6 +165,7 @@ __all__ = [
     "builtin_println",
     "builtin_reduce",
     "builtin_rest",
+    "builtin_some",
     "builtin_is_string_q",
     "builtin_subtract",
     "builtin_vals",
