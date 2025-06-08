@@ -3,6 +3,7 @@
 from ..environment import Environment  # Import Environment from parent package
 
 # Function imports (alphabetized)
+from .abs import builtin_abs
 from .add import builtin_add
 from .append import append_fn
 from .assoc import builtin_assoc
@@ -34,7 +35,9 @@ from .list import builtin_list
 from .is_list_q import builtin_is_list_q
 from .map import builtin_map
 from .is_map_q import builtin_is_map_q
+from .max import builtin_max
 from .merge import merge_fn
+from .min import builtin_min
 from .modulo import builtin_modulo
 from .multiply import builtin_multiply
 from .is_nil_q import builtin_is_nil_q
@@ -76,6 +79,7 @@ def create_global_env() -> Environment:
     env.define(">=", builtin_greater_than_or_equal)
 
     # Functions (alphabetized by name)
+    env.define("abs", builtin_abs)
     env.define("append", append_fn)
     env.define("assoc", builtin_assoc)
     env.define("is_boolean?", builtin_is_boolean_q)
@@ -99,7 +103,9 @@ def create_global_env() -> Environment:
     env.define("is_list?", builtin_is_list_q)
     env.define("map", builtin_map)
     env.define("is_map?", builtin_is_map_q)
+    env.define("max", builtin_max)
     env.define("merge", merge_fn)
+    env.define("min", builtin_min)
     env.define("not", builtin_not)
     env.define("is_nil?", builtin_is_nil_q)
     env.define("nth", nth_fn)
@@ -130,6 +136,7 @@ global_env = create_global_env()
 
 __all__ = [
     "append_fn",
+    "builtin_abs",
     "builtin_add",
     "builtin_assoc",
     "builtin_is_boolean_q",
@@ -156,6 +163,8 @@ __all__ = [
     "builtin_is_list_q",
     "builtin_map",
     "builtin_is_map_q",
+    "builtin_max",
+    "builtin_min",
     "builtin_modulo",
     "builtin_multiply",
     "builtin_is_nil_q",
