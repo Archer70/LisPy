@@ -1,7 +1,6 @@
 # lispy_project/lispy/functions/__init__.py
 
-from ..environment import Environment # Import Environment from parent package
-from ..types import LispyList, Vector, Symbol # Changed List to LispyList
+from ..environment import Environment  # Import Environment from parent package
 
 # Function imports (alphabetized)
 from .add import builtin_add
@@ -47,24 +46,25 @@ from .subtract import builtin_subtract
 from .vals import builtin_vals
 from .vector import builtin_vector
 
+
 def create_global_env() -> Environment:
     """Creates and returns the global environment with built-in functions."""
     env = Environment()
-    
+
     # Mathematical operations (alphabetized by symbol)
     env.define("*", builtin_multiply)
     env.define("+", builtin_add)
     env.define("-", builtin_subtract)
     env.define("/", builtin_divide)
     env.define("%", builtin_modulo)
-    
+
     # Comparison operations (alphabetized by symbol)
     env.define("<", builtin_less_than)
     env.define("<=", builtin_less_than_or_equal)
     env.define("=", builtin_equals)
     env.define(">", builtin_greater_than)
     env.define(">=", builtin_greater_than_or_equal)
-    
+
     # Functions (alphabetized by name)
     env.define("append", append_fn)
     env.define("assoc", builtin_assoc)
@@ -103,6 +103,7 @@ def create_global_env() -> Environment:
         env.define(name, func)
 
     return env
+
 
 # Create a single global environment instance when the module is loaded.
 global_env = create_global_env()
@@ -151,4 +152,4 @@ __all__ = [
     "sort_fn",
     "split_fn",
     "str_fn",
-] 
+]

@@ -12,7 +12,7 @@ from .registry import (
     add_step,
     mark_last_step_status,
     clear_bdd_results,
-    BDD_RESULTS
+    BDD_RESULTS,
 )
 
 __all__ = [
@@ -27,5 +27,5 @@ __all__ = [
     "add_step",
     "mark_last_step_status",
     "clear_bdd_results",
-    "BDD_RESULTS"
-] 
+    "BDD_RESULTS",
+]

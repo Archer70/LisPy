@@ -3,6 +3,7 @@ from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
 from typing import List, Any
 
+
 def builtin_rest(args: List[Any], env: Environment):
     """Implementation of the (rest coll) LisPy function.
     Returns a new list or vector containing all but the first item.
@@ -10,7 +11,9 @@ def builtin_rest(args: List[Any], env: Environment):
     Usage: (rest collection)
     """
     if len(args) != 1:
-        raise EvaluationError(f"SyntaxError: 'rest' expects 1 argument, got {len(args)}.")
+        raise EvaluationError(
+            f"SyntaxError: 'rest' expects 1 argument, got {len(args)}."
+        )
 
     collection = args[0]
 
@@ -24,7 +27,11 @@ def builtin_rest(args: List[Any], env: Environment):
             return Vector([])
         else:
             return Vector(collection[1:])
-    elif collection is None: # (rest nil) should probably return nil or an empty list
-        return LispyList([]) # Consistent with (first nil) behavior, (rest nil) is '() for Clojure
+    elif collection is None:  # (rest nil) should probably return nil or an empty list
+        return LispyList(
+            []
+        )  # Consistent with (first nil) behavior, (rest nil) is '() for Clojure
     else:
-        raise EvaluationError(f"TypeError: 'rest' expects a list, vector, or nil, got {type(collection)}.") # Updated error message 
+        raise EvaluationError(
+            f"TypeError: 'rest' expects a list, vector, or nil, got {type(collection)}."
+        )  # Updated error message

@@ -2,7 +2,8 @@ from lispy.types import Vector
 from lispy.closure import Function  # Import Function for user-defined procedures
 from lispy.exceptions import EvaluationError
 from lispy.evaluator import evaluate  # For evaluating user-defined function bodies
-from lispy.environment import Environment # Added import for Environment
+from lispy.environment import Environment  # Added import for Environment
+
 
 def builtin_map(args, env):
     """Implementation of the (map proc vec) LisPy function.
@@ -10,7 +11,9 @@ def builtin_map(args, env):
     Usage: (map procedure vector)
     """
     if len(args) != 2:
-        raise EvaluationError(f"SyntaxError: 'map' expects 2 arguments (procedure, vector), got {len(args)}.")
+        raise EvaluationError(
+            f"SyntaxError: 'map' expects 2 arguments (procedure, vector), got {len(args)}."
+        )
 
     proc_arg = args[0]
     vec_arg = args[1]
@@ -21,17 +24,25 @@ def builtin_map(args, env):
     is_builtin_fn = callable(proc_arg) and not is_user_defined_fn
 
     if not (is_user_defined_fn or is_builtin_fn):
-        raise EvaluationError(f"TypeError: First argument to 'map' must be a procedure, got {type(proc_arg)}.")
+        raise EvaluationError(
+            f"TypeError: First argument to 'map' must be a procedure, got {type(proc_arg)}."
+        )
 
     # Validate vec_arg type
     if not isinstance(vec_arg, Vector):
-        raise EvaluationError(f"TypeError: Second argument to 'map' must be a vector, got {type(vec_arg)}.")
+        raise EvaluationError(
+            f"TypeError: Second argument to 'map' must be a vector, got {type(vec_arg)}."
+        )
 
     # Arity check for user-defined functions: they must accept exactly one argument for map
     if is_user_defined_fn:
         if len(proc_arg.params) != 1:
-            fn_repr = repr(proc_arg)  # Provides a string representation like <UserDefinedFunction params:(...)>
-            raise EvaluationError(f"ArityError: Procedure {fn_repr} passed to 'map' expects 1 argument, got {len(proc_arg.params)}.")
+            fn_repr = repr(
+                proc_arg
+            )  # Provides a string representation like <UserDefinedFunction params:(...)>
+            raise EvaluationError(
+                f"ArityError: Procedure {fn_repr} passed to 'map' expects 1 argument, got {len(proc_arg.params)}."
+            )
     # For built-in functions, arity errors will be caught during their execution if they don't match.
 
     result_vector_elements = []
@@ -41,25 +52,35 @@ def builtin_map(args, env):
             # Proc is a user-defined Function (closure)
             param_symbol = proc_arg.params[0]  # The single parameter Symbol
             # Create a new environment for the function call, extending its defining environment
-            call_env = Environment(outer=proc_arg.defining_env) # Changed to use Environment constructor
-            call_env.define(param_symbol.name, item) # Define the parameter in the new environment
-            
+            call_env = Environment(
+                outer=proc_arg.defining_env
+            )  # Changed to use Environment constructor
+            call_env.define(
+                param_symbol.name, item
+            )  # Define the parameter in the new environment
+
             # Execute the function body: evaluate all expressions, result of the last one is returned
             for expr_in_body in proc_arg.body:
                 call_result = evaluate(expr_in_body, call_env)
             result_vector_elements.append(call_result)
-        
+
         elif is_builtin_fn:
             # Proc is a built-in Python callable
             # Built-ins in this LisPy expect a list of evaluated args and the current env
             try:
-                call_result = proc_arg([item], env)  # Pass the item as a single-element list
+                call_result = proc_arg(
+                    [item], env
+                )  # Pass the item as a single-element list
                 result_vector_elements.append(call_result)
             except EvaluationError as e:
                 # Re-raise evaluation errors from the built-in, possibly adding context
-                raise EvaluationError(f"Error during 'map' applying built-in procedure to '{item}': {e}")
+                raise EvaluationError(
+                    f"Error during 'map' applying built-in procedure to '{item}': {e}"
+                )
             except Exception as e:
                 # Catch other potential Python exceptions from the built-in's execution
-                raise EvaluationError(f"Unexpected error during 'map' applying built-in procedure to '{item}': {type(e).__name__} - {e}")
-                
-    return Vector(result_vector_elements) 
+                raise EvaluationError(
+                    f"Unexpected error during 'map' applying built-in procedure to '{item}': {type(e).__name__} - {e}"
+                )
+
+    return Vector(result_vector_elements)

@@ -15,4 +15,4 @@ bdd_assertion_functions = {
     "assert-not-nil?": bdd_assert_not_nil_q,
 }
 
-__all__ = ["bdd_assertion_functions"] 
+__all__ = ["bdd_assertion_functions"]

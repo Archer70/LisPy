@@ -1,12 +1,13 @@
 # lispy/special_forms/bdd/describe_form.py
 
-from lispy.types import Symbol
 from lispy.exceptions import EvaluationError
 from lispy.bdd import registry
 from typing import List as TypingList, Any
 
 
-def describe_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) -> Any:
+def describe_form_handler(
+    expression: TypingList[Any], env: Any, evaluate_fn: Any
+) -> Any:
     """Handles the (describe \"description\" ...body) special form."""
     if len(expression) < 2:
         raise EvaluationError(
@@ -18,7 +19,7 @@ def describe_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: An
         raise EvaluationError(
             "SyntaxError: 'describe' expects a description string as its first argument."
         )
-    
+
     registry.start_feature(description_str)
     last_result = None
     try:
@@ -28,7 +29,7 @@ def describe_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: An
 
         for expr in body_expressions:
             last_result = evaluate_fn(expr, env)
-        
+
         return last_result
     finally:
-        registry.end_feature() 
+        registry.end_feature()

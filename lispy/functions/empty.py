@@ -1,22 +1,27 @@
 from typing import List, Any
-from ..types import Vector # For type checking
+from ..types import Vector  # For type checking
 from ..exceptions import EvaluationError
-from ..environment import Environment # Added Environment import
+from ..environment import Environment  # Added Environment import
 
-def builtin_empty_q(args: List[Any], env: Environment) -> bool: # Added env parameter
+
+def builtin_empty_q(args: List[Any], env: Environment) -> bool:  # Added env parameter
     """Checks if a collection (list, vector, map, string) or nil is empty. (empty? collection)"""
     if len(args) != 1:
-        raise EvaluationError(f"SyntaxError: 'empty?' expects 1 argument, got {len(args)}.")
-    
+        raise EvaluationError(
+            f"SyntaxError: 'empty?' expects 1 argument, got {len(args)}."
+        )
+
     arg = args[0]
-    
-    if arg is None: # nil
+
+    if arg is None:  # nil
         return True
     elif isinstance(arg, (list, Vector, str, dict)):
-        return not bool(arg) # len(arg) == 0 works for these types
+        return not bool(arg)  # len(arg) == 0 works for these types
     else:
         type_name = type(arg).__name__
         # Special handling for Function type name for clarity in error
-        if hasattr(arg, '__class__') and arg.__class__.__name__ == 'Function':
+        if hasattr(arg, "__class__") and arg.__class__.__name__ == "Function":
             type_name = "Function"
-        raise EvaluationError(f"TypeError: 'empty?' expects a list, vector, map, string, or nil. Got {type_name}") 
+        raise EvaluationError(
+            f"TypeError: 'empty?' expects a list, vector, map, string, or nil. Got {type_name}"
+        )

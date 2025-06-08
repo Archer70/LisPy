@@ -2,6 +2,7 @@ from typing import List, Any
 from lispy.exceptions import EvaluationError, AssertionFailure
 from ...environment import Environment
 
+
 def bdd_assert_equal_q(args: List[Any], env: Environment) -> bool:
     """(assert-equal? expected actual)
     Asserts that `actual` is equal to `expected`.
@@ -11,7 +12,7 @@ def bdd_assert_equal_q(args: List[Any], env: Environment) -> bool:
         raise EvaluationError(
             f"SyntaxError: 'assert-equal?' expects 2 arguments (expected actual), got {len(args)}."
         )
-    
+
     expected = args[0]
     actual = args[1]
 
@@ -22,5 +23,5 @@ def bdd_assert_equal_q(args: List[Any], env: Environment) -> bool:
         raise AssertionFailure(
             f"Assertion Failed: Expected [{expected}] (type: {type(expected).__name__}) but got [{actual}] (type: {type(actual).__name__})."
         )
-    
-    return True # Assertion passed 
+
+    return True  # Assertion passed

@@ -11,14 +11,14 @@ Examples:
          (conj 5)
          (conj 6))
     ; => [1 2 3 4 5 6]
-    
+
     (->> 10
          (- 100)
          (* 2))
     ; => (* 2 (- 100 10)) => (* 2 90) => 180
 """
 
-from ..types import Symbol, LispyList, Vector
+from ..types import Symbol, LispyList
 from ..exceptions import EvaluationError
 
 
@@ -34,7 +34,9 @@ def handle_thread_last(expression, env, evaluate_fn):
         The result of the pipeline.
     """
     if len(expression) < 2:
-        raise EvaluationError("SyntaxError: '->>' special form expects at least an initial value.")
+        raise EvaluationError(
+            "SyntaxError: '->>' special form expects at least an initial value."
+        )
 
     # The first element is '->>', the second is the initial value.
     # The rest are the steps in the pipeline.
@@ -46,15 +48,15 @@ def handle_thread_last(expression, env, evaluate_fn):
 
     # Sequentially apply each step in the pipeline
     for step_form in pipeline_steps:
-        # If current_value is a data structure that would be re-evaluated as code, 
+        # If current_value is a data structure that would be re-evaluated as code,
         # we need to protect it with a quote
         if isinstance(current_value, (LispyList, list)) and current_value:
             # Wrap in quote to prevent re-evaluation
-            protected_value = LispyList([Symbol('quote'), current_value])
+            protected_value = LispyList([Symbol("quote"), current_value])
         else:
             # Safe to use directly (primitives, vectors, etc.)
             protected_value = current_value
-            
+
         if isinstance(step_form, Symbol):
             # If the step is a symbol, it's a function call with no other arguments.
             # Construct (function_symbol current_value)
@@ -63,9 +65,11 @@ def handle_thread_last(expression, env, evaluate_fn):
             # If the step is a list (func arg1 arg2 ...),
             # append current_value as the LAST argument to that function call.
             # (func arg1 arg2 ... current_value)
-            if not step_form: # Empty list in pipeline is invalid
-                raise EvaluationError("SyntaxError: Invalid empty list () found in '->>' pipeline.")
-            
+            if not step_form:  # Empty list in pipeline is invalid
+                raise EvaluationError(
+                    "SyntaxError: Invalid empty list () found in '->>' pipeline."
+                )
+
             # Thread as last argument: [func, arg1, arg2, ...] + [current_value]
             new_expr_to_eval = LispyList(list(step_form) + [protected_value])
         else:
@@ -73,8 +77,8 @@ def handle_thread_last(expression, env, evaluate_fn):
             raise EvaluationError(
                 f"TypeError: Invalid form in '->>' pipeline. Expected function or (function ...), got {type(step_form)}: {step_form}"
             )
-        
+
         # Evaluate the newly constructed expression
         current_value = evaluate_fn(new_expr_to_eval, env)
-        
-    return current_value 
+
+    return current_value

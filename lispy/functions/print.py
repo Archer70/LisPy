@@ -2,12 +2,13 @@ from typing import List, Any
 import sys
 from ..environment import Environment
 
+
 def builtin_print(args: List[Any], env: Environment) -> None:
     """Prints values to the console without a newline. (print value1 value2 ...)"""
     if not args:
         # Print nothing if no arguments
         return None
-    
+
     # Convert each argument to string and print
     output_parts = []
     for arg in args:
@@ -22,10 +23,10 @@ def builtin_print(args: List[Any], env: Environment) -> None:
         else:
             # Use string representation for other types
             output_parts.append(str(arg))
-    
+
     # Join with spaces and print without newline
     output = " ".join(output_parts)
     print(output, end="")
     sys.stdout.flush()  # Ensure immediate output
-    
-    return None 
+
+    return None

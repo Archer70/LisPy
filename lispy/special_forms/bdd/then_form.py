@@ -20,12 +20,12 @@ def then_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) -
         raise EvaluationError(
             "SyntaxError: 'then' expects a description string as its first argument."
         )
-    
+
     # print(f"    [BDD Then]: {description_str}") # For future use
 
     # Add step initially. If body evaluation fails, exception propagates.
     # The runner will mark this step as failed based on the exception.
-    registry.add_step("Then", description_str) # Added, status defaults to "passed"
+    registry.add_step("Then", description_str)  # Added, status defaults to "passed"
 
     last_result = None
     body_expressions = expression[2:]
@@ -33,7 +33,7 @@ def then_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) -
         # A `then` block usually should have a body (assertions).
         # We could make this an error, or the runner could flag it.
         # For now, allow it to be 'passed' if empty.
-        return None 
+        return None
 
     try:
         for expr in body_expressions:
@@ -41,12 +41,13 @@ def then_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) -
         return last_result
     except AssertionFailure as af:
         registry.mark_last_step_status("failed", str(af))
-        return None # Indicates handled assertion failure
+        return None  # Indicates handled assertion failure
     except EvaluationError as ee:
         registry.mark_last_step_status("failed", f"Step error: {str(ee)}")
         return None
     except Exception as e:
         registry.mark_last_step_status("failed", f"Unexpected critical error: {str(e)}")
-        raise # Re-raise other critical errors
+        raise  # Re-raise other critical errors
 
-# Removed the final unreachable: return last_result 
+
+# Removed the final unreachable: return last_result

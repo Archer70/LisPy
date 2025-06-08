@@ -20,7 +20,7 @@ def it_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) -> 
         raise EvaluationError(
             "SyntaxError: 'it' expects a description string as its first argument."
         )
-    
+
     registry.start_scenario(description_str)
     last_result = None
     try:
@@ -30,7 +30,7 @@ def it_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) -> 
 
         for expr in body_expressions:
             last_result = evaluate_fn(expr, env)
-        
+
         return last_result
     finally:
-        registry.end_scenario() 
+        registry.end_scenario()

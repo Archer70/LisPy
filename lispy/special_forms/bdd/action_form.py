@@ -20,7 +20,7 @@ def action_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any)
         raise EvaluationError(
             "SyntaxError: 'action' expects a description string as its first argument."
         )
-    
+
     registry.add_step("Action", description_str)
 
     last_result = None
@@ -31,5 +31,5 @@ def action_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any)
 
     for expr in body_expressions:
         last_result = evaluate_fn(expr, env)
-    
-    return last_result 
+
+    return last_result

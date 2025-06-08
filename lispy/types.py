@@ -1,7 +1,9 @@
 # LisPy Custom Types
 
+
 class Symbol:
     """Represents a Lisp symbol."""
+
     def __init__(self, name: str):
         self.name = name
 
@@ -25,6 +27,7 @@ class Vector(list):
     """Represents a Lisp vector, which is self-evaluating.
     Inherits from list for convenience but can be distinctly identified.
     """
+
     def __repr__(self):
         # Provide a Lisp-like representation for vectors
         return f"[{' '.join(map(repr, self))}]"
@@ -40,6 +43,7 @@ class LispyList(list):
     """Represents a Lisp list.
     Inherits from list for convenience and distinct identification.
     """
+
     def __repr__(self):
         # Provide a Lisp-like representation for lists
         return f"({' '.join(map(repr, self))})"

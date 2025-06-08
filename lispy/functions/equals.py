@@ -13,12 +13,16 @@ def builtin_equals(args: List[Any], env: Environment) -> bool:
 
     first_item = args[0]
     if not isinstance(first_item, (int, float)):
-        raise EvaluationError(f"TypeError: Argument 1 to '=' must be a number for comparison, got {type(first_item).__name__}: '{first_item}'")
+        raise EvaluationError(
+            f"TypeError: Argument 1 to '=' must be a number for comparison, got {type(first_item).__name__}: '{first_item}'"
+        )
 
     for i in range(1, len(args)):
         current_item = args[i]
         if not isinstance(current_item, (int, float)):
-            raise EvaluationError(f"TypeError: Argument {i+1} to '=' must be a number for comparison, got {type(current_item).__name__}: '{current_item}'")
+            raise EvaluationError(
+                f"TypeError: Argument {i + 1} to '=' must be a number for comparison, got {type(current_item).__name__}: '{current_item}'"
+            )
         if first_item != current_item:
             return False
-    return True 
+    return True

@@ -22,18 +22,18 @@ def given_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) 
         raise EvaluationError(
             "SyntaxError: 'given' expects a description string as its first argument."
         )
-    
+
     # print(f"    [BDD Given]: {description_str}") # For future use
 
-    registry.add_step("Given", description_str) # Status defaults to "passed"
-    
+    registry.add_step("Given", description_str)  # Status defaults to "passed"
+
     last_result = None
     body_expressions = expression[2:]
     if not body_expressions:
-        return None # No body, returns nil (None)
+        return None  # No body, returns nil (None)
 
-    # If an error occurs here, it will propagate. 
+    # If an error occurs here, it will propagate.
     # The test runner will later interpret this as a step failure.
     for expr in body_expressions:
         last_result = evaluate_fn(expr, env)
-    return last_result 
+    return last_result

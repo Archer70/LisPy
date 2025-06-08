@@ -1,14 +1,15 @@
 # LisPy Environment
 
 # from .evaluator import EvaluationError # Old import
-from .types import Symbol # Symbol is still from .types
-from .exceptions import EvaluationError # EvaluationError now from .exceptions
+from .exceptions import EvaluationError  # EvaluationError now from .exceptions
+
 
 class Environment:
     """Manages symbol bindings for the LisPy interpreter."""
+
     def __init__(self, outer=None):
         self.store = {}
-        self.outer = outer # For lexical scoping later
+        self.outer = outer  # For lexical scoping later
 
     def define(self, name_str: str, value):
         """Define a symbol in the current environment."""
@@ -26,4 +27,4 @@ class Environment:
             raise EvaluationError(f"Unbound symbol: {name_str}")
 
     # We might add methods like `set` later if we want to modify existing
-    # bindings, which has different semantics from `define` in some Lisps. 
+    # bindings, which has different semantics from `define` in some Lisps.

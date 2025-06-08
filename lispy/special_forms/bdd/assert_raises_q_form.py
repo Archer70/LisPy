@@ -1,4 +1,5 @@
 from typing import List, Any, Callable
+
 # from lispy.evaluator import evaluate # Removed to break circular import
 from lispy.exceptions import EvaluationError, AssertionFailure
 from lispy.environment import Environment
@@ -16,25 +17,27 @@ from lispy.environment import Environment
 
 # The most direct fix for circular imports of this type is often to move the import
 # to be local to the function if it's only used there, or to refactor.
-# However, `evaluate` is central. 
+# However, `evaluate` is central.
 
 # Let's try relying on the fact that `evaluate` is in the global scope of the `lispy.evaluator` module,
 # and action `assert_raises_q_form_handler` is executed, that `evaluate` will be found.
 # This means the `evaluate` calls inside this function will implicitly refer to `lispy.evaluator.evaluate`.
 
 
-def assert_raises_q_form_handler(expression: List[Any], env: Environment, evaluate_fn: Callable) -> bool:
+def assert_raises_q_form_handler(
+    expression: List[Any], env: Environment, evaluate_fn: Callable
+) -> bool:
     """(assert-raises? <expected-error-message-string> <form-to-execute>)
     Special form. Asserts that evaluating <form-to-execute> in the current environment
     raises an EvaluationError with a message containing <expected-error-message-string>.
-    
+
     `expression` is the full S-expression, e.g. (assert-raises? "msg" (form)).
     `evaluate_fn` is the evaluator's main evaluate function.
     """
     # expression[0] is 'assert-raises?' symbol
     # expression[1] is expected_message_expr
     # expression[2] is form_to_execute
-    if len(expression) != 3: # (assert-raises? msg form)
+    if len(expression) != 3:  # (assert-raises? msg form)
         raise EvaluationError(
             f"SyntaxError: 'assert-raises?' expects 2 arguments (expected-message form), got {len(expression) - 1}."
         )

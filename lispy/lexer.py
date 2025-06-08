@@ -1,7 +1,7 @@
 # Lexer implementation will go here
 
 import re  # Import the regex module
-from .exceptions import LexerError # Import LexerError
+from .exceptions import LexerError  # Import LexerError
 
 # Token Types (constants)
 TOKEN_NUMBER = "NUMBER"
@@ -50,15 +50,14 @@ _raw_token_specification = [
     (TOKEN_RBRACE, RBRACE_REGEX),
     (TOKEN_QUOTE, QUOTE_REGEX),
     (TOKEN_SYMBOL, SYMBOL_REGEX),
-    ('SKIP', r'\s+'),
-    ('SKIP', COMMA_REGEX),  # Skip commas like whitespace
-    ('SKIP', COMMENT_REGEX),
-    ('MISMATCH', r'.')
+    ("SKIP", r"\s+"),
+    ("SKIP", COMMA_REGEX),  # Skip commas like whitespace
+    ("SKIP", COMMENT_REGEX),
+    ("MISMATCH", r"."),
 ]
 
 TOKEN_SPECIFICATION = [
-    (ttype, p_str, re.compile(p_str))
-    for ttype, p_str in _raw_token_specification
+    (ttype, p_str, re.compile(p_str)) for ttype, p_str in _raw_token_specification
 ]
 
 
@@ -73,19 +72,19 @@ def _unescape_string(s: str) -> str:
     n = len(s)
     while i < n:
         char = s[i]
-        if char == '\\':
+        if char == "\\":
             i += 1
             if i >= n:
                 raise LexerError("Unterminated escape sequence at end of string")
             escaped_char = s[i]
-            if escaped_char == 'n':
-                result.append('\n')
-            elif escaped_char == 't':
-                result.append('\t')
+            if escaped_char == "n":
+                result.append("\n")
+            elif escaped_char == "t":
+                result.append("\t")
             elif escaped_char == '"':
                 result.append('"')
-            elif escaped_char == '\\':
-                result.append('\\')
+            elif escaped_char == "\\":
+                result.append("\\")
             else:
                 raise LexerError(f"Invalid escape sequence: \\{escaped_char}")
         else:
@@ -134,25 +133,23 @@ def tokenize(source_code: str) -> list[tuple]:
         if not match:
             err_msg = (
                 f"Lexer error: No token matched at position {position} "
-                f"for \'{source_code[position:]}\'"
+                f"for '{source_code[position:]}'"
             )
             raise RuntimeError(err_msg)
 
         matched_string = match.group(0)
 
-        if token_type == 'SKIP':
+        if token_type == "SKIP":
             position = match.end(0)
             continue
-        elif token_type == 'MISMATCH':
+        elif token_type == "MISMATCH":
             err_msg = (
-                f"Lexer error: Unexpected character \'{matched_string}\' "
+                f"Lexer error: Unexpected character '{matched_string}' "
                 f"at position {position}"
             )
             raise ValueError(err_msg)
 
-        actual_value = _get_token_value(
-            token_type, pattern_str, matched_string
-        )
+        actual_value = _get_token_value(token_type, pattern_str, matched_string)
         tokens.append((token_type, actual_value))
         position = match.end(0)
 
