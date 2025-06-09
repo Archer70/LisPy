@@ -80,6 +80,9 @@ from .list import (
 from .io import (
     builtin_print, documentation_print,
     builtin_println, documentation_println,
+    builtin_read_line, documentation_read_line,
+    builtin_slurp, documentation_slurp,
+    builtin_spit, documentation_spit,
 )
 
 # String functions
@@ -157,7 +160,10 @@ def create_global_env() -> Environment:
     env.define("print", builtin_print)
     env.define("print-doc", builtin_print_doc)
     env.define("println", builtin_println)
+    env.define("read-line", builtin_read_line)
     env.define("reduce", builtin_reduce)
+    env.define("slurp", builtin_slurp)
+    env.define("spit", builtin_spit)
     env.define("rest", builtin_rest)
     env.define("reverse", reverse_fn)
     env.define("some", builtin_some)
@@ -235,7 +241,10 @@ def setup_documentation_registry():
     register_documentation("print", documentation_print)
     register_documentation("print-doc", documentation_print_doc)
     register_documentation("println", documentation_println)
+    register_documentation("read-line", documentation_read_line)
     register_documentation("reduce", documentation_reduce)
+    register_documentation("slurp", documentation_slurp)
+    register_documentation("spit", documentation_spit)
     register_documentation("rest", documentation_rest)
     register_documentation("reverse", documentation_reverse)
     register_documentation("some", documentation_some)
