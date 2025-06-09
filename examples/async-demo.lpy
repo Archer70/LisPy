@@ -139,6 +139,160 @@
         _ (println "Use regular functions for quick computations")]
     "Performance notes displayed"))
 
+; === PROMISE COMBINATORS ===
+; Demonstrate promise-all for coordinating multiple async operations
+(async
+  (let [_ (println "")
+        _ (println "=== Promise Combinators ===")
+        
+        ; Create multiple async operations
+        promises (vector
+                   (fetch-user-data "user1")
+                   (fetch-user-data "user2") 
+                   (calculate-fibonacci-async 8))
+        
+        _ (println "Starting multiple async operations in parallel...")
+        
+        ; Wait for all to complete
+        results (await (promise-all promises))
+        _ (println "All operations completed!")
+        _ (println "Results:" results)
+        
+        ; Show how promise-all maintains order
+        _ (println "")
+        _ (println "Promise-all maintains order of results:")
+        ordered-promises (vector (resolve "first") (resolve "second") (resolve "third"))
+        ordered-results (await (promise-all ordered-promises))
+        _ (println "Ordered results:" ordered-results)
+        
+        ; === PROMISE-RACE EXAMPLES ===
+        _ (println "")
+        _ (println "=== Promise Race Examples ===")
+        _ (println "Promise-race: First to settle (resolve or reject) wins")
+        
+        ; Example 1: Racing between fast and slow operations
+        _ (println "")
+        _ (println "1. Racing fast vs slow operations:")
+        race-result1 (await (promise-race (vector 
+                                           (delay 100 "fast-operation")
+                                           (delay 500 "slow-operation"))))
+        _ (println "   Winner:" race-result1)
+        
+        ; Example 2: Timeout pattern - very common use case
+        _ (println "")
+        _ (println "2. Timeout pattern (operation vs timeout):")
+        race-result2 (await (promise-race (vector
+                                          (delay 200 "data-fetched")
+                                          (delay 1000 "timeout"))))
+        _ (println "   Result within timeout:" race-result2)
+        
+        ; Example 3: Immediate vs delayed
+        _ (println "")
+        _ (println "3. Immediate vs delayed:")
+        race-result3 (await (promise-race (vector
+                                          (resolve "immediate")
+                                          (delay 300 "delayed"))))
+        _ (println "   Immediate wins:" race-result3)
+        
+        ; Example 4: Multiple fibonacci calculations - first to finish
+        _ (println "")
+        _ (println "4. Racing multiple calculations (first to complete):")
+        calc-race (await (promise-race (vector
+                                       (calculate-fibonacci-async 5)
+                                       (calculate-fibonacci-async 6)
+                                       (calculate-fibonacci-async 7))))
+        _ (println "   First calculation result:" calc-race)
+        
+        ; === PROMISE-ANY EXAMPLES ===
+        _ (println "")
+        _ (println "=== Promise Any Examples ===")
+        _ (println "Promise-any: First to resolve wins (ignores rejections)")
+        
+        ; Example 1: Fallback pattern - first success wins
+        _ (println "")
+        _ (println "1. Fallback pattern (ignores failures):")
+        fallback-result (await (promise-any (vector
+                                            (reject "primary-failed")
+                                            (resolve "backup-success")
+                                            (reject "tertiary-failed"))))
+        _ (println "   Successful fallback:" fallback-result)
+        
+        ; Example 2: API endpoint fallback simulation
+        _ (println "")
+        _ (println "2. API endpoint fallback:")
+        api-result (await (promise-any (vector
+                                       (reject "api-1-down")
+                                       (delay 150 "api-2-data")
+                                       (delay 300 "api-3-data"))))
+        _ (println "   First successful API:" api-result)
+        
+        ; Example 3: Immediate success beats delayed success
+        _ (println "")
+        _ (println "3. Immediate vs delayed success:")
+        immediate-result (await (promise-any (vector
+                                             (reject "error")
+                                             (resolve "immediate-success")
+                                             (delay 500 "delayed-success"))))
+        _ (println "   Immediate success:" immediate-result)
+        
+        ; Example 4: Multiple data sources - first to succeed
+        _ (println "")
+        _ (println "4. Multiple data sources (first to provide data):")
+        data-result (await (promise-any (vector
+                                        (reject "cache-miss")
+                                        (delay 100 "database-data")
+                                        (delay 200 "api-data"))))
+        _ (println "   First data source:" data-result)
+        
+        ; === PROMISE-ALL-SETTLED EXAMPLES ===
+        _ (println "")
+        _ (println "=== Promise All Settled Examples ===")
+        _ (println "Promise-all-settled: Wait for all, never reject, return status objects")
+        
+        ; Example 1: Mixed success and failure
+        _ (println "")
+        _ (println "1. Mixed success and failure:")
+        mixed-results (await (promise-all-settled (vector
+                                                   (resolve "success1")
+                                                   (reject "error1")
+                                                   (resolve "success2")
+                                                   (reject "error2"))))
+        _ (println (append "   Total results: " (str (count mixed-results))))
+        _ (println (append "   First result: " (get (first mixed-results) ':status) " - " (str (get (first mixed-results) ':value))))
+        _ (println (append "   Second result: " (get (nth mixed-results 1) ':status) " - " (get (nth mixed-results 1) ':reason)))
+        
+        ; Example 2: All successful operations
+        _ (println "")
+        _ (println "2. All successful operations:")
+        success-results (await (promise-all-settled (vector
+                                                     (resolve "data-a")
+                                                     (resolve "data-b")
+                                                     (resolve "data-c"))))
+        successful-count (count (filter success-results (fn [r] (equal? (get r ':status) "fulfilled"))))
+        _ (println (append "   Successful operations: " (str successful-count) "/" (str (count success-results))))
+        
+        ; Example 3: Graceful degradation pattern
+        _ (println "")
+        _ (println "3. Graceful degradation (continue despite failures):")
+        service-results (await (promise-all-settled (vector
+                                                     (reject "service-1-down")
+                                                     (delay 50 "service-2-ok")
+                                                     (reject "service-3-timeout")
+                                                     (delay 80 "service-4-ok"))))
+        working-services (filter service-results (fn [r] (equal? (get r ':status) "fulfilled")))
+        _ (println (append "   Working services: " (str (count working-services)) "/" (str (count service-results))))
+        
+        ; Example 4: Comprehensive error reporting
+        _ (println "")
+        _ (println "4. Comprehensive error reporting:")
+        batch-results (await (promise-all-settled (vector
+                                                   (resolve "task-1-complete")
+                                                   (reject "task-2-failed")
+                                                   (resolve "task-3-complete"))))
+        failed-tasks (filter batch-results (fn [r] (equal? (get r ':status) "rejected")))
+        _ (println (append "   Failed tasks: " (str (count failed-tasks))))]
+    "Promise combinators demo complete"))
+
 ; === FINAL DEMONSTRATION ===
 ; Put it all together in a comprehensive example
 (async
@@ -155,7 +309,14 @@
         _ (println "3. Processing calculations...")
         calculation (await (calculate-fibonacci-async 12))
         _ (println "   Fibonacci(12) =" calculation)
-        _ (println "4. Finalizing...")
+        _ (println "4. Batch operations with promise-all...")
+        batch-promises (vector
+                         (calculate-fibonacci-async 5)
+                         (calculate-fibonacci-async 6)
+                         (calculate-fibonacci-async 7))
+        batch-results (await (promise-all batch-promises))
+        _ (println "   Batch fibonacci results:" batch-results)
+        _ (println "5. Finalizing...")
         final-result (await (resolve "All operations complete!"))
         _ (println "   " final-result)
         _ (println "")
@@ -166,5 +327,10 @@
         _ (println "- Use 'async' to create async contexts")
         _ (println "- Use 'await' to wait for promises")
         _ (println "- Use 'defn-async' to define async functions")
+        _ (println "- Use 'promise-all' to coordinate multiple async operations")
+        _ (println "- Use 'promise-race' for timeouts and first-wins scenarios")
+        _ (println "- Use 'promise-any' for fallback patterns and resilient operations")
+        _ (println "- Use 'promise-all-settled' for comprehensive results and graceful degradation")
+        _ (println "- Use 'delay' for timed operations and testing")
         _ (println "- Async enables concurrent, non-blocking operations")]
     "Demo complete")) 

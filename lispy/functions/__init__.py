@@ -97,6 +97,11 @@ from .promises import (
     builtin_promise, documentation_promise,
     builtin_resolve, documentation_resolve,
     builtin_reject, documentation_reject,
+    builtin_promise_all, documentation_promise_all,
+    builtin_promise_race, documentation_promise_race,
+    builtin_promise_any, documentation_promise_any,
+    builtin_promise_all_settled, documentation_promise_all_settled,
+    builtin_delay, documentation_delay,
 )
 
 # Other function imports (alphabetized)
@@ -142,6 +147,7 @@ def create_global_env() -> Environment:
     env.define("conj", builtin_conj)
     env.define("cons", builtin_cons)
     env.define("count", builtin_count)
+    env.define("delay", builtin_delay)
     env.define("dissoc", builtin_dissoc)
     env.define("doc", builtin_doc)
     env.define("empty?", builtin_empty_q)
@@ -168,6 +174,10 @@ def create_global_env() -> Environment:
     env.define("print-doc", builtin_print_doc)
     env.define("println", builtin_println)
     env.define("promise", builtin_promise)
+    env.define("promise-all", builtin_promise_all)
+    env.define("promise-race", builtin_promise_race)
+    env.define("promise-any", builtin_promise_any)
+    env.define("promise-all-settled", builtin_promise_all_settled)
     env.define("read-line", builtin_read_line)
     env.define("reduce", builtin_reduce)
     env.define("reject", builtin_reject)
@@ -222,6 +232,7 @@ def setup_documentation_registry():
     register_documentation("conj", documentation_conj)
     register_documentation("cons", documentation_cons)
     register_documentation("count", documentation_count)
+    register_documentation("delay", documentation_delay)
     register_documentation("dissoc", documentation_dissoc)
     register_documentation("doc", documentation_doc)
     register_documentation("empty?", documentation_empty_q)
@@ -252,6 +263,10 @@ def setup_documentation_registry():
     register_documentation("print-doc", documentation_print_doc)
     register_documentation("println", documentation_println)
     register_documentation("promise", documentation_promise)
+    register_documentation("promise-all", documentation_promise_all)
+    register_documentation("promise-race", documentation_promise_race)
+    register_documentation("promise-any", documentation_promise_any)
+    register_documentation("promise-all-settled", documentation_promise_all_settled)
     register_documentation("read-line", documentation_read_line)
     register_documentation("reduce", documentation_reduce)
     register_documentation("reject", documentation_reject)
