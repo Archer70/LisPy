@@ -1,0 +1,170 @@
+; Async Programming Examples in LisPy
+; Demonstrates promises, async/await, and async functions
+
+; === BASIC PROMISES ===
+; Creating a promise that resolves after some computation
+(define slow-calculation 
+  (promise (fn [] 
+    ; Simulate some work (in real code this might be I/O, network, etc.)
+    (+ 42 (* 6 7)))))
+
+; Promises can be awaited in async contexts
+(async 
+  (let [result (await slow-calculation)]
+    (println "Starting async calculation...")
+    (println "Calculation result:" result)))
+
+; === IMMEDIATE RESOLUTION/REJECTION ===
+; Sometimes you want to create already-resolved promises
+(define immediate-value (resolve "Hello, Async World!"))
+(define immediate-error (reject "Something went wrong!"))
+
+; Demonstrate immediate promises
+(async
+  (let [value (await immediate-value)]
+    (println "Immediate value:" value)
+    ; Note: In real code you'd use try/catch for error handling
+    ; For now, we'll just show the promise structure
+    (println "Error promise created (not awaited to avoid exception)")))
+
+; === ASYNC FUNCTIONS ===
+; Define async functions that return promises
+(defn-async fetch-user-data [user-id]
+  (let [_ (println "Fetching user data for ID:" user-id)]
+    ; Simulate network delay and return mock data
+    (append "User-" (str user-id) "-Data")))
+
+; Define async function that calls another async function
+(defn-async process-users [user-ids]
+  (let [_ (println "Processing users:" user-ids)
+        results []
+        _ (println "Fetched user data for all users")]
+    (append "Processed-" (str (count user-ids)) "-users")))
+
+; === PRACTICAL ASYNC EXAMPLE ===
+; Simulate a real-world async workflow
+(defn-async calculate-fibonacci-async [n]
+  (let [_ (println "Calculating fibonacci(" n ") asynchronously...")
+        ; Tail-recursive fibonacci (same as sync version but wrapped in async)
+        fib-tail (fn [n a b]
+          (if (= n 0)
+            a
+            (recur (- n 1) b (+ a b))))]
+    (fib-tail n 0 1)))
+
+(defn-async batch-fibonacci [numbers]
+  (let [_ (println "Calculating fibonacci for batch:" numbers)
+        ; Simulate processing multiple numbers
+        ; In a real async system, these could run in parallel
+        results []
+        _ (println "Batch fibonacci calculation complete")]
+    results))
+
+; === ASYNC WORKFLOWS ===
+; Demonstrate complex async workflows
+(async
+  (let [_ (println "=== Starting Complex Async Workflow ===")
+        ; Step 1: Fetch some data
+        user-data (await (fetch-user-data "123"))
+        _ (println "Step 1 complete:" user-data)
+        ; Step 2: Process data
+        processed (await (process-users ["123" "456" "789"]))
+        _ (println "Step 2 complete:" processed)
+        ; Step 3: Calculate some values
+        fib-result (await (calculate-fibonacci-async 10))
+        _ (println "Step 3 complete - Fibonacci(10):" fib-result)
+        ; Step 4: Batch processing
+        batch-result (await (batch-fibonacci [5 10 15]))
+        _ (println "Step 4 complete:" batch-result)
+        _ (println "=== Async Workflow Complete ===")]
+    "Workflow finished successfully"))
+
+; === ERROR HANDLING PATTERNS ===
+; Demonstrate error handling with promises
+(defn-async risky-operation [should-fail]
+  (let [_ (println "Running risky operation, fail:" should-fail)]
+    (if should-fail
+      (throw "Operation failed!")
+      "Operation succeeded!")))
+
+; === CHAINING AND COMPOSITION ===
+; Show how async operations can be chained
+(async
+  (let [_ (println "=== Demonstrating Async Chaining ===")
+        ; Chain multiple async operations
+        step1 (await (resolve "Initial value"))
+        _ (println "Step 1:" step1)
+        step2 (await (fetch-user-data "chained"))
+        _ (println "Step 2:" step2)
+        step3 (await (calculate-fibonacci-async 7))
+        _ (println "Step 3 - Fibonacci(7):" step3)
+        _ (println "=== Chaining Complete ===")]
+    "All steps completed"))
+
+; === EDUCATIONAL EXAMPLES ===
+; Show the difference between sync and async versions
+
+; Synchronous version
+(define sync-work (fn [x]
+  (let [_ (println "Sync work with" x)]
+    (* x x))))
+
+; Asynchronous version
+(defn-async async-work [x]
+  (let [_ (println "Async work with" x)]
+    (* x x)))
+
+; Compare usage
+(async
+  (let [_ (println "=== Sync vs Async Comparison ===")
+        ; Sync - direct call
+        sync-result (sync-work 5)
+        _ (println "Sync result:" sync-result)
+        ; Async - must await
+        async-result (await (async-work 5))
+        _ (println "Async result:" async-result)
+        _ (println "Both give same result, but async can run concurrently")]
+    "Comparison complete"))
+
+; === PERFORMANCE CONSIDERATIONS ===
+; Show when async is beneficial vs overhead
+(async
+  (let [_ (println "=== Performance Notes ===")
+        _ (println "Async is beneficial when:")
+        _ (println "1. I/O operations (file, network, database)")
+        _ (println "2. Long-running computations that can be parallelized")
+        _ (println "3. Operations that can be interleaved")
+        _ (println "")
+        _ (println "Async has overhead for simple, fast operations")
+        _ (println "Use regular functions for quick computations")]
+    "Performance notes displayed"))
+
+; === FINAL DEMONSTRATION ===
+; Put it all together in a comprehensive example
+(async
+  (let [_ (println "")
+        _ (println "=== FINAL ASYNC DEMONSTRATION ===")
+        _ (println "This example shows a complete async workflow")
+        ; Simulate a real application workflow
+        _ (println "1. Starting application...")
+        app-data (await (resolve "Application initialized"))
+        _ (println "   " app-data)
+        _ (println "2. Loading user data...")
+        users (await (fetch-user-data "demo-user"))
+        _ (println "   " users)
+        _ (println "3. Processing calculations...")
+        calculation (await (calculate-fibonacci-async 12))
+        _ (println "   Fibonacci(12) =" calculation)
+        _ (println "4. Finalizing...")
+        final-result (await (resolve "All operations complete!"))
+        _ (println "   " final-result)
+        _ (println "")
+        _ (println "🎉 Async demonstration finished successfully!")
+        _ (println "")
+        _ (println "Key takeaways:")
+        _ (println "- Use 'promise' to create async operations")
+        _ (println "- Use 'async' to create async contexts")
+        _ (println "- Use 'await' to wait for promises")
+        _ (println "- Use 'defn-async' to define async functions")
+        _ (println "- Async enables concurrent, non-blocking operations")]
+    "Demo complete")) 

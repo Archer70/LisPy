@@ -92,6 +92,13 @@ from .string import (
     str_fn, documentation_str,
 )
 
+# Promise functions
+from .promises import (
+    builtin_promise, documentation_promise,
+    builtin_resolve, documentation_resolve,
+    builtin_reject, documentation_reject,
+)
+
 # Other function imports (alphabetized)
 from .bdd_assertions import (
     bdd_assertion_functions,
@@ -160,8 +167,11 @@ def create_global_env() -> Environment:
     env.define("print", builtin_print)
     env.define("print-doc", builtin_print_doc)
     env.define("println", builtin_println)
+    env.define("promise", builtin_promise)
     env.define("read-line", builtin_read_line)
     env.define("reduce", builtin_reduce)
+    env.define("reject", builtin_reject)
+    env.define("resolve", builtin_resolve)
     env.define("slurp", builtin_slurp)
     env.define("spit", builtin_spit)
     env.define("rest", builtin_rest)
@@ -241,8 +251,11 @@ def setup_documentation_registry():
     register_documentation("print", documentation_print)
     register_documentation("print-doc", documentation_print_doc)
     register_documentation("println", documentation_println)
+    register_documentation("promise", documentation_promise)
     register_documentation("read-line", documentation_read_line)
     register_documentation("reduce", documentation_reduce)
+    register_documentation("reject", documentation_reject)
+    register_documentation("resolve", documentation_resolve)
     register_documentation("slurp", documentation_slurp)
     register_documentation("spit", documentation_spit)
     register_documentation("rest", documentation_rest)

@@ -4,6 +4,8 @@ from ..environment import Environment  # For type hint in handler signature
 
 # Import handler functions (alphabetized)
 from .and_form import handle_and_form
+from .async_form import handle_async_form
+from .await_form import handle_await_form
 from .bdd.action_form import action_form_handler
 from .bdd.assert_raises_q_form import assert_raises_q_form_handler
 from .bdd.describe_form import describe_form_handler
@@ -12,6 +14,7 @@ from .bdd.it_form import it_form_handler
 from .bdd.then_form import then_form_handler
 from .cond_form import handle_cond
 from .define_form import handle_define_form
+from .defn_async_form import handle_defn_async_form
 from .export_form import export_form
 from .fn_form import handle_fn_form
 from .if_form import handle_if_form
@@ -33,8 +36,11 @@ special_form_handlers: Dict[str, Callable[[List[Any], Environment, Callable], An
     "action": action_form_handler,
     "and": handle_and_form,
     "assert-raises?": assert_raises_q_form_handler,
+    "async": handle_async_form,
+    "await": handle_await_form,
     "cond": handle_cond,
     "define": handle_define_form,
+    "defn-async": handle_defn_async_form,
     "describe": describe_form_handler,
     "export": export_form,
     "fn": handle_fn_form,

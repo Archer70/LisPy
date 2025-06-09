@@ -1,5 +1,9 @@
 # LisPy Custom Types
 
+import threading
+import time
+from typing import Any, Callable, List, Optional
+
 
 class Symbol:
     """Represents a Lisp symbol."""
@@ -50,3 +54,124 @@ class LispyList(list):
 
     # Similar to Vector, assuming mutable sequence behavior from Python lists.
     # If lists needed to be hashable, immutability would be a consideration.
+
+
+class LispyPromise:
+    """Represents an asynchronous operation in LisPy."""
+
+    def __init__(self, executor_fn: Optional[Callable[[], Any]] = None):
+        self.state = "pending"  # pending, resolved, rejected
+        self.value = None
+        self.error = None
+        self.callbacks: List[Callable[[], None]] = []
+        
+        if executor_fn:
+            try:
+                # Execute immediately in background thread
+                threading.Thread(target=self._execute, args=[executor_fn], daemon=True).start()
+            except Exception as e:
+                self.reject(e)
+
+    def _execute(self, executor_fn: Callable[[], Any]) -> None:
+        """Execute the promise function in a background thread."""
+        try:
+            result = executor_fn()
+            self.resolve(result)
+        except Exception as e:
+            self.reject(e)
+
+    def resolve(self, value: Any) -> None:
+        """Resolve the promise with a value."""
+        if self.state == "pending":
+            self.state = "resolved"
+            self.value = value
+            self._notify_callbacks()
+
+    def reject(self, error: Any) -> None:
+        """Reject the promise with an error."""
+        if self.state == "pending":
+            self.state = "rejected"
+            self.error = error
+            self._notify_callbacks()
+
+    def _notify_callbacks(self) -> None:
+        """Notify all registered callbacks."""
+        for callback in self.callbacks:
+            try:
+                callback()
+            except Exception as e:
+                # Log error but don't let callback failures break the promise
+                print(f"Promise callback error: {e}")
+        self.callbacks = []
+
+    def then(self, callback: Callable[[Any], Any]) -> 'LispyPromise':
+        """Chain a callback to be executed when promise resolves."""
+        if self.state == "resolved":
+            return self._create_resolved_promise(callback(self.value))
+        elif self.state == "rejected":
+            return self._create_rejected_promise(self.error)
+        else:
+            new_promise = LispyPromise()
+            self.callbacks.append(lambda: self._handle_then(callback, new_promise))
+            return new_promise
+
+    def _handle_then(self, callback: Callable[[Any], Any], new_promise: 'LispyPromise') -> None:
+        """Handle then callback execution."""
+        if self.state == "resolved":
+            try:
+                result = callback(self.value)
+                # If callback returns a promise, chain it
+                if isinstance(result, LispyPromise):
+                    result.then(lambda v: new_promise.resolve(v))
+                    result.catch(lambda e: new_promise.reject(e))
+                else:
+                    new_promise.resolve(result)
+            except Exception as e:
+                new_promise.reject(e)
+        else:
+            new_promise.reject(self.error)
+
+    def catch(self, error_callback: Callable[[Any], Any]) -> 'LispyPromise':
+        """Handle promise rejection."""
+        if self.state == "rejected":
+            return self._create_resolved_promise(error_callback(self.error))
+        elif self.state == "resolved":
+            return self._create_resolved_promise(self.value)
+        else:
+            new_promise = LispyPromise()
+            self.callbacks.append(lambda: self._handle_catch(error_callback, new_promise))
+            return new_promise
+
+    def _handle_catch(self, error_callback: Callable[[Any], Any], new_promise: 'LispyPromise') -> None:
+        """Handle catch callback execution."""
+        if self.state == "rejected":
+            try:
+                result = error_callback(self.error)
+                new_promise.resolve(result)
+            except Exception as e:
+                new_promise.reject(e)
+        else:
+            new_promise.resolve(self.value)
+
+    def _create_resolved_promise(self, value: Any) -> 'LispyPromise':
+        """Create a promise that's already resolved."""
+        promise = LispyPromise()
+        promise.resolve(value)
+        return promise
+
+    def _create_rejected_promise(self, error: Any) -> 'LispyPromise':
+        """Create a promise that's already rejected."""
+        promise = LispyPromise()
+        promise.reject(error)
+        return promise
+
+    def __repr__(self):
+        if self.state == "resolved":
+            return f"Promise(resolved: {repr(self.value)})"
+        elif self.state == "rejected":
+            return f"Promise(rejected: {repr(self.error)})"
+        else:
+            return "Promise(pending)"
+
+    def __str__(self):
+        return self.__repr__()
