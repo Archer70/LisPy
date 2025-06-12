@@ -109,6 +109,7 @@ from .promises import (
     builtin_timeout, documentation_timeout,
     builtin_with_timeout, documentation_with_timeout,
     builtin_async_map, documentation_async_map,
+    builtin_async_filter, documentation_async_filter,
 )
 
 # Other function imports (alphabetized)
@@ -147,6 +148,8 @@ def create_global_env() -> Environment:
     env.define("abs", builtin_abs)
     env.define("append", append_fn)
     env.define("assoc", builtin_assoc)
+    env.define("async-filter", builtin_async_filter)
+    env.define("async-map", builtin_async_map)
     env.define("is_boolean?", builtin_is_boolean_q)
     env.define("car", builtin_car)
     env.define("cdr", builtin_cdr)
@@ -205,7 +208,6 @@ def create_global_env() -> Environment:
     env.define("promise-then", builtin_promise_then)
     env.define("vals", builtin_vals)
     env.define("with-timeout", builtin_with_timeout)
-    env.define("async-map", builtin_async_map)
     env.define("vector", builtin_vector)
     env.define("is_vector?", builtin_is_vector_q)
 
@@ -235,6 +237,8 @@ def setup_documentation_registry():
     register_documentation("abs", documentation_abs)
     register_documentation("append", documentation_append)
     register_documentation("assoc", documentation_assoc)
+    register_documentation("async-filter", documentation_async_filter)
+    register_documentation("async-map", documentation_async_map)
     register_documentation("assert-equal?", documentation_assert_equal_q)
     register_documentation("assert-false?", documentation_assert_false_q)
     register_documentation("assert-nil?", documentation_assert_nil_q)
@@ -300,7 +304,6 @@ def setup_documentation_registry():
     register_documentation("promise-then", documentation_promise_then)
     register_documentation("vals", documentation_vals)
     register_documentation("with-timeout", documentation_with_timeout)
-    register_documentation("async-map", documentation_async_map)
     register_documentation("vector", documentation_vector)
 
 
