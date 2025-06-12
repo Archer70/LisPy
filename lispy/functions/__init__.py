@@ -105,6 +105,8 @@ from .promises import (
     builtin_promise_then, documentation_promise_then,
     builtin_on_reject, documentation_on_reject,
     builtin_on_complete, documentation_on_complete,
+    builtin_timeout, documentation_timeout,
+    builtin_with_timeout, documentation_with_timeout,
 )
 
 # Other function imports (alphabetized)
@@ -196,8 +198,10 @@ def create_global_env() -> Environment:
     env.define("split", split_fn)
     env.define("str", str_fn)
     env.define("is_string?", builtin_is_string_q)
+    env.define("timeout", builtin_timeout)
     env.define("promise-then", builtin_promise_then)
     env.define("vals", builtin_vals)
+    env.define("with-timeout", builtin_with_timeout)
     env.define("vector", builtin_vector)
     env.define("is_vector?", builtin_is_vector_q)
 
@@ -287,8 +291,10 @@ def setup_documentation_registry():
     register_documentation("sort", documentation_sort)
     register_documentation("split", documentation_split)
     register_documentation("str", documentation_str)
+    register_documentation("timeout", documentation_timeout)
     register_documentation("promise-then", documentation_promise_then)
     register_documentation("vals", documentation_vals)
+    register_documentation("with-timeout", documentation_with_timeout)
     register_documentation("vector", documentation_vector)
 
 

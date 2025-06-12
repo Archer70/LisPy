@@ -11,6 +11,8 @@ from .promise_all_settled import builtin_promise_all_settled, documentation_prom
 from .then import builtin_promise_then, documentation_promise_then
 from .on_reject import builtin_on_reject, documentation_on_reject
 from .on_complete import builtin_on_complete, documentation_on_complete
+from .timeout import builtin_timeout, documentation_timeout
+from .with_timeout import builtin_with_timeout, documentation_with_timeout
 
 __all__ = [
     # Functions
@@ -25,6 +27,8 @@ __all__ = [
     "builtin_promise_then",
     "builtin_on_reject",
     "builtin_on_complete",
+    "builtin_timeout",
+    "builtin_with_timeout",
     # Documentation
     "documentation_promise",
     "documentation_resolve",
@@ -37,4 +41,6 @@ __all__ = [
     "documentation_promise_then",
     "documentation_on_reject",
     "documentation_on_complete",
+    "documentation_timeout",
+    "documentation_with_timeout",
 ] 
