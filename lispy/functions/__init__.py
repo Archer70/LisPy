@@ -182,6 +182,8 @@ from .promises import (
     documentation_async_map,
     builtin_async_filter,
     documentation_async_filter,
+    builtin_async_reduce,
+    documentation_async_reduce,
 )
 
 # Other function imports (alphabetized)
@@ -222,6 +224,7 @@ def create_global_env() -> Environment:
     env.define("assoc", builtin_assoc)
     env.define("async-filter", builtin_async_filter)
     env.define("async-map", builtin_async_map)
+    env.define("async-reduce", builtin_async_reduce)
     env.define("is_boolean?", builtin_is_boolean_q)
     env.define("car", builtin_car)
     env.define("cdr", builtin_cdr)
@@ -311,6 +314,7 @@ def setup_documentation_registry():
     register_documentation("assoc", documentation_assoc)
     register_documentation("async-filter", documentation_async_filter)
     register_documentation("async-map", documentation_async_map)
+    register_documentation("async-reduce", documentation_async_reduce)
     register_documentation("assert-equal?", documentation_assert_equal_q)
     register_documentation("assert-false?", documentation_assert_false_q)
     register_documentation("assert-nil?", documentation_assert_nil_q)
