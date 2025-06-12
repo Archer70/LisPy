@@ -10,6 +10,7 @@ from .filter import builtin_filter, documentation_filter
 from .first import builtin_first, documentation_first
 from .map import builtin_map, documentation_map
 from .nth import nth_fn, documentation_nth
+from .range import builtin_range, documentation_range
 from .reduce import builtin_reduce, documentation_reduce
 from .rest import builtin_rest, documentation_rest
 from .reverse import reverse_fn, documentation_reverse
@@ -26,6 +27,7 @@ __all__ = [
     "builtin_filter",
     "builtin_first",
     "builtin_map",
+    "builtin_range",
     "builtin_reduce",
     "builtin_rest",
     "builtin_some",
@@ -44,6 +46,7 @@ __all__ = [
     "documentation_first",
     "documentation_map",
     "documentation_nth",
+    "documentation_range",
     "documentation_reduce",
     "documentation_rest",
     "documentation_reverse",

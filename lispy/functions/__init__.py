@@ -47,6 +47,7 @@ from .collection import (
     builtin_filter, documentation_filter,
     builtin_first, documentation_first,
     builtin_map, documentation_map,
+    builtin_range, documentation_range,
     builtin_reduce, documentation_reduce,
     builtin_rest, documentation_rest,
     builtin_some, documentation_some,
@@ -186,6 +187,7 @@ def create_global_env() -> Environment:
     env.define("promise-race", builtin_promise_race)
     env.define("promise-any", builtin_promise_any)
     env.define("promise-all-settled", builtin_promise_all_settled)
+    env.define("range", builtin_range)
     env.define("read-line", builtin_read_line)
     env.define("reduce", builtin_reduce)
     env.define("reject", builtin_reject)
@@ -281,6 +283,7 @@ def setup_documentation_registry():
     register_documentation("promise-race", documentation_promise_race)
     register_documentation("promise-any", documentation_promise_any)
     register_documentation("promise-all-settled", documentation_promise_all_settled)
+    register_documentation("range", documentation_range)
     register_documentation("read-line", documentation_read_line)
     register_documentation("reduce", documentation_reduce)
     register_documentation("reject", documentation_reject)

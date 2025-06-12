@@ -15,6 +15,7 @@ from .bdd.then_form import then_form_handler
 from .cond_form import handle_cond
 from .define_form import handle_define_form
 from .defn_async_form import handle_defn_async_form
+from .doseq_form import handle_doseq_form
 from .export_form import export_form
 from .fn_form import handle_fn_form
 from .if_form import handle_if_form
@@ -44,6 +45,7 @@ special_form_handlers: Dict[str, Callable[[List[Any], Environment, Callable], An
     "define": handle_define_form,
     "defn-async": handle_defn_async_form,
     "describe": describe_form_handler,
+    "doseq": handle_doseq_form,
     "export": export_form,
     "fn": handle_fn_form,
     "given": given_form_handler,

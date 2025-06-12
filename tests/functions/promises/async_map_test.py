@@ -118,9 +118,7 @@ class TestAsyncMap(unittest.TestCase):
         """Test async-map with promise chaining operations"""
         result = run_lispy_string('''
             (await (async-map [1 2 3] (fn [x]
-                                        (-> x
-                                            (* 2)
-                                            (timeout 50)
+                                        (-> (timeout 50 (* x 2))
                                             (promise-then (fn [y] (+ y 5)))))))
         ''', self.env)
         self.assertEqual(result, Vector([7, 9, 11]))
@@ -164,13 +162,12 @@ class TestAsyncMap(unittest.TestCase):
 
     def test_async_map_performance_comparison(self):
         """Test that async-map is significantly faster than sequential processing"""
-        # Sequential version (for comparison)
+        # Sequential version using functional reduce pattern
         start_sequential = time.time()
         run_lispy_string('''
-            (let [result []]
-              (doseq [x [100 100 100]]
-                (set! result (conj result (await (timeout x x)))))
-              result)
+            (reduce [100 100 100] 
+                    (fn [acc x] (conj acc (await (timeout x x))))
+                    [])
         ''', self.env)
         sequential_time = (time.time() - start_sequential) * 1000
         
