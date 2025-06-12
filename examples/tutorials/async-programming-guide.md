@@ -5,13 +5,14 @@
 1. [Introduction to Async Programming](#introduction-to-async-programming)
 2. [Basic Concepts](#basic-concepts)
 3. [Core Promise Functions](#core-promise-functions)
-4. [Async/Await Pattern](#asyncawait-pattern)
-5. [Promise Combinators](#promise-combinators)
-6. [Utility Functions](#utility-functions)
-7. [Real-World Use Cases](#real-world-use-cases)
-8. [Best Practices](#best-practices)
-9. [Common Patterns](#common-patterns)
-10. [Troubleshooting](#troubleshooting)
+4. [Promise Chaining](#promise-chaining)
+5. [Async/Await Pattern](#asyncawait-pattern)
+6. [Promise Combinators](#promise-combinators)
+7. [Utility Functions](#utility-functions)
+8. [Real-World Use Cases](#real-world-use-cases)
+9. [Best Practices](#best-practices)
+10. [Common Patterns](#common-patterns)
+11. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -112,7 +113,87 @@ Creates a promise that immediately rejects with an error.
 
 ---
 
+## Promise Chaining
+
+Promise chaining allows you to transform and handle promises in a functional, composable way without nested callbacks or complex async/await blocks.
+
+### `promise-then`
+
+Transforms the resolved value of a promise using a callback function.
+
+```lisp
+;; Syntax: (promise-then promise callback)
+
+;; Basic transformation
+(-> (resolve 10)
+    (promise-then (fn [x] (* x 2)))
+    (promise-then (fn [x] (+ x 5))))
+;; => Promise that resolves to 25
+
+;; Chaining with thread-first operator
+(-> (promise (fn [] (fetch-user-id)))
+    (promise-then (fn [id] (fetch-user-data id)))
+    (promise-then (fn [user] (extract-user-name user)))
+    (promise-then (fn [name] (append "Hello, " name))))
+```
+
+### `on-reject`
+
+Handles promise rejections and provides error recovery.
+
+```lisp
+;; Syntax: (on-reject promise error-handler)
+
+;; Basic error handling
+(-> (reject "network-error")
+    (on-reject (fn [err] (append "Handled: " (str err)))))
+;; => Promise that resolves to "Handled: network-error"
+
+;; Error recovery with fallback data
+(-> (fetch-from-api)
+    (on-reject (fn [_] (fetch-from-cache)))
+    (on-reject (fn [_] "default-data")))
+```
+
+### `on-complete`
+
+Executes cleanup code regardless of whether the promise resolves or rejects.
+
+```lisp
+;; Syntax: (on-complete promise cleanup-callback)
+
+;; Resource cleanup
+(-> (open-database-connection)
+    (promise-then (fn [conn] (query-database conn)))
+    (on-complete (fn [_] (close-database-connection))))
+
+;; Logging and monitoring
+(-> (critical-operation)
+    (promise-then (fn [result] (log-success result)))
+    (on-reject (fn [error] (log-error error)))
+    (on-complete (fn [_] (log-completion))))
+```
+
+### Combining Chaining Functions
+
+```lisp
+;; Complete error handling and cleanup pipeline
+(-> (fetch-user-data user-id)
+    (promise-then (fn [user] (validate-user user)))
+    (promise-then (fn [user] (enrich-user-data user)))
+    (on-reject (fn [err] 
+      (do 
+        (log-error "User processing failed:" err)
+        (get-default-user))))
+    (on-complete (fn [_] (cleanup-temp-resources)))
+    (promise-then (fn [user] (render-user-profile user))))
+```
+
+---
+
 ## Async/Await Pattern
+
+The async/await pattern provides an imperative style for handling promises, while promise chaining offers a functional style. Choose based on your preference and use case.
 
 ### Basic Async/Await
 
@@ -129,16 +210,37 @@ Creates a promise that immediately rejects with an error.
     (println "Retrieved:" user)))
 ```
 
-### Chaining Async Operations
+### Async/Await vs Promise Chaining
 
 ```lisp
+;; Async/await style (imperative)
 (async 
   (let [user-id "123"
         user-data (await (fetch-user-data user-id))
         processed-data (await (process-user-data user-data))
         final-result (await (save-processed-data processed-data))]
     (println "Pipeline complete:" final-result)))
+
+;; Promise chaining style (functional)
+(-> (resolve "123")
+    (promise-then fetch-user-data)
+    (promise-then process-user-data)
+    (promise-then save-processed-data)
+    (promise-then (fn [result] (println "Pipeline complete:" result))))
 ```
+
+### When to Use Each Style
+
+**Use async/await when:**
+- You need complex control flow (loops, conditionals)
+- You prefer imperative programming style
+- You need to handle multiple unrelated async operations
+
+**Use promise chaining when:**
+- You have linear data transformation pipelines
+- You prefer functional programming style
+- You want to leverage thread-first (`->`) operator
+- You need composable, reusable promise transformations
 
 ---
 
@@ -300,8 +402,40 @@ Creates a promise that resolves after a specified time delay.
 ### 1. API Data Aggregation
 
 ```lisp
-(defn-async load-dashboard-data [user-id]
+;; Using promise chaining for clean, functional data aggregation
+(defn load-dashboard-data [user-id]
   "Load all data needed for a user dashboard"
+  (-> (promise-all (vector
+                     (fetch-user-profile user-id)
+                     (fetch-user-settings user-id)))
+      (promise-then (fn [core-data]
+        (let [profile (first core-data)
+              settings (nth core-data 1)]
+          ; Load optional data in parallel
+          (-> (promise-all-settled (vector
+                                     (fetch-user-activity user-id)
+                                     (fetch-user-notifications user-id)
+                                     (fetch-user-recommendations user-id)))
+              (promise-then (fn [optional-data]
+                ; Extract successful optional data safely
+                (let [activity (extract-fulfilled-value (first optional-data))
+                      notifications (extract-fulfilled-value (nth optional-data 1) [])
+                      recommendations (extract-fulfilled-value (nth optional-data 2) [])]
+                  {:profile profile
+                   :settings settings  
+                   :activity activity
+                   :notifications notifications
+                   :recommendations recommendations})))))))
+
+;; Helper function for extracting fulfilled values
+(defn extract-fulfilled-value [result default-value]
+  (if (equal? (get result ':status) "fulfilled")
+    (get result ':value)
+    default-value))
+
+;; Alternative async/await version for comparison
+(defn-async load-dashboard-data-async [user-id]
+  "Load all data needed for a user dashboard (async/await style)"
   (let [; Core data must succeed - use promise-all
         core-data (await (promise-all (vector
                                         (fetch-user-profile user-id)
@@ -316,18 +450,9 @@ Creates a promise that resolves after a specified time delay.
                                                     (fetch-user-recommendations user-id))))
         
         ; Extract successful optional data safely
-        activity (let [result (first optional-data)]
-                   (if (equal? (get result ':status) "fulfilled")
-                     (get result ':value)
-                     nil))
-        notifications (let [result (nth optional-data 1)]
-                        (if (equal? (get result ':status) "fulfilled")
-                          (get result ':value)
-                          []))
-        recommendations (let [result (nth optional-data 2)]
-                          (if (equal? (get result ':status) "fulfilled")
-                            (get result ':value)
-                            []))]
+        activity (extract-fulfilled-value (first optional-data))
+        notifications (extract-fulfilled-value (nth optional-data 1) [])
+        recommendations (extract-fulfilled-value (nth optional-data 2) [])]
     
     {:profile profile
      :settings settings  
@@ -339,59 +464,142 @@ Creates a promise that resolves after a specified time delay.
 ### 2. Resilient Service Communication
 
 ```lisp
-(defn-async resilient-api-call [endpoint]
-  "Try multiple strategies to get data"
-  (promise-any (vector
-                 ; Try cache first (fastest)
-                 (fetch-from-cache endpoint)
-                 
-                 ; Try primary API with timeout
-                 (promise-race (vector
-                                 (fetch-from-api endpoint)
-                                 (delay 2000 (reject "primary-timeout"))))
-                 
-                 ; Try backup API with longer timeout
-                 (promise-race (vector
-                                 (fetch-from-backup-api endpoint)
-                                 (delay 5000 (reject "backup-timeout"))))
-                 
-                 ; Last resort: return default data
-                 (delay 100 (get-default-data endpoint)))))
+;; Promise chaining approach with graceful fallbacks
+(defn resilient-api-call [endpoint]
+  "Try multiple strategies to get data with promise chaining"
+  (-> (fetch-from-cache endpoint)
+      (on-reject (fn [_] 
+        (-> (fetch-from-api endpoint)
+            (on-reject (fn [_] (fetch-from-backup-api endpoint)))
+            (on-reject (fn [_] (get-default-data endpoint))))))
+      (on-complete (fn [_] (log-api-call-completion endpoint)))))
+
+;; Alternative using promise-any for concurrent attempts
+(defn resilient-api-call-concurrent [endpoint]
+  "Try multiple strategies concurrently"
+  (-> (promise-any (vector
+                     ; Try cache first (fastest)
+                     (fetch-from-cache endpoint)
+                     
+                     ; Try primary API with timeout
+                     (promise-race (vector
+                                     (fetch-from-api endpoint)
+                                     (delay 2000 (reject "primary-timeout"))))
+                     
+                     ; Try backup API with longer timeout
+                     (promise-race (vector
+                                     (fetch-from-backup-api endpoint)
+                                     (delay 5000 (reject "backup-timeout"))))
+                     
+                     ; Last resort: return default data
+                     (delay 100 (get-default-data endpoint))))
+      (promise-then (fn [data] 
+        (do 
+          (log-successful-source endpoint)
+          data)))
+      (on-reject (fn [err] 
+        (do 
+          (log-all-sources-failed endpoint err)
+          (get-emergency-fallback-data endpoint))))))
 ```
 
 ### 3. Batch Processing with Error Handling
 
 ```lisp
-(defn-async process-batch [items]
+;; Promise chaining approach for batch processing
+(defn process-batch [items]
   "Process a batch of items, handling individual failures gracefully"
-  (let [; Create promises for each item
-        processing-promises (map items (fn [item] 
-                                         (promise (fn [] (process-item item)))))
-        
-        ; Wait for all to complete (success or failure)
-        results (await (promise-all-settled processing-promises))
-        
+  (-> (map items (fn [item] (promise (fn [] (process-item item)))))
+      (promise-all-settled)
+      (promise-then (fn [results]
         ; Separate successful and failed results
-        successful (filter results (fn [r] (equal? (get r ':status) "fulfilled")))
-        failed (filter results (fn [r] (equal? (get r ':status) "rejected")))
-        
-        ; Extract values and reasons
-        successful-values (map successful (fn [r] (get r ':value)))
-        error-reasons (map failed (fn [r] (get r ':reason)))]
-    
-    {:processed successful-values
-     :errors error-reasons
-     :total-items (count items)
-     :success-count (count successful)
-     :failure-count (count failed)
-     :success-rate (/ (count successful) (count results))}))
+        (let [successful (filter results (fn [r] (equal? (get r ':status) "fulfilled")))
+              failed (filter results (fn [r] (equal? (get r ':status) "rejected")))
+              
+              ; Extract values and reasons
+              successful-values (map successful (fn [r] (get r ':value)))
+              error-reasons (map failed (fn [r] (get r ':reason)))]
+          
+          {:processed successful-values
+           :errors error-reasons
+           :total-items (count items)
+           :success-count (count successful)
+           :failure-count (count failed)
+           :success-rate (/ (count successful) (count results))})))
+      (promise-then (fn [summary]
+        (do 
+          (log-batch-summary summary)
+          summary)))
+      (on-reject (fn [err] 
+        (do 
+          (log-batch-error err)
+          {:processed []
+           :errors [err]
+           :total-items (count items)
+           :success-count 0
+           :failure-count 1
+           :success-rate 0}))))
+
+;; Enhanced version with progress tracking
+(defn process-batch-with-progress [items progress-callback]
+  "Process batch with progress updates using promise chaining"
+  (-> (map items (fn [item] 
+        (-> (promise (fn [] (process-item item)))
+            (promise-then (fn [result] 
+              (do 
+                (progress-callback item result)
+                result)))
+            (on-reject (fn [err] 
+              (do 
+                (progress-callback item err)
+                (reject err)))))))
+      (promise-all-settled)
+      (promise-then (fn [results]
+        (let [summary (create-batch-summary results items)]
+          (do 
+            (progress-callback :complete summary)
+            summary))))))
 ```
 
 ---
 
 ## Best Practices
 
-### 1. Choose the Right Combinator
+### 1. Choose the Right Programming Style
+
+**Use Promise Chaining when:**
+- You have linear data transformation pipelines
+- You prefer functional programming style
+- You want to leverage thread-first (`->`) operator
+- You need composable, reusable transformations
+- Error handling can be localized to specific steps
+
+```lisp
+;; Good: Clean functional pipeline
+(-> (fetch-user-data user-id)
+    (promise-then validate-user)
+    (promise-then enrich-user-data)
+    (on-reject get-default-user)
+    (promise-then render-user-profile))
+```
+
+**Use Async/Await when:**
+- You need complex control flow (loops, conditionals)
+- You prefer imperative programming style
+- You need to handle multiple unrelated async operations
+- You have complex error handling requirements
+
+```lisp
+;; Good: Complex control flow
+(async 
+  (let [users (await (fetch-all-users))]
+    (for [user users]
+      (when (user-needs-update? user)
+        (let [updated-user (await (update-user user))]
+          (await (notify-user-updated updated-user)))))))
+```
+
+### 2. Choose the Right Combinator
 
 **Use `promise-all` when:**
 - All operations must succeed
@@ -413,8 +621,32 @@ Creates a promise that resolves after a specified time delay.
 - Some failures are acceptable
 - Building monitoring/reporting systems
 
-### 2. Error Handling Patterns
+### 3. Error Handling Patterns
 
+**Promise Chaining Error Handling:**
+```lisp
+;; Good: Localized error handling with recovery
+(-> (fetch-user-data user-id)
+    (promise-then validate-user)
+    (on-reject (fn [err] 
+      (do 
+        (log-validation-error err)
+        (get-default-user))))
+    (promise-then enrich-user-data)
+    (on-reject (fn [err] 
+      (do 
+        (log-enrichment-error err)
+        (resolve user)))) ; Continue with basic user data
+    (promise-then render-user-profile))
+
+;; Good: Comprehensive error handling with cleanup
+(-> (acquire-resource)
+    (promise-then use-resource)
+    (on-reject handle-resource-error)
+    (on-complete (fn [_] (release-resource))))
+```
+
+**Async/Await Error Handling:**
 ```lisp
 ;; Good: Use promise-any for graceful fallbacks
 (async 
@@ -432,7 +664,9 @@ Creates a promise that resolves after a specified time delay.
     (handle-result result)))
 ```
 
-### 3. Performance Optimization
+### 4. Performance Optimization
+
+**Sequential vs Concurrent Operations:**
 
 ```lisp
 ;; Sequential (slow) - operations run one after another
@@ -449,10 +683,35 @@ Creates a promise that resolves after a specified time delay.
                                     (fetch-user "2")
                                     (fetch-user "3"))))]
     users))
+
+;; Promise chaining with concurrent operations
+(-> (promise-all (vector
+                   (fetch-user "1")
+                   (fetch-user "2") 
+                   (fetch-user "3")))
+    (promise-then (fn [users] (process-users users)))
+    (promise-then (fn [processed] (save-processed-users processed))))
 ```
 
-### 4. Avoid Common Anti-Patterns
+**Optimizing Promise Chains:**
 
+```lisp
+;; Good: Parallel independent operations
+(-> (promise-all (vector
+                   (fetch-user-profile user-id)
+                   (fetch-user-preferences user-id)
+                   (fetch-user-history user-id)))
+    (promise-then (fn [data] (merge-user-data data))))
+
+;; Good: Sequential dependent operations
+(-> (authenticate-user credentials)
+    (promise-then (fn [user] (fetch-user-permissions user)))
+    (promise-then (fn [permissions] (authorize-action permissions action))))
+```
+
+### 5. Avoid Common Anti-Patterns
+
+**Promise Creation Anti-Patterns:**
 ```lisp
 ;; Bad: Unnecessary promise wrapping
 (defn bad-async-function []
@@ -462,10 +721,35 @@ Creates a promise that resolves after a specified time delay.
 (defn good-async-function []
   (some-async-operation))
 
+;; Bad: Mixing async styles unnecessarily
+(defn mixed-style-bad []
+  (async 
+    (let [result (await (-> (fetch-data)
+                            (promise-then process-data)))]
+      result)))
+
+;; Good: Choose one style and stick with it
+(defn promise-chain-good []
+  (-> (fetch-data)
+      (promise-then process-data)))
+
+(defn async-await-good []
+  (async 
+    (let [data (await (fetch-data))
+          result (await (process-data data))]
+      result)))
+```
+
+**Error Handling Anti-Patterns:**
+```lisp
 ;; Bad: Not handling rejections appropriately
 (async 
   (let [result (await (risky-operation))]  ; May throw unhandled error
     (process result)))
+
+;; Bad: Ignoring errors in promise chains
+(-> (risky-operation)
+    (promise-then process-result))  ; No error handling
 
 ;; Good: Use appropriate error handling
 (async 
@@ -473,6 +757,11 @@ Creates a promise that resolves after a specified time delay.
                                      (risky-operation)
                                      (resolve "fallback-value"))))]
     (process result)))
+
+;; Good: Handle errors in promise chains
+(-> (risky-operation)
+    (promise-then process-result)
+    (on-reject handle-error))
 ```
 
 ---
@@ -703,13 +992,39 @@ Creates a promise that resolves after a specified time delay.
 
 | Function | Purpose | When to Use |
 |----------|---------|-------------|
+| **Core Functions** | | |
+| `promise` | Create async operation | Wrapping sync functions |
+| `resolve` | Create resolved promise | Immediate values |
+| `reject` | Create rejected promise | Immediate errors |
+| **Promise Chaining** | | |
+| `promise-then` | Transform resolved values | Data transformation pipelines |
+| `on-reject` | Handle rejections | Error recovery, fallbacks |
+| `on-complete` | Cleanup operations | Resource management, logging |
+| **Promise Combinators** | | |
 | `promise-all` | Wait for all, fail-fast | All operations must succeed |
 | `promise-race` | First to settle wins | Timeouts, competing sources |
 | `promise-any` | First success wins | Fallbacks, resilience |
 | `promise-all-settled` | Comprehensive results | Monitoring, graceful degradation |
+| **Utilities** | | |
 | `delay` | Timed operations | Timeouts, rate limiting |
 
-### Decision Tree
+### Programming Style Decision Tree
+
+```
+What type of async operation are you building?
+
+Linear data transformation pipeline?
+├─ Yes → Use Promise Chaining
+│  ├─ (-> promise (promise-then transform) (on-reject handle-error))
+│  └─ Benefits: Functional, composable, thread-first compatible
+└─ No → Complex control flow needed?
+   ├─ Yes → Use Async/Await
+   │  ├─ (async (let [x (await op1)] (if condition (await op2) (await op3))))
+   │  └─ Benefits: Imperative, familiar, complex logic support
+   └─ Mixed → Use appropriate style for each part
+```
+
+### Combinator Decision Tree
 
 ```
 Do you need ALL operations to succeed?
@@ -725,29 +1040,79 @@ Do you need ALL operations to succeed?
 
 ### Error Handling Guide
 
+**Promise Chaining Error Handling:**
+- **For step-by-step recovery**: Use `on-reject` after each `promise-then`
+- **For comprehensive cleanup**: Use `on-complete` at the end of chains
+- **For fallback chains**: Chain multiple `on-reject` calls
+- **For resource management**: Always use `on-complete` for cleanup
+
+**Combinator Error Handling:**
 - **For critical operations**: Use `promise-all` with proper fallbacks
 - **For optional operations**: Use `promise-all-settled` 
 - **For fallback chains**: Use `promise-any`
 - **For timeouts**: Use `promise-race` with `delay`
 
+**Quick Error Handling Patterns:**
+```lisp
+;; Immediate fallback
+(-> (risky-operation)
+    (on-reject (fn [_] "safe-default")))
+
+;; Retry pattern
+(-> (operation)
+    (on-reject (fn [_] (operation)))  ; Simple retry
+    (on-reject (fn [_] "final-fallback")))
+
+;; Resource cleanup
+(-> (acquire-resource)
+    (promise-then use-resource)
+    (on-complete (fn [_] (release-resource))))
+```
+
 ---
 
 ## Conclusion
 
-LisPy's async programming capabilities provide powerful tools for building responsive, efficient applications. The key to success is:
+LisPy's async programming capabilities provide powerful tools for building responsive, efficient applications. With both promise chaining and async/await patterns, you can choose the style that best fits your use case and programming preferences.
 
-1. **Understanding each combinator's behavior**
-2. **Choosing the right tool for your use case**
-3. **Always considering error scenarios**
-4. **Adding appropriate timeouts**
-5. **Testing async flows thoroughly**
+### Key Success Factors:
+
+1. **Choose the right programming style**: Promise chaining for functional pipelines, async/await for complex control flow
+2. **Understand each combinator's behavior**: Know when to use `promise-all`, `promise-race`, `promise-any`, and `promise-all-settled`
+3. **Implement comprehensive error handling**: Use `on-reject` for recovery, `on-complete` for cleanup
+4. **Add appropriate timeouts**: Prevent hanging operations with `promise-race` and `delay`
+5. **Test async flows thoroughly**: Both success and failure scenarios
+
+### Promise Chaining Benefits:
+
+- **Functional composition**: Clean, readable transformation pipelines
+- **Thread-first compatibility**: Works seamlessly with `->` operator
+- **Localized error handling**: Handle errors at each step as needed
+- **Resource management**: Built-in cleanup with `on-complete`
+- **Composability**: Easy to build reusable async components
 
 ### Next Steps
 
-1. **Practice with examples**: Start with `examples/async-demo.lpy`
-2. **Build gradually**: Begin with simple patterns, add complexity incrementally
-3. **Focus on error handling**: Async systems must be resilient
-4. **Monitor and debug**: Use logging and comprehensive error reporting
-5. **Consider performance**: Choose concurrent over sequential when possible
+1. **Practice with examples**: Start with simple promise chains using `promise-then`
+2. **Build gradually**: Add error handling with `on-reject` and cleanup with `on-complete`
+3. **Experiment with styles**: Try both promise chaining and async/await for different scenarios
+4. **Focus on error handling**: Build resilient systems with comprehensive error recovery
+5. **Monitor and debug**: Use logging and comprehensive error reporting
+6. **Consider performance**: Choose concurrent over sequential when possible
+
+### Quick Start Template
+
+```lisp
+;; Basic promise chain template
+(-> (initial-operation)
+    (promise-then transform-data)
+    (promise-then validate-data)
+    (on-reject (fn [err] 
+      (do 
+        (log-error err)
+        (get-fallback-data))))
+    (on-complete (fn [_] (cleanup-resources)))
+    (promise-then final-processing))
+```
 
 Happy async programming in LisPy! 🚀

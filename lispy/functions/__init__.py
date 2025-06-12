@@ -102,6 +102,9 @@ from .promises import (
     builtin_promise_any, documentation_promise_any,
     builtin_promise_all_settled, documentation_promise_all_settled,
     builtin_delay, documentation_delay,
+    builtin_promise_then, documentation_promise_then,
+    builtin_on_reject, documentation_on_reject,
+    builtin_on_complete, documentation_on_complete,
 )
 
 # Other function imports (alphabetized)
@@ -170,6 +173,8 @@ def create_global_env() -> Environment:
     env.define("is_nil?", builtin_is_nil_q)
     env.define("nth", nth_fn)
     env.define("is_number?", builtin_is_number_q)
+    env.define("on-complete", builtin_on_complete)
+    env.define("on-reject", builtin_on_reject)
     env.define("print", builtin_print)
     env.define("print-doc", builtin_print_doc)
     env.define("println", builtin_println)
@@ -191,6 +196,7 @@ def create_global_env() -> Environment:
     env.define("split", split_fn)
     env.define("str", str_fn)
     env.define("is_string?", builtin_is_string_q)
+    env.define("promise-then", builtin_promise_then)
     env.define("vals", builtin_vals)
     env.define("vector", builtin_vector)
     env.define("is_vector?", builtin_is_vector_q)
@@ -259,6 +265,8 @@ def setup_documentation_registry():
     register_documentation("%", documentation_modulo)
     register_documentation("not", documentation_not)
     register_documentation("nth", documentation_nth)
+    register_documentation("on-complete", documentation_on_complete)
+    register_documentation("on-reject", documentation_on_reject)
     register_documentation("print", documentation_print)
     register_documentation("print-doc", documentation_print_doc)
     register_documentation("println", documentation_println)
@@ -279,6 +287,7 @@ def setup_documentation_registry():
     register_documentation("sort", documentation_sort)
     register_documentation("split", documentation_split)
     register_documentation("str", documentation_str)
+    register_documentation("promise-then", documentation_promise_then)
     register_documentation("vals", documentation_vals)
     register_documentation("vector", documentation_vector)
 
