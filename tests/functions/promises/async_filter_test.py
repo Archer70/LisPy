@@ -14,14 +14,8 @@ Tests cover:
 
 import unittest
 import time
-from lispy.functions.promises.async_filter import builtin_async_filter
-from lispy.functions.promises.timeout import builtin_timeout
-from lispy.functions.promises.resolve import builtin_resolve
-from lispy.functions.promises.reject import builtin_reject
-from lispy.functions.promises.then import builtin_promise_then
-from lispy.functions.collection.range import builtin_range
+from lispy.functions import create_global_env
 from lispy.types import Vector
-from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
 from lispy.utils import run_lispy_string
 
@@ -29,34 +23,7 @@ from lispy.utils import run_lispy_string
 class TestAsyncFilter(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
-        self.env = Environment()
-        # Add necessary functions to environment
-        self.env.define("async-filter", builtin_async_filter)
-        self.env.define("timeout", builtin_timeout)
-        self.env.define("resolve", builtin_resolve)
-        self.env.define("reject", builtin_reject)
-        self.env.define("promise-then", builtin_promise_then)
-        self.env.define("range", builtin_range)
-
-        # Add basic math and comparison functions
-        from lispy.functions.math import (
-            builtin_add,
-            builtin_subtract,
-            builtin_multiply,
-            builtin_modulo,
-            builtin_equals,
-        )
-        from lispy.functions.logical import builtin_greater_than, builtin_less_than
-        from lispy.functions.collection import builtin_count
-
-        self.env.define("+", builtin_add)
-        self.env.define("-", builtin_subtract)
-        self.env.define("*", builtin_multiply)
-        self.env.define("%", builtin_modulo)
-        self.env.define("=", builtin_equals)
-        self.env.define(">", builtin_greater_than)
-        self.env.define("<", builtin_less_than)
-        self.env.define("count", builtin_count)
+        self.env = create_global_env()
 
     def test_empty_collection(self):
         """Test async-filter with empty collection."""

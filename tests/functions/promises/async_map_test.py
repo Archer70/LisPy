@@ -2,28 +2,15 @@
 
 import unittest
 import time
-from lispy.environment import Environment
-from lispy.evaluator import evaluate
-from lispy.parser import parse
-from lispy.lexer import tokenize
+from lispy.functions import create_global_env
 from lispy.types import Vector
 from lispy.exceptions import EvaluationError
-from lispy.functions import global_env
-
-
-def run_lispy_string(code_string, env=None):
-    """Helper function to run LisPy code from a string."""
-    if env is None:
-        env = Environment(outer=global_env)
-
-    tokens = tokenize(code_string)
-    parsed_expr = parse(tokens)
-    return evaluate(parsed_expr, env)
+from lispy.utils import run_lispy_string
 
 
 class TestAsyncMap(unittest.TestCase):
     def setUp(self):
-        self.env = Environment(outer=global_env)
+        self.env = create_global_env()
 
     def test_async_map_basic_functionality(self):
         """Test basic async-map with timeout operations"""

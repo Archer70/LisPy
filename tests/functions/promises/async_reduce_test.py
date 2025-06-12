@@ -14,14 +14,8 @@ Tests cover:
 
 import unittest
 import time
-from lispy.functions.promises.async_reduce import builtin_async_reduce
-from lispy.functions.promises.timeout import builtin_timeout
-from lispy.functions.promises.resolve import builtin_resolve
-from lispy.functions.promises.reject import builtin_reject
-from lispy.functions.promises.then import builtin_promise_then
-from lispy.functions.collection.range import builtin_range
+from lispy.functions import create_global_env
 from lispy.types import Vector, LispyPromise, Symbol
-from lispy.environment import Environment
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
 
@@ -31,30 +25,7 @@ class AsyncReduceTest(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-        self.env = Environment()
-        # Add necessary functions to environment
-        self.env.define("async-reduce", builtin_async_reduce)
-        self.env.define("timeout", builtin_timeout)
-        self.env.define("resolve", builtin_resolve)
-        self.env.define("reject", builtin_reject)
-        self.env.define("promise-then", builtin_promise_then)
-        self.env.define("range", builtin_range)
-        
-        # Add basic math and comparison functions
-        from lispy.functions.math import builtin_add, builtin_subtract, builtin_multiply, builtin_modulo, builtin_equals
-        from lispy.functions.logical import builtin_greater_than, builtin_less_than
-        from lispy.functions.collection import builtin_conj
-        from lispy.functions.string.str import str_fn
-        
-        self.env.define("+", builtin_add)
-        self.env.define("-", builtin_subtract)
-        self.env.define("*", builtin_multiply)
-        self.env.define("%", builtin_modulo)
-        self.env.define("=", builtin_equals)
-        self.env.define(">", builtin_greater_than)
-        self.env.define("<", builtin_less_than)
-        self.env.define("conj", builtin_conj)
-        self.env.define("str", str_fn)
+        self.env = create_global_env()
 
     def test_basic_sync_reduction(self):
         """Test basic synchronous reduction (sum)."""
@@ -137,9 +108,9 @@ class AsyncReduceTest(unittest.TestCase):
             run_lispy_string('(async-reduce [1 2 3])', self.env)
         self.assertIn("expects 3 arguments", str(cm.exception))
 
-        # Test with too many arguments - use a simpler approach
+        # Test with too many arguments - simpler test using lispy string
         with self.assertRaises(EvaluationError) as cm:
-            builtin_async_reduce([[1, 2, 3], lambda x, y: x + y, 0, "extra"], self.env)
+            run_lispy_string('(async-reduce [1 2 3] (fn [acc x] (+ acc x)) 0 "extra")', self.env)
         self.assertIn("expects 3 arguments", str(cm.exception))
 
     def test_invalid_collection_type(self):
