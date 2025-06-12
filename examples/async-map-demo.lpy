@@ -1,0 +1,153 @@
+;; LisPy async-map Demo - Concurrent Async Mapping
+;; 
+;; This demo showcases async-map, which follows JavaScript's Array.map() + Promise.all() pattern:
+;; - All operations start immediately (concurrent execution)
+;; - Results maintain original array order
+;; - Fail-fast behavior if any operation fails
+;; - Thread-first operator compatible
+
+(print "=== LisPy async-map Demo ===")
+(print)
+
+;; Example 1: Basic concurrent mapping
+(print "1. Basic concurrent async mapping:")
+(let [numbers [1 2 3 4 5]
+      start-time (current-time-millis)
+      doubled (await (async-map numbers (fn [x] 
+                                          (timeout 100 (* x 2)))))
+      end-time (current-time-millis)
+      duration (- end-time start-time)]
+  (print "  Input:" numbers)
+  (print "  Output:" doubled)
+  (print "  Time taken:" duration "ms (should be ~100ms, not 500ms)")
+  (print "  ✓ All operations ran concurrently!"))
+(print)
+
+;; Example 2: Order preservation despite different completion times
+(print "2. Order preservation with different completion times:")
+(let [delays [300 50 150 25 200]  ; Different delays
+      results (await (async-map delays (fn [delay]
+                                         (timeout delay delay))))]
+  (print "  Delays:" delays)
+  (print "  Results:" results)
+  (print "  ✓ Results maintain original order despite completion order!"))
+(print)
+
+;; Example 3: Thread-first operator compatibility
+(print "3. Thread-first operator compatibility:")
+(let [result (-> [1 2 3 4]
+                 (async-map (fn [x] (timeout 50 (+ x 10))))
+                 (await))]
+  (print "  (-> [1 2 3 4] (async-map (fn [x] (timeout 50 (+ x 10)))) (await))")
+  (print "  Result:" result)
+  (print "  ✓ Works perfectly with thread-first!"))
+(print)
+
+;; Example 4: Mixed synchronous and asynchronous operations
+(print "4. Mixed sync/async operations:")
+(let [mixed-result (await (async-map [1 2 3 4] (fn [x]
+                                                  (if (even? x)
+                                                    (timeout 75 (* x x))    ; Async for even
+                                                    (* x x)))))]           ; Sync for odd
+  (print "  Input: [1 2 3 4] (async for even, sync for odd)")
+  (print "  Result:" mixed-result)
+  (print "  ✓ Handles mixed sync/async seamlessly!"))
+(print)
+
+;; Example 5: Practical API simulation
+(print "5. Simulated API calls (concurrent data fetching):")
+(defn fetch-user-data [user-id]
+  "Simulate fetching user data from an API"
+  (let [delay (+ 50 (rand-int 100))]  ; Random delay 50-150ms
+    (timeout delay {:id user-id 
+                    :name (str "User" user-id)
+                    :email (str "user" user-id "@example.com")})))
+
+(let [user-ids [101 102 103 104 105]
+      start-time (current-time-millis)
+      users (await (async-map user-ids fetch-user-data))
+      end-time (current-time-millis)
+      duration (- end-time start-time)]
+  (print "  Fetching data for users:" user-ids)
+  (doseq [user users]
+    (print "    " user))
+  (print "  Total time:" duration "ms")
+  (print "  ✓ All API calls made concurrently!"))
+(print)
+
+;; Example 6: Promise chaining within async-map
+(print "6. Promise chaining within async-map:")
+(let [chained-result (await (async-map [1 2 3] (fn [x]
+                                                  (-> x
+                                                      (* 3)
+                                                      (timeout 60)
+                                                      (promise-then (fn [y] (+ y 5)))))))]
+  (print "  Chain: x -> (* 3) -> timeout -> (+ 5)")
+  (print "  Input: [1 2 3]")
+  (print "  Result:" chained-result)
+  (print "  ✓ Promise chaining works within async-map!"))
+(print)
+
+;; Example 7: Error handling - fail-fast behavior
+(print "7. Error handling (fail-fast behavior):")
+(try
+  (await (async-map [1 2 3 4] (fn [x]
+                                (if (= x 3)
+                                  (reject (str "Error processing " x))
+                                  (timeout 50 (* x 10))))))
+  (catch error
+    (print "  Attempted to process [1 2 3 4], but failed on 3")
+    (print "  Error caught:" error)
+    (print "  ✓ Failed fast when one operation rejected!")))
+(print)
+
+;; Example 8: Performance comparison
+(print "8. Performance comparison (sequential vs concurrent):")
+
+;; Sequential processing
+(defn process-sequentially [items]
+  (let [result []]
+    (doseq [item items]
+      (set! result (conj result (await (timeout 80 (* item 2))))))
+    result))
+
+;; Test data
+(let [test-data [1 2 3 4 5]]
+  
+  ;; Sequential timing
+  (let [start (current-time-millis)
+        seq-result (process-sequentially test-data)
+        seq-time (- (current-time-millis) start)]
+    (print "  Sequential processing:" seq-time "ms")
+    
+    ;; Concurrent timing
+    (let [start (current-time-millis)
+          conc-result (await (async-map test-data (fn [x] (timeout 80 (* x 2)))))
+          conc-time (- (current-time-millis) start)]
+      (print "  Concurrent processing:" conc-time "ms")
+      (print "  Speedup:" (/ seq-time conc-time) "x faster")
+      (print "  Results match:" (= seq-result conc-result))
+      (print "  ✓ Concurrent is much faster!"))))
+(print)
+
+;; Example 9: Large collection processing
+(print "9. Large collection processing:")
+(let [large-collection (range 1 21)  ; 1 to 20
+      start-time (current-time-millis)
+      squares (await (async-map large-collection (fn [x] 
+                                                   (timeout 30 (* x x)))))
+      end-time (current-time-millis)
+      duration (- end-time start-time)]
+  (print "  Processing" (count large-collection) "items concurrently")
+  (print "  First 10 squares:" (take 10 squares))
+  (print "  Time taken:" duration "ms")
+  (print "  ✓ Efficiently processed large collection!"))
+(print)
+
+(print "=== Demo Complete ===")
+(print "async-map provides JavaScript-familiar concurrent mapping:")
+(print "• All operations start immediately (like Promise.all)")
+(print "• Results maintain original order")
+(print "• Fail-fast error handling")
+(print "• Thread-first operator compatible")
+(print "• Significant performance gains over sequential processing") 

@@ -13,6 +13,7 @@ from .on_reject import builtin_on_reject, documentation_on_reject
 from .on_complete import builtin_on_complete, documentation_on_complete
 from .timeout import builtin_timeout, documentation_timeout
 from .with_timeout import builtin_with_timeout, documentation_with_timeout
+from .async_map import builtin_async_map, documentation_async_map
 
 __all__ = [
     # Functions
@@ -29,6 +30,7 @@ __all__ = [
     "builtin_on_complete",
     "builtin_timeout",
     "builtin_with_timeout",
+    "builtin_async_map",
     # Documentation
     "documentation_promise",
     "documentation_resolve",
@@ -43,4 +45,5 @@ __all__ = [
     "documentation_on_complete",
     "documentation_timeout",
     "documentation_with_timeout",
+    "documentation_async_map",
 ] 

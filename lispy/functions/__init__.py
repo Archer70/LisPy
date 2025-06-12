@@ -107,6 +107,7 @@ from .promises import (
     builtin_on_complete, documentation_on_complete,
     builtin_timeout, documentation_timeout,
     builtin_with_timeout, documentation_with_timeout,
+    builtin_async_map, documentation_async_map,
 )
 
 # Other function imports (alphabetized)
@@ -202,6 +203,7 @@ def create_global_env() -> Environment:
     env.define("promise-then", builtin_promise_then)
     env.define("vals", builtin_vals)
     env.define("with-timeout", builtin_with_timeout)
+    env.define("async-map", builtin_async_map)
     env.define("vector", builtin_vector)
     env.define("is_vector?", builtin_is_vector_q)
 
@@ -295,6 +297,7 @@ def setup_documentation_registry():
     register_documentation("promise-then", documentation_promise_then)
     register_documentation("vals", documentation_vals)
     register_documentation("with-timeout", documentation_with_timeout)
+    register_documentation("async-map", documentation_async_map)
     register_documentation("vector", documentation_vector)
 
 
