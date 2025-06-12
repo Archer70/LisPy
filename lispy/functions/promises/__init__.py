@@ -19,6 +19,7 @@ from .with_timeout import builtin_with_timeout, documentation_with_timeout
 from .async_map import builtin_async_map, documentation_async_map
 from .async_filter import builtin_async_filter, documentation_async_filter
 from .async_reduce import builtin_async_reduce, documentation_async_reduce
+from .debounce import builtin_debounce, documentation_debounce
 
 __all__ = [
     # Functions
@@ -37,6 +38,7 @@ __all__ = [
     "builtin_async_map",
     "builtin_async_filter",
     "builtin_async_reduce",
+    "builtin_debounce",
     # Documentation
     "documentation_promise",
     "documentation_resolve",
@@ -53,4 +55,5 @@ __all__ = [
     "documentation_async_map",
     "documentation_async_filter",
     "documentation_async_reduce",
+    "documentation_debounce",
 ]

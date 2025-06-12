@@ -184,6 +184,8 @@ from .promises import (
     documentation_async_filter,
     builtin_async_reduce,
     documentation_async_reduce,
+    builtin_debounce,
+    documentation_debounce,
 )
 
 # Other function imports (alphabetized)
@@ -232,7 +234,7 @@ def create_global_env() -> Environment:
     env.define("conj", builtin_conj)
     env.define("cons", builtin_cons)
     env.define("count", builtin_count)
-
+    env.define("debounce", builtin_debounce)
     env.define("dissoc", builtin_dissoc)
     env.define("doc", builtin_doc)
     env.define("empty?", builtin_empty_q)
@@ -326,7 +328,7 @@ def setup_documentation_registry():
     register_documentation("conj", documentation_conj)
     register_documentation("cons", documentation_cons)
     register_documentation("count", documentation_count)
-
+    register_documentation("debounce", documentation_debounce)
     register_documentation("dissoc", documentation_dissoc)
     register_documentation("doc", documentation_doc)
     register_documentation("empty?", documentation_empty_q)
