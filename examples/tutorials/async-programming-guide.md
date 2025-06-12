@@ -289,7 +289,7 @@ Promise combinators allow you to coordinate multiple asynchronous operations.
 (async 
   (let [result (await (promise-race (vector
                                       (fetch-data-from-api)
-                                      (delay 5000 (reject "timeout")))))]
+                                      (timeout 5000 (reject "timeout")))))]
     (println "Got result within timeout:" result)))
 
 ;; Racing multiple data sources
@@ -377,21 +377,21 @@ Promise combinators allow you to coordinate multiple asynchronous operations.
 Creates a promise that resolves after a specified time delay.
 
 ```lisp
-;; Syntax: (delay milliseconds value)
-(delay 1000 "Hello") ; Resolves to "Hello" after 1 second
+;; Syntax: (timeout milliseconds value)
+(timeout 1000 "Hello") ; Resolves to "Hello" after 1 second
 
 ;; Use for timeouts
 (async 
   (let [result (await (promise-race (vector
                                       (some-operation)
-                                      (delay 3000 "timeout"))))]
+                                      (timeout 3000 "timeout"))))]
     (if (equal? result "timeout")
       (println "Operation timed out")
       (println "Operation completed:" result))))
 
 ;; Use for rate limiting
 (async 
-  (let [_ (await (delay 100 nil))]  ; Wait 100ms between requests
+          (let [_ (await (timeout 100 nil))]  ; Wait 100ms between requests
     (fetch-next-batch)))
 ```
 
@@ -484,15 +484,15 @@ Creates a promise that resolves after a specified time delay.
                      ; Try primary API with timeout
                      (promise-race (vector
                                      (fetch-from-api endpoint)
-                                     (delay 2000 (reject "primary-timeout"))))
+                                     (timeout 2000 (reject "primary-timeout"))))
                      
                      ; Try backup API with longer timeout
                      (promise-race (vector
                                      (fetch-from-backup-api endpoint)
-                                     (delay 5000 (reject "backup-timeout"))))
+                                     (timeout 5000 (reject "backup-timeout"))))
                      
                      ; Last resort: return default data
-                     (delay 100 (get-default-data endpoint))))
+                     (timeout 100 (get-default-data endpoint))))
       (promise-then (fn [data] 
         (do 
           (log-successful-source endpoint)
@@ -660,7 +660,7 @@ Creates a promise that resolves after a specified time delay.
 (async 
   (let [result (await (promise-race (vector
                                       (long-running-operation)
-                                      (delay 5000 (reject "timeout")))))]
+                                      (timeout 5000 (reject "timeout")))))]
     (handle-result result)))
 ```
 
@@ -777,7 +777,7 @@ Creates a promise that resolves after a specified time delay.
                   (if (> remaining 0)
                     (promise-any (vector
                                    (operation)
-                                   (delay current-delay
+                                   (timeout current-delay
                                           (attempt (- remaining 1) 
                                                    (* current-delay 2)))))
                     (reject "max-retries-exceeded")))]
@@ -799,7 +799,7 @@ Creates a promise that resolves after a specified time delay.
   "Process items with rate limiting between operations"
   (let [process-with-delay (fn [acc item]
                              (let [result (await (process-fn item))
-                                   _ (await (delay rate-limit-ms nil))]
+                                   _ (await (timeout rate-limit-ms nil))]
                                (conj acc result)))]
     (reduce items process-with-delay [])))
 
@@ -827,7 +827,7 @@ Creates a promise that resolves after a specified time delay.
                    data)
                  
                  ; Fallback timeout
-                 (delay 10000 (reject "cache-and-fetch-timeout")))))
+                 (timeout 10000 (reject "cache-and-fetch-timeout")))))
 ```
 
 ### 4. Circuit Breaker Pattern
@@ -852,7 +852,7 @@ Creates a promise that resolves after a specified time delay.
                        (swap! circuit-state assoc ':failures 0 ':state "closed")
                        result)
                      
-                     (delay 0 ; Immediate failure handling
+                     (timeout 0 ; Immediate failure handling
                             (let [failures (+ (get state ':failures) 1)]
                               (if (> failures 5)
                                 (swap! circuit-state assoc 
@@ -884,7 +884,7 @@ Creates a promise that resolves after a specified time delay.
 (async 
   (let [result (await (promise-race (vector
                                       broken-promise
-                                      (delay 5000 "timeout"))))]
+                                      (timeout 5000 "timeout"))))]
     (if (equal? result "timeout")
       (handle-timeout)
       (handle-result result))))
@@ -940,7 +940,7 @@ Creates a promise that resolves after a specified time delay.
         start-time (current-time-ms)
         result (await (promise-race (vector
                                       (operation)
-                                      (delay 30000 (reject "debug-timeout")))))
+                                      (timeout 30000 (reject "debug-timeout")))))
         end-time (current-time-ms)
         duration (- end-time start-time)]
     (println "Completed:" name "in" duration "ms")
@@ -978,7 +978,7 @@ Creates a promise that resolves after a specified time delay.
   "Add debug timeout to catch hanging operations"
   (promise-race (vector
                   (operation)
-                  (delay timeout-ms 
+                  (timeout timeout-ms 
                          (do 
                            (println "DEBUG: Operation timed out after" timeout-ms "ms")
                            (reject "debug-timeout"))))))
@@ -1006,7 +1006,7 @@ Creates a promise that resolves after a specified time delay.
 | `promise-any` | First success wins | Fallbacks, resilience |
 | `promise-all-settled` | Comprehensive results | Monitoring, graceful degradation |
 | **Utilities** | | |
-| `delay` | Timed operations | Timeouts, rate limiting |
+| `timeout` | Timed operations | Timeouts, rate limiting |
 
 ### Programming Style Decision Tree
 
@@ -1050,7 +1050,7 @@ Do you need ALL operations to succeed?
 - **For critical operations**: Use `promise-all` with proper fallbacks
 - **For optional operations**: Use `promise-all-settled` 
 - **For fallback chains**: Use `promise-any`
-- **For timeouts**: Use `promise-race` with `delay`
+- **For timeouts**: Use `promise-race` with `timeout`
 
 **Quick Error Handling Patterns:**
 ```lisp
@@ -1080,7 +1080,7 @@ LisPy's async programming capabilities provide powerful tools for building respo
 1. **Choose the right programming style**: Promise chaining for functional pipelines, async/await for complex control flow
 2. **Understand each combinator's behavior**: Know when to use `promise-all`, `promise-race`, `promise-any`, and `promise-all-settled`
 3. **Implement comprehensive error handling**: Use `on-reject` for recovery, `on-complete` for cleanup
-4. **Add appropriate timeouts**: Prevent hanging operations with `promise-race` and `delay`
+4. **Add appropriate timeouts**: Prevent hanging operations with `promise-race` and `timeout`
 5. **Test async flows thoroughly**: Both success and failure scenarios
 
 ### Promise Chaining Benefits:

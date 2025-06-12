@@ -127,9 +127,9 @@ Examples:
   ; With async operations
   (async
     (let [results (await (promise-all-settled [
-                           (delay 100 "fast")
-                           (reject "error")
-                           (delay 200 "slow")]))]
+                                           (timeout 100 "fast")
+                (reject "error")
+                (timeout 200 "slow")]))]
       ; Process each result
       (map (fn [result]
              (if (= (get result :status) "fulfilled")

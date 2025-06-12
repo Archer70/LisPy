@@ -17,11 +17,11 @@ def builtin_promise_race(args, env):
         the first promise to settle (resolve or reject)
 
     Examples:
-        (promise-race [(delay 100 "slow") (delay 50 "fast")]) 
+        (promise-race [(timeout 100 "slow") (timeout 50 "fast")]) 
         ; => Promise that resolves to "fast"
         
         (async 
-          (let [result (await (promise-race [(resolve "immediate") (delay 1000 "slow")]))]
+          (let [result (await (promise-race [(resolve "immediate") (timeout 1000 "slow")]))]
             result)) ; => "immediate"
     """
     if len(args) != 1:
@@ -91,22 +91,22 @@ Description: Returns a promise that settles with the first promise to settle (re
 
 Examples:
   ; First to resolve wins
-  (promise-race [(delay 200 "slow") (delay 50 "fast")])
+  (promise-race [(timeout 200 "slow") (timeout 50 "fast")])
   ; => Promise that resolves to "fast"
   
   ; First to reject wins too
-  (promise-race [(delay 200 "slow") (reject "error")])
+  (promise-race [(timeout 200 "slow") (reject "error")])
   ; => Promise that rejects with "error"
   
   ; With immediate values
-  (promise-race [(resolve "immediate") (delay 1000 "delayed")])
+  (promise-race [(resolve "immediate") (timeout 1000 "delayed")])
   ; => Promise that resolves to "immediate"
   
   ; Timeout pattern
   (async
     (let [result (await (promise-race [
                           (fetch-data "user")
-                          (delay 5000 (reject "timeout"))]))]
+                          (timeout 5000 (reject "timeout"))]))]
       result)) ; => Either user data or timeout error
   
   ; Empty collection never settles

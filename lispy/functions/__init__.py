@@ -101,7 +101,7 @@ from .promises import (
     builtin_promise_race, documentation_promise_race,
     builtin_promise_any, documentation_promise_any,
     builtin_promise_all_settled, documentation_promise_all_settled,
-    builtin_delay, documentation_delay,
+
     builtin_promise_then, documentation_promise_then,
     builtin_on_reject, documentation_on_reject,
     builtin_on_complete, documentation_on_complete,
@@ -152,7 +152,7 @@ def create_global_env() -> Environment:
     env.define("conj", builtin_conj)
     env.define("cons", builtin_cons)
     env.define("count", builtin_count)
-    env.define("delay", builtin_delay)
+
     env.define("dissoc", builtin_dissoc)
     env.define("doc", builtin_doc)
     env.define("empty?", builtin_empty_q)
@@ -242,7 +242,7 @@ def setup_documentation_registry():
     register_documentation("conj", documentation_conj)
     register_documentation("cons", documentation_cons)
     register_documentation("count", documentation_count)
-    register_documentation("delay", documentation_delay)
+
     register_documentation("dissoc", documentation_dissoc)
     register_documentation("doc", documentation_doc)
     register_documentation("empty?", documentation_empty_q)

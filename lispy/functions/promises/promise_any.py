@@ -110,7 +110,7 @@ Examples:
   ; => Promise that rejects with aggregate error containing all reasons
   
   ; Immediate resolution wins
-  (promise-any [(reject "error") (resolve "immediate") (delay 1000 "delayed")])
+  (promise-any [(reject "error") (resolve "immediate") (timeout 1000 "delayed")])
   ; => Promise that resolves to "immediate"
   
   ; API fallback pattern

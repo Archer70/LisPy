@@ -174,16 +174,16 @@
         _ (println "")
         _ (println "1. Racing fast vs slow operations:")
         race-result1 (await (promise-race (vector 
-                                           (delay 100 "fast-operation")
-                                           (delay 500 "slow-operation"))))
+                                           (timeout 100 "fast-operation")
+                                           (timeout 500 "slow-operation"))))
         _ (println "   Winner:" race-result1)
         
         ; Example 2: Timeout pattern - very common use case
         _ (println "")
         _ (println "2. Timeout pattern (operation vs timeout):")
         race-result2 (await (promise-race (vector
-                                          (delay 200 "data-fetched")
-                                          (delay 1000 "timeout"))))
+                                          (timeout 200 "data-fetched")
+                                          (timeout 1000 "timeout"))))
         _ (println "   Result within timeout:" race-result2)
         
         ; Example 3: Immediate vs delayed
@@ -191,7 +191,7 @@
         _ (println "3. Immediate vs delayed:")
         race-result3 (await (promise-race (vector
                                           (resolve "immediate")
-                                          (delay 300 "delayed"))))
+                                          (timeout 300 "delayed"))))
         _ (println "   Immediate wins:" race-result3)
         
         ; Example 4: Multiple fibonacci calculations - first to finish
@@ -222,8 +222,8 @@
         _ (println "2. API endpoint fallback:")
         api-result (await (promise-any (vector
                                        (reject "api-1-down")
-                                       (delay 150 "api-2-data")
-                                       (delay 300 "api-3-data"))))
+                                       (timeout 150 "api-2-data")
+                                       (timeout 300 "api-3-data"))))
         _ (println "   First successful API:" api-result)
         
         ; Example 3: Immediate success beats delayed success
@@ -232,7 +232,7 @@
         immediate-result (await (promise-any (vector
                                              (reject "error")
                                              (resolve "immediate-success")
-                                             (delay 500 "delayed-success"))))
+                                             (timeout 500 "delayed-success"))))
         _ (println "   Immediate success:" immediate-result)
         
         ; Example 4: Multiple data sources - first to succeed
@@ -240,8 +240,8 @@
         _ (println "4. Multiple data sources (first to provide data):")
         data-result (await (promise-any (vector
                                         (reject "cache-miss")
-                                        (delay 100 "database-data")
-                                        (delay 200 "api-data"))))
+                                        (timeout 100 "database-data")
+                                        (timeout 200 "api-data"))))
         _ (println "   First data source:" data-result)
         
         ; === PROMISE-ALL-SETTLED EXAMPLES ===
@@ -276,9 +276,9 @@
         _ (println "3. Graceful degradation (continue despite failures):")
         service-results (await (promise-all-settled (vector
                                                      (reject "service-1-down")
-                                                     (delay 50 "service-2-ok")
+                                                     (timeout 50 "service-2-ok")
                                                      (reject "service-3-timeout")
-                                                     (delay 80 "service-4-ok"))))
+                                                     (timeout 80 "service-4-ok"))))
         working-services (filter service-results (fn [r] (equal? (get r ':status) "fulfilled")))
         _ (println (append "   Working services: " (str (count working-services)) "/" (str (count service-results))))
         
