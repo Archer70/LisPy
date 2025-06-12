@@ -19,4 +19,4 @@ __all__ = [
     "documentation_read_line",
     "documentation_slurp",
     "documentation_spit",
-] 
+]

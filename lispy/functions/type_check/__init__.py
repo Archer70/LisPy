@@ -28,4 +28,4 @@ __all__ = [
     "documentation_is_number_q",
     "documentation_is_string_q",
     "documentation_is_vector_q",
-] 
+]

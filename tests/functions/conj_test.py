@@ -1,6 +1,6 @@
 import unittest
 
-from lispy.types import LispyList, Vector, Symbol
+from lispy.types import LispyList, Vector
 from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
 from lispy.utils import run_lispy_string
@@ -76,16 +76,16 @@ class ConjFnTest(unittest.TestCase):
 
     # Nil collection tests
     def test_conj_nil_one_item(self):
-      """Test (conj nil 1) results in list (1)"""
-      lispy_code = "(conj nil 1)"
-      result = run_lispy_string(lispy_code, self.env)
-      self.assertEqual(result, LispyList([1]))
+        """Test (conj nil 1) results in list (1)"""
+        lispy_code = "(conj nil 1)"
+        result = run_lispy_string(lispy_code, self.env)
+        self.assertEqual(result, LispyList([1]))
 
     def test_conj_nil_multiple_items(self):
-      """Test (conj nil 1 2 3) results in list (3 2 1)"""
-      lispy_code = "(conj nil 1 2 3)"
-      result = run_lispy_string(lispy_code, self.env)
-      self.assertEqual(result, LispyList([3,2,1]))
+        """Test (conj nil 1 2 3) results in list (3 2 1)"""
+        lispy_code = "(conj nil 1 2 3)"
+        result = run_lispy_string(lispy_code, self.env)
+        self.assertEqual(result, LispyList([3, 2, 1]))
 
     # Error handling tests
     def test_conj_no_items(self):
@@ -93,28 +93,41 @@ class ConjFnTest(unittest.TestCase):
         lispy_code = "(conj '(1 2))"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'conj' expects at least 2 arguments (collection and item(s)), got 1.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'conj' expects at least 2 arguments (collection and item(s)), got 1.",
+        )
 
     def test_conj_no_args(self):
         """Test (conj) raises SyntaxError."""
         lispy_code = "(conj)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'conj' expects at least 2 arguments (collection and item(s)), got 0.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'conj' expects at least 2 arguments (collection and item(s)), got 0.",
+        )
 
     def test_conj_wrong_collection_type(self):
         """Test (conj {:a 1} 2) raises TypeError."""
         lispy_code = "(conj {:a 1} 2)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'conj' expects a list, vector, or nil as the first argument, got <class 'dict'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'conj' expects a list, vector, or nil as the first argument, got <class 'dict'>.",
+        )
 
     def test_conj_string_collection(self):
         """Test (conj \"abc\" \"d\") raises TypeError."""
         lispy_code = '(conj "abc" "d")'
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'conj' expects a list, vector, or nil as the first argument, got <class 'str'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'conj' expects a list, vector, or nil as the first argument, got <class 'str'>.",
+        )
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

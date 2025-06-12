@@ -3,7 +3,6 @@ import unittest
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
-from lispy.types import LispyList, Vector
 
 
 class JoinFnTest(unittest.TestCase):
@@ -80,7 +79,7 @@ class JoinFnTest(unittest.TestCase):
         """Test join with variables."""
         run_lispy_string('(define words ["hello" "beautiful" "world"])', self.env)
         run_lispy_string('(define sep " ")', self.env)
-        result = run_lispy_string('(join words sep)', self.env)
+        result = run_lispy_string("(join words sep)", self.env)
         self.assertIsInstance(result, str)
         self.assertEqual(result, "hello beautiful world")
 
@@ -89,43 +88,64 @@ class JoinFnTest(unittest.TestCase):
         """Test join with too few arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(join)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'join' expects 2 arguments, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'join' expects 2 arguments, got 0."
+        )
 
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string('(join [])', self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'join' expects 2 arguments, got 1.")
+            run_lispy_string("(join [])", self.env)
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'join' expects 2 arguments, got 1."
+        )
 
     def test_join_too_many_args(self):
         """Test join with too many arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(join ["a"] " " "extra")', self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'join' expects 2 arguments, got 3.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'join' expects 2 arguments, got 3."
+        )
 
     def test_join_invalid_separator_type(self):
         """Test join with non-string separator."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(join ["a" "b"] 123)', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'join' second argument (separator) must be a string, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'join' second argument (separator) must be a string, got <class 'int'>.",
+        )
 
     def test_join_invalid_collection_type(self):
         """Test join with non-collection first argument."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(join "not-a-collection" " ")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'join' first argument must be a list or vector, got <class 'str'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'join' first argument must be a list or vector, got <class 'str'>.",
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(join 123 " ")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'join' first argument must be a list or vector, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'join' first argument must be a list or vector, got <class 'int'>.",
+        )
 
     def test_join_collection_with_non_string_elements(self):
         """Test join with non-string elements in collection."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(join ["a" 123 "c"] " ")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: All elements in collection must be strings, got <class 'int'> at position 1.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: All elements in collection must be strings, got <class 'int'> at position 1.",
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(join [true "b"] " ")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: All elements in collection must be strings, got <class 'bool'> at position 0.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: All elements in collection must be strings, got <class 'bool'> at position 0.",
+        )
 
     def test_join_with_thread_first(self):
         """Test join used with the -> (thread-first) special form."""
@@ -135,16 +155,20 @@ class JoinFnTest(unittest.TestCase):
 
     def test_join_chaining_with_thread_first(self):
         """Test chaining join with other operations via thread-first."""
-        result = run_lispy_string('(-> ["a" "b" "c"] (join "-") (append "!"))', self.env)
+        result = run_lispy_string(
+            '(-> ["a" "b" "c"] (join "-") (append "!"))', self.env
+        )
         self.assertIsInstance(result, str)
         self.assertEqual(result, "a-b-c!")
 
     def test_join_complex_thread_first(self):
         """Test complex join operation with thread-first."""
-        result = run_lispy_string('(-> ["1" "2" "3"] (join ", ") (append " are numbers"))', self.env)
+        result = run_lispy_string(
+            '(-> ["1" "2" "3"] (join ", ") (append " are numbers"))', self.env
+        )
         self.assertIsInstance(result, str)
         self.assertEqual(result, "1, 2, 3 are numbers")
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

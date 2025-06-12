@@ -28,11 +28,15 @@ class IsMapQFnTest(unittest.TestCase):
 
     def test_map_q_map_with_mixed_types(self):
         """Test (is_map? {:a 1 :b \"hello\" :c true :d nil}) returns true."""
-        self.assertTrue(run_lispy_string("(is_map? {:a 1 :b \"hello\" :c true :d nil})", self.env))
+        self.assertTrue(
+            run_lispy_string('(is_map? {:a 1 :b "hello" :c true :d nil})', self.env)
+        )
 
     def test_map_q_map_with_collections(self):
         """Test (is_map? {:list '(1 2) :vector [3 4]}) returns true."""
-        self.assertTrue(run_lispy_string("(is_map? {:list '(1 2) :vector [3 4]})", self.env))
+        self.assertTrue(
+            run_lispy_string("(is_map? {:list '(1 2) :vector [3 4]})", self.env)
+        )
 
     def test_map_q_vector(self):
         """Test (is_map? [1 2 3]) returns false."""
@@ -70,14 +74,18 @@ class IsMapQFnTest(unittest.TestCase):
         """Test (is_map?) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_map?)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_map?' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_map?' expects 1 argument, got 0."
+        )
 
     def test_map_q_too_many_args(self):
         """Test (is_map? {} {}) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_map? {} {})", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_map?' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_map?' expects 1 argument, got 2."
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

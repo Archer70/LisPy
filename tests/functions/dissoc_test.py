@@ -72,22 +72,31 @@ class DissocFnTest(unittest.TestCase):
         lispy_code = "(dissoc)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'dissoc' expects at least 1 argument (map), got 0.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'dissoc' expects at least 1 argument (map), got 0.",
+        )
 
     def test_dissoc_map_arg_not_map_or_nil(self):
         """Test (dissoc '(1 2) :a) raises TypeError."""
         lispy_code = "(dissoc '(1 2) ':a)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: First argument to 'dissoc' must be a map or nil, got <class 'lispy.types.LispyList'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: First argument to 'dissoc' must be a map or nil, got <class 'lispy.types.LispyList'>.",
+        )
 
     def test_dissoc_key_not_symbol(self):
         """Test (dissoc {:a 1} 1) raises TypeError (key must be a symbol)."""
         lispy_code = "(dissoc {:a 1} 1)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Keys to 'dissoc' must be symbols, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Keys to 'dissoc' must be symbols, got <class 'int'>.",
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

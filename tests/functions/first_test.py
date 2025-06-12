@@ -1,5 +1,5 @@
 import unittest
-from lispy.types import LispyList, Vector, Symbol
+from lispy.types import LispyList
 from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
 from lispy.utils import run_lispy_string
@@ -77,29 +77,39 @@ class FirstFnTest(unittest.TestCase):
         lispy_code = "(first)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'first' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'first' expects 1 argument, got 0."
+        )
 
     def test_first_too_many_args(self):
         """Test (first '(1) '(2)) raises SyntaxError."""
         lispy_code = "(first '(1) '(2))"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'first' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'first' expects 1 argument, got 2."
+        )
 
     def test_first_wrong_type(self):
         """Test (first 123) raises TypeError."""
         lispy_code = "(first 123)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'first' expects a list, vector, string, or nil, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'first' expects a list, vector, string, or nil, got <class 'int'>.",
+        )
 
     def test_first_map_type(self):
         """Test (first {:a 1}) raises TypeError."""
         lispy_code = "(first {:a 1})"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'first' expects a list, vector, string, or nil, got <class 'dict'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'first' expects a list, vector, string, or nil, got <class 'dict'>.",
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

@@ -1,7 +1,6 @@
 # LisPy Custom Types
 
 import threading
-import time
 from typing import Any, Callable, List, Optional
 
 
@@ -64,11 +63,13 @@ class LispyPromise:
         self.value = None
         self.error = None
         self.callbacks: List[Callable[[], None]] = []
-        
+
         if executor_fn:
             try:
                 # Execute immediately in background thread
-                threading.Thread(target=self._execute, args=[executor_fn], daemon=True).start()
+                threading.Thread(
+                    target=self._execute, args=[executor_fn], daemon=True
+                ).start()
             except Exception as e:
                 self.reject(e)
 
@@ -104,7 +105,7 @@ class LispyPromise:
                 print(f"Promise callback error: {e}")
         self.callbacks = []
 
-    def then(self, callback: Callable[[Any], Any]) -> 'LispyPromise':
+    def then(self, callback: Callable[[Any], Any]) -> "LispyPromise":
         """Chain a callback to be executed when promise resolves."""
         if self.state == "resolved":
             return self._create_resolved_promise(callback(self.value))
@@ -115,7 +116,9 @@ class LispyPromise:
             self.callbacks.append(lambda: self._handle_then(callback, new_promise))
             return new_promise
 
-    def _handle_then(self, callback: Callable[[Any], Any], new_promise: 'LispyPromise') -> None:
+    def _handle_then(
+        self, callback: Callable[[Any], Any], new_promise: "LispyPromise"
+    ) -> None:
         """Handle then callback execution."""
         if self.state == "resolved":
             try:
@@ -131,7 +134,7 @@ class LispyPromise:
         else:
             new_promise.reject(self.error)
 
-    def catch(self, error_callback: Callable[[Any], Any]) -> 'LispyPromise':
+    def catch(self, error_callback: Callable[[Any], Any]) -> "LispyPromise":
         """Handle promise rejection."""
         if self.state == "rejected":
             return self._create_resolved_promise(error_callback(self.error))
@@ -139,10 +142,14 @@ class LispyPromise:
             return self._create_resolved_promise(self.value)
         else:
             new_promise = LispyPromise()
-            self.callbacks.append(lambda: self._handle_catch(error_callback, new_promise))
+            self.callbacks.append(
+                lambda: self._handle_catch(error_callback, new_promise)
+            )
             return new_promise
 
-    def _handle_catch(self, error_callback: Callable[[Any], Any], new_promise: 'LispyPromise') -> None:
+    def _handle_catch(
+        self, error_callback: Callable[[Any], Any], new_promise: "LispyPromise"
+    ) -> None:
         """Handle catch callback execution."""
         if self.state == "rejected":
             try:
@@ -153,13 +160,13 @@ class LispyPromise:
         else:
             new_promise.resolve(self.value)
 
-    def _create_resolved_promise(self, value: Any) -> 'LispyPromise':
+    def _create_resolved_promise(self, value: Any) -> "LispyPromise":
         """Create a promise that's already resolved."""
         promise = LispyPromise()
         promise.resolve(value)
         return promise
 
-    def _create_rejected_promise(self, error: Any) -> 'LispyPromise':
+    def _create_rejected_promise(self, error: Any) -> "LispyPromise":
         """Create a promise that's already rejected."""
         promise = LispyPromise()
         promise.reject(error)

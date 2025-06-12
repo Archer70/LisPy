@@ -3,7 +3,6 @@ import unittest
 from lispy.types import Vector
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
-from lispy.exceptions import EvaluationError
 
 
 class VectorFnTest(unittest.TestCase):
@@ -48,5 +47,5 @@ class VectorFnTest(unittest.TestCase):
         self.assertEqual(result, Vector([10, 3, Vector([6])]))
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

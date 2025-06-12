@@ -7,10 +7,14 @@ from lispy.types import LispyPromise
 def builtin_reject(args: List[Any], env: Environment) -> LispyPromise:
     """Creates a rejected promise with the given error. (reject error)"""
     if len(args) != 1:
-        raise EvaluationError("SyntaxError: 'reject' expects 1 argument (error), got {}.".format(len(args)))
-    
+        raise EvaluationError(
+            "SyntaxError: 'reject' expects 1 argument (error), got {}.".format(
+                len(args)
+            )
+        )
+
     error = args[0]
-    
+
     # Create a promise that's already rejected
     promise = LispyPromise()
     promise.reject(error)
@@ -51,4 +55,4 @@ Notes:
   - Error value can be any LisPy value (string, number, map, etc.)
   - Maintains consistent async error interface
   - Use with try/catch when awaiting
-  - Rejected promises propagate through promise chains""" 
+  - Rejected promises propagate through promise chains"""

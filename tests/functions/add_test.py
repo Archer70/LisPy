@@ -5,8 +5,8 @@ from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
 
-class AddFunctionTest(unittest.TestCase):
 
+class AddFunctionTest(unittest.TestCase):
     def setUp(self):
         self.env = create_global_env()
 
@@ -27,14 +27,21 @@ class AddFunctionTest(unittest.TestCase):
         self.assertEqual(run_lispy_string("(+)", self.env), 0)
 
     def test_add_type_error_non_numeric(self):
-        with self.assertRaisesRegex(EvaluationError, r"TypeError: Argument 1 to '\+' must be a number, got str: 'a'"):
-            run_lispy_string("(+ \"a\" 5)", self.env)
-        with self.assertRaisesRegex(EvaluationError, r"TypeError: Argument 2 to '\+' must be a number, got Vector: '\[.*\]'"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"TypeError: Argument 1 to '\+' must be a number, got str: 'a'",
+        ):
+            run_lispy_string('(+ "a" 5)', self.env)
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"TypeError: Argument 2 to '\+' must be a number, got Vector: '\[.*\]'",
+        ):
             run_lispy_string("(+ 5 [])", self.env)
 
     def test_add_empty_call(self):
         # Standard Lisp behavior: (+) should return 0
         self.assertEqual(run_lispy_string("(+)", self.env), 0)
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

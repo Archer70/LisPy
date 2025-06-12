@@ -66,14 +66,18 @@ class IsNumberQFnTest(unittest.TestCase):
         """Test (is_number?) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_number?)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_number?' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_number?' expects 1 argument, got 0."
+        )
 
     def test_number_q_too_many_args(self):
         """Test (is_number? 1 2) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_number? 1 2)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_number?' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_number?' expects 1 argument, got 2."
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

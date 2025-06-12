@@ -20,54 +20,62 @@ import threading
 def builtin_async_map(args, env):
     """
     Async map function - concurrent mapping with Promise.all semantics.
-    
+
     Maps each element through callback concurrently, returns promise of results.
     Follows JavaScript Array.map() + Promise.all() pattern exactly.
     """
     # Validate argument count
     if len(args) != 2:
-        raise EvaluationError(f"SyntaxError: 'async-map' expects 2 arguments, got {len(args)}.")
-    
+        raise EvaluationError(
+            f"SyntaxError: 'async-map' expects 2 arguments, got {len(args)}."
+        )
+
     collection, callback = args
-    
+
     # Validate arguments
     if not isinstance(collection, (Vector, List)):
-        raise EvaluationError("TypeError: 'async-map' expects a vector or list as first argument.")
-    
+        raise EvaluationError(
+            "TypeError: 'async-map' expects a vector or list as first argument."
+        )
+
     # Validate callback type (can be user-defined function or built-in)
     is_user_defined_fn = isinstance(callback, Function)
     is_builtin_fn = callable(callback) and not is_user_defined_fn
-    
+
     if not (is_user_defined_fn or is_builtin_fn):
-        raise EvaluationError("TypeError: 'async-map' expects a function as second argument.")
-    
+        raise EvaluationError(
+            "TypeError: 'async-map' expects a function as second argument."
+        )
+
     # Handle empty collection
     if len(collection) == 0:
         promise = LispyPromise()
         promise.resolve(Vector([]))
         return promise
-    
+
     # Create the result promise
     result_promise = LispyPromise()
-    
+
     try:
         results = []
         all_sync = True  # Track if all results are synchronous
-        
+
         for element in collection:
             # Call the callback function
             if is_user_defined_fn:
                 # User-defined function - need to handle environment and parameters
                 from lispy.environment import Environment
                 from lispy.evaluator import evaluate
-                
+
                 if len(callback.params) != 1:
-                    raise EvaluationError(f"ArityError: Function passed to 'async-map' expects 1 argument, got {len(callback.params)}.")
-                
+                    raise EvaluationError(
+                        f"ArityError: Function passed to 'async-map' expects 1 argument, got {len(callback.params)}."
+                    )
+
                 param_symbol = callback.params[0]
                 call_env = Environment(outer=callback.defining_env)
                 call_env.define(param_symbol.name, element)
-                
+
                 # Execute function body
                 result = None
                 for expr_in_body in callback.body:
@@ -75,13 +83,13 @@ def builtin_async_map(args, env):
             else:
                 # Built-in function
                 result = callback([element], env)
-            
+
             # Check if result is a promise
             if isinstance(result, LispyPromise):
                 all_sync = False
-            
+
             results.append(result)
-        
+
         # If all results are synchronous, resolve immediately
         if all_sync:
             result_promise.resolve(Vector(results))
@@ -92,7 +100,7 @@ def builtin_async_map(args, env):
             completed_count = [0]
             error_occurred = [False]
             lock = threading.Lock()
-            
+
             def handle_completion():
                 with lock:
                     if error_occurred[0]:
@@ -100,13 +108,13 @@ def builtin_async_map(args, env):
                     completed_count[0] += 1
                     if completed_count[0] == len(results):
                         result_promise.resolve(Vector(final_results))
-            
+
             def handle_error(error):
                 with lock:
                     if not error_occurred[0]:
                         error_occurred[0] = True
                         result_promise.reject(error)
-            
+
             # Process each result
             for i, result in enumerate(results):
                 if isinstance(result, LispyPromise):
@@ -115,10 +123,12 @@ def builtin_async_map(args, env):
                         def success_handler(value):
                             final_results[idx] = value
                             handle_completion()
+
                         def error_handler(error):
                             handle_error(error)
+
                         return success_handler, error_handler
-                    
+
                     success_handler, error_handler = make_handlers(i)
                     result.then(success_handler)
                     result.catch(error_handler)
@@ -126,10 +136,10 @@ def builtin_async_map(args, env):
                     # Sync result - store immediately
                     final_results[i] = result
                     handle_completion()
-        
+
     except Exception as e:
         result_promise.reject(str(e))
-    
+
     return result_promise
 
 
@@ -167,4 +177,4 @@ Notes:
   - Fail-fast: if any operation fails, whole operation fails
   - Follows JavaScript Array.map() + Promise.all() semantics
   - Thread-first (->) operator compatible
-""" 
+"""

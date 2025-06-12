@@ -3,7 +3,6 @@ import unittest
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
-from lispy.types import LispyList, Vector, Symbol
 
 
 class StrFnTest(unittest.TestCase):
@@ -122,10 +121,10 @@ class StrFnTest(unittest.TestCase):
         """Test str with variables."""
         run_lispy_string("(define x 42)", self.env)
         run_lispy_string("(define y 'hello)", self.env)
-        
+
         result_x = run_lispy_string("(str x)", self.env)
         result_y = run_lispy_string("(str y)", self.env)
-        
+
         self.assertEqual(result_x, "42")
         self.assertEqual(result_y, "hello")
 
@@ -146,13 +145,17 @@ class StrFnTest(unittest.TestCase):
         """Test str with too few arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(str)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'str' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'str' expects 1 argument, got 0."
+        )
 
     def test_str_too_many_args(self):
         """Test str with too many arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(str 42 43)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'str' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'str' expects 1 argument, got 2."
+        )
 
     # --- Integration Tests ---
     def test_str_with_append(self):
@@ -163,28 +166,34 @@ class StrFnTest(unittest.TestCase):
 
     def test_str_with_append_multiple_types(self):
         """Test complex string building with str and append."""
-        result = run_lispy_string('(append "Value: " (str 3.14) ", Active: " (str true))', self.env)
+        result = run_lispy_string(
+            '(append "Value: " (str 3.14) ", Active: " (str true))', self.env
+        )
         self.assertIsInstance(result, str)
         self.assertEqual(result, "Value: 3.14, Active: true")
 
     def test_str_with_thread_first(self):
         """Test str used with the -> (thread-first) special form."""
-        result = run_lispy_string("(-> 42 (str) (append \" items\"))", self.env)
+        result = run_lispy_string('(-> 42 (str) (append " items"))', self.env)
         self.assertIsInstance(result, str)
         self.assertEqual(result, "42 items")
 
     def test_str_complex_thread_first(self):
         """Test complex thread-first with str and append."""
-        result = run_lispy_string('(-> [1 2 3] (str) (append " is a vector"))', self.env)
+        result = run_lispy_string(
+            '(-> [1 2 3] (str) (append " is a vector"))', self.env
+        )
         self.assertIsInstance(result, str)
         self.assertEqual(result, "[1 2 3] is a vector")
 
     def test_str_chaining_conversions(self):
         """Test chaining str conversions in thread-first."""
-        result = run_lispy_string('(-> true (str) (append " and ") (append (str 42)))', self.env)
+        result = run_lispy_string(
+            '(-> true (str) (append " and ") (append (str 42)))', self.env
+        )
         self.assertIsInstance(result, str)
         self.assertEqual(result, "true and 42")
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

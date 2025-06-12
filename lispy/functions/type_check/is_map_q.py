@@ -38,4 +38,4 @@ Notes:
   - Works with nested maps and mixed value types
   - Essential for distinguishing maps from other collection types
   - Maps provide key-value associations
-  - Requires exactly one argument""" 
+  - Requires exactly one argument"""

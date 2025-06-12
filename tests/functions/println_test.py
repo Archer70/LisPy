@@ -5,8 +5,8 @@ from io import StringIO
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 
-class PrintlnFunctionTest(unittest.TestCase):
 
+class PrintlnFunctionTest(unittest.TestCase):
     def setUp(self):
         self.env = create_global_env()
         # Capture stdout for testing
@@ -29,7 +29,7 @@ class PrintlnFunctionTest(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_println_numbers(self):
-        result = run_lispy_string('(println 42 3.14)', self.env)
+        result = run_lispy_string("(println 42 3.14)", self.env)
         output = sys.stdout.getvalue()
         self.assertEqual(output, "42 3.14\n")
         self.assertIsNone(result)
@@ -41,19 +41,19 @@ class PrintlnFunctionTest(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_println_booleans(self):
-        result = run_lispy_string('(println true false)', self.env)
+        result = run_lispy_string("(println true false)", self.env)
         output = sys.stdout.getvalue()
         self.assertEqual(output, "true false\n")
         self.assertIsNone(result)
 
     def test_println_nil(self):
-        result = run_lispy_string('(println nil)', self.env)
+        result = run_lispy_string("(println nil)", self.env)
         output = sys.stdout.getvalue()
         self.assertEqual(output, "nil\n")
         self.assertIsNone(result)
 
     def test_println_vector(self):
-        result = run_lispy_string('(println [1 2 3])', self.env)
+        result = run_lispy_string("(println [1 2 3])", self.env)
         output = sys.stdout.getvalue()
         self.assertEqual(output, "[1 2 3]\n")
         self.assertIsNone(result)
@@ -70,7 +70,7 @@ class PrintlnFunctionTest(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_println_no_arguments(self):
-        result = run_lispy_string('(println)', self.env)
+        result = run_lispy_string("(println)", self.env)
         output = sys.stdout.getvalue()
         self.assertEqual(output, "\n")
         self.assertIsNone(result)
@@ -88,5 +88,6 @@ class PrintlnFunctionTest(unittest.TestCase):
         self.assertEqual(output, "\n")
         self.assertIsNone(result)
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

@@ -19,54 +19,62 @@ import threading
 def builtin_async_filter(args, env):
     """
     Async filter function - concurrent filtering with Promise.all semantics.
-    
+
     Filters elements where predicate returns truthy, all predicates run concurrently.
     Follows JavaScript Array.filter() + Promise.all() pattern exactly.
     """
     # Validate argument count
     if len(args) != 2:
-        raise EvaluationError(f"SyntaxError: 'async-filter' expects 2 arguments, got {len(args)}.")
-    
+        raise EvaluationError(
+            f"SyntaxError: 'async-filter' expects 2 arguments, got {len(args)}."
+        )
+
     collection, predicate = args
-    
+
     # Validate arguments
     if not isinstance(collection, (Vector, List)):
-        raise EvaluationError("TypeError: 'async-filter' expects a vector or list as first argument.")
-    
+        raise EvaluationError(
+            "TypeError: 'async-filter' expects a vector or list as first argument."
+        )
+
     # Validate predicate type (can be user-defined function or built-in)
     is_user_defined_fn = isinstance(predicate, Function)
     is_builtin_fn = callable(predicate) and not is_user_defined_fn
-    
+
     if not (is_user_defined_fn or is_builtin_fn):
-        raise EvaluationError("TypeError: 'async-filter' expects a function as second argument.")
-    
+        raise EvaluationError(
+            "TypeError: 'async-filter' expects a function as second argument."
+        )
+
     # Handle empty collection
     if len(collection) == 0:
         promise = LispyPromise()
         promise.resolve(Vector([]))
         return promise
-    
+
     # Create the result promise
     result_promise = LispyPromise()
-    
+
     try:
         predicate_results = []
         all_sync = True  # Track if all results are synchronous
-        
+
         for element in collection:
             # Call the predicate function
             if is_user_defined_fn:
                 # User-defined function - need to handle environment and parameters
                 from lispy.environment import Environment
                 from lispy.evaluator import evaluate
-                
+
                 if len(predicate.params) != 1:
-                    raise EvaluationError(f"ArityError: Function passed to 'async-filter' expects 1 argument, got {len(predicate.params)}.")
-                
+                    raise EvaluationError(
+                        f"ArityError: Function passed to 'async-filter' expects 1 argument, got {len(predicate.params)}."
+                    )
+
                 param_symbol = predicate.params[0]
                 call_env = Environment(outer=predicate.defining_env)
                 call_env.define(param_symbol.name, element)
-                
+
                 # Execute function body
                 result = None
                 for expr_in_body in predicate.body:
@@ -74,13 +82,13 @@ def builtin_async_filter(args, env):
             else:
                 # Built-in function
                 result = predicate([element], env)
-            
+
             # Check if result is a promise
             if isinstance(result, LispyPromise):
                 all_sync = False
-            
+
             predicate_results.append(result)
-        
+
         # If all results are synchronous, filter immediately
         if all_sync:
             filtered_elements = []
@@ -94,7 +102,7 @@ def builtin_async_filter(args, env):
             completed_count = [0]
             error_occurred = [False]
             lock = threading.Lock()
-            
+
             def handle_completion():
                 with lock:
                     if error_occurred[0]:
@@ -107,13 +115,13 @@ def builtin_async_filter(args, env):
                             if predicate_result:  # Truthy check
                                 filtered_elements.append(collection[i])
                         result_promise.resolve(Vector(filtered_elements))
-            
+
             def handle_error(error):
                 with lock:
                     if not error_occurred[0]:
                         error_occurred[0] = True
                         result_promise.reject(error)
-            
+
             # Process each predicate result
             for i, result in enumerate(predicate_results):
                 if isinstance(result, LispyPromise):
@@ -122,10 +130,12 @@ def builtin_async_filter(args, env):
                         def success_handler(value):
                             final_predicate_results[idx] = value
                             handle_completion()
+
                         def error_handler(error):
                             handle_error(error)
+
                         return success_handler, error_handler
-                    
+
                     success_handler, error_handler = make_handlers(i)
                     result.then(success_handler)
                     result.catch(error_handler)
@@ -133,10 +143,10 @@ def builtin_async_filter(args, env):
                     # Sync result - store immediately
                     final_predicate_results[i] = result
                     handle_completion()
-        
+
     except Exception as e:
         result_promise.reject(str(e))
-    
+
     return result_promise
 
 
@@ -181,4 +191,4 @@ Notes:
   - Elements are included if predicate returns truthy value
   - Follows JavaScript Array.filter() + Promise.all() semantics
   - Thread-first (->) operator compatible
-""" 
+"""

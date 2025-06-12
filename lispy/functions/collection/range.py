@@ -1,9 +1,9 @@
 """
 LisPy range function - Generate sequences of numbers.
 
-Usage: 
+Usage:
   (range end)           ; 0 to end-1
-  (range start end)     ; start to end-1  
+  (range start end)     ; start to end-1
   (range start end step); start to end-1 with step
 
 Examples:
@@ -21,19 +21,19 @@ from typing import List, Any
 
 def builtin_range(args: List[Any], env: Environment) -> Vector:
     """Implementation of the (range ...) LisPy function.
-    
+
     Generates a sequence of numbers as a vector.
-    
+
     Args:
         args: 1-3 arguments:
             - (range end): 0 to end-1
             - (range start end): start to end-1
             - (range start end step): start to end-1 with step
         env: The current environment
-        
+
     Returns:
         Vector: A vector containing the generated sequence
-        
+
     Raises:
         EvaluationError: If incorrect number of arguments or invalid argument types
     """
@@ -41,14 +41,14 @@ def builtin_range(args: List[Any], env: Environment) -> Vector:
         raise EvaluationError(
             f"SyntaxError: 'range' expects 1-3 arguments, got {len(args)}."
         )
-    
+
     # Validate all arguments are integers
     for i, arg in enumerate(args):
         if not isinstance(arg, int):
             raise EvaluationError(
                 f"TypeError: Argument {i + 1} to 'range' must be an integer, got {type(arg).__name__}: '{arg}'"
             )
-    
+
     # Parse arguments based on count
     if len(args) == 1:
         start, end, step = 0, args[0], 1
@@ -56,15 +56,15 @@ def builtin_range(args: List[Any], env: Environment) -> Vector:
         start, end, step = args[0], args[1], 1
     else:  # len(args) == 3
         start, end, step = args[0], args[1], args[2]
-    
+
     # Validate step is not zero
     if step == 0:
         raise EvaluationError("ValueError: 'range' step argument must not be zero.")
-    
+
     # Generate the sequence
     result = []
     current = start
-    
+
     if step > 0:
         while current < end:
             result.append(current)
@@ -73,7 +73,7 @@ def builtin_range(args: List[Any], env: Environment) -> Vector:
         while current > end:
             result.append(current)
             current += step
-    
+
     return Vector(result)
 
 
@@ -113,4 +113,4 @@ Notes:
   - Positive step: start < end required for non-empty result
   - Negative step: start > end required for non-empty result
   - Useful for generating index sequences and numeric ranges
-""" 
+"""

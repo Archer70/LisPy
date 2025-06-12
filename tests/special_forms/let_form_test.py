@@ -3,8 +3,8 @@ import unittest
 
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
-from lispy.environment import Environment
 from lispy.functions import create_global_env
+
 
 class LetFormTest(unittest.TestCase):
     def setUp(self):
@@ -19,26 +19,28 @@ class LetFormTest(unittest.TestCase):
         self.assertEqual(run_lispy_string(code, self.global_env), 3)
 
     def test_let_sequential_body(self):
-        code = "(let [x 1] (define y 2) (+ x y))" # define in let should modify let's env
+        code = (
+            "(let [x 1] (define y 2) (+ x y))"  # define in let should modify let's env
+        )
         self.assertEqual(run_lispy_string(code, self.global_env), 3)
 
     def test_let_initializer_scope_let_star_behavior(self):
         """Test let* behavior: initializers can see previous bindings in the same let."""
         env = create_global_env()
-        run_lispy_string("(define x 10)", env) # Outer x
-        
+        run_lispy_string("(define x 10)", env)  # Outer x
+
         # y is initialized with the let-bound x (1), not the outer x (10)
         code = "(let [x 1 y x] y)"
         self.assertEqual(run_lispy_string(code, env), 1)
-        
+
         # z is initialized with the let-bound y (which used let-bound x)
-        code_sequential = "(let [x 1 y (+ x 1) z (+ y 1)] z)" # x=1, y=2, z=3
+        code_sequential = "(let [x 1 y (+ x 1) z (+ y 1)] z)"  # x=1, y=2, z=3
         self.assertEqual(run_lispy_string(code_sequential, env), 3)
 
     def test_let_initializer_still_sees_outer_scope_if_not_shadowed(self):
         env = create_global_env()
         run_lispy_string("(define outer_val 100)", env)
-        code = "(let [x outer_val y (+ x 1)] y)" # x=100, y=101
+        code = "(let [x outer_val y (+ x 1)] y)"  # x=100, y=101
         self.assertEqual(run_lispy_string(code, env), 101)
 
     def test_let_shadowing(self):
@@ -46,7 +48,7 @@ class LetFormTest(unittest.TestCase):
         run_lispy_string("(define x 100)", env)
         code = "(let [x 1] x)"
         self.assertEqual(run_lispy_string(code, env), 1)
-        self.assertEqual(run_lispy_string("x", env), 100) # Outer x remains unchanged
+        self.assertEqual(run_lispy_string("x", env), 100)  # Outer x remains unchanged
 
     def test_let_nested(self):
         code = "(let [x 1] (let [y 2] (+ x y)))"
@@ -56,15 +58,19 @@ class LetFormTest(unittest.TestCase):
         # Inner let's y uses inner let's x (2)
         code = "(let [x 1] (let [x 2 y x] y))"
         self.assertEqual(run_lispy_string(code, self.global_env), 2)
-        
+
         # Verify inner x value
         code_inner_x = "(let [x 1] (let [x 2 y x] x))"
         self.assertEqual(run_lispy_string(code_inner_x, self.global_env), 2)
-        
+
         # Verify outer let's x is still accessible if not shadowed by inner let's init
         # (This is standard lexical scoping, let* only affects current binding block)
-        code_outer_still_accessible = "(let [x 1 z x] (let [y (+ z 10)] y))" # x=1, z=1, y=11
-        self.assertEqual(run_lispy_string(code_outer_still_accessible, self.global_env), 11)
+        code_outer_still_accessible = (
+            "(let [x 1 z x] (let [y (+ z 10)] y))"  # x=1, z=1, y=11
+        )
+        self.assertEqual(
+            run_lispy_string(code_outer_still_accessible, self.global_env), 11
+        )
 
     def test_let_access_outer_scope(self):
         env = create_global_env()
@@ -73,28 +79,56 @@ class LetFormTest(unittest.TestCase):
         self.assertEqual(run_lispy_string(code, env), 31)
 
     def test_let_syntax_error_main_form_too_short(self):
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: 'let' requires a bindings vector and at least one body expression."):
-            run_lispy_string("(let [x 1])", self.global_env) # No body
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: 'let' requires a bindings vector and at least one body expression."):
-            run_lispy_string("(let)", self.global_env) # No bindings, no body
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"SyntaxError: 'let' requires a bindings vector and at least one body expression.",
+        ):
+            run_lispy_string("(let [x 1])", self.global_env)  # No body
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"SyntaxError: 'let' requires a bindings vector and at least one body expression.",
+        ):
+            run_lispy_string("(let)", self.global_env)  # No bindings, no body
 
     def test_let_syntax_error_bindings_not_vector(self):
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: Bindings for 'let' must be a vector/list, got Symbol"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"SyntaxError: Bindings for 'let' must be a vector/list, got Symbol",
+        ):
             run_lispy_string("(let x (+ 1 2))", self.global_env)
 
     def test_let_syntax_error_odd_bindings_count(self):
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: Bindings in 'let' must be in symbol-value pairs. Found an odd number of elements"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"SyntaxError: Bindings in 'let' must be in symbol-value pairs. Found an odd number of elements",
+        ):
             run_lispy_string("(let [x] (+ 1 2))", self.global_env)
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: Bindings in 'let' must be in symbol-value pairs. Found an odd number of elements"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"SyntaxError: Bindings in 'let' must be in symbol-value pairs. Found an odd number of elements",
+        ):
             run_lispy_string("(let [x 1 y] (+ 1 2))", self.global_env)
 
     def test_let_syntax_error_binding_var_not_symbol(self):
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: Variable in 'let' binding must be a symbol, got int: '1' at index 0"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"SyntaxError: Variable in 'let' binding must be a symbol, got int: '1' at index 0",
+        ):
             run_lispy_string("(let [1 10] 1)", self.global_env)
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: Variable in 'let' binding must be a symbol, got Vector: '\[Symbol\(\'a\'\) Symbol\(\'b\'\)\]' at index 0"):
-            run_lispy_string("(let [[a b] 10] 1)", self.global_env) # Fixed typo: removed extra ] after 10
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: Variable in 'let' binding must be a symbol, got str: 'x' at index 0"):
-            run_lispy_string('(let ["x" 1] 1)', self.global_env) # "x" is a string, not a symbol
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"SyntaxError: Variable in 'let' binding must be a symbol, got Vector: '\[Symbol\(\'a\'\) Symbol\(\'b\'\)\]' at index 0",
+        ):
+            run_lispy_string(
+                "(let [[a b] 10] 1)", self.global_env
+            )  # Fixed typo: removed extra ] after 10
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"SyntaxError: Variable in 'let' binding must be a symbol, got str: 'x' at index 0",
+        ):
+            run_lispy_string(
+                '(let ["x" 1] 1)', self.global_env
+            )  # "x" is a string, not a symbol
 
     def test_let_define_interaction(self):
         """Test that define inside let modifies the let's environment."""
@@ -119,5 +153,6 @@ class LetFormTest(unittest.TestCase):
         run_lispy_string("(let [x 1] x)", env)
         self.assertEqual(run_lispy_string("x", env), 100)
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

@@ -3,7 +3,7 @@ import unittest
 from lispy.utils import run_lispy_string
 from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
-from lispy.types import Symbol
+
 
 class CarFnTest(unittest.TestCase):
     def setUp(self):
@@ -14,7 +14,7 @@ class CarFnTest(unittest.TestCase):
 
     def test_car_basic(self):
         self.assertEqual(run_lispy_string("(car mylist)", self.env), 10)
-        self.assertEqual(run_lispy_string("(car (list \"a\" \"b\"))", self.env), "a")
+        self.assertEqual(run_lispy_string('(car (list "a" "b"))', self.env), "a")
         self.assertEqual(run_lispy_string("(car nestedlist)", self.env), [1, 2])
 
     def test_car_on_literal_list(self):
@@ -26,26 +26,46 @@ class CarFnTest(unittest.TestCase):
         # Let's assume 'car' works on the list type.
 
     def test_car_empty_list_error(self):
-        with self.assertRaisesRegex(EvaluationError, r"RuntimeError: 'car' cannot operate on an empty list."):
+        with self.assertRaisesRegex(
+            EvaluationError, r"RuntimeError: 'car' cannot operate on an empty list."
+        ):
             run_lispy_string("(car emptylist)", self.env)
-        with self.assertRaisesRegex(EvaluationError, r"RuntimeError: 'car' cannot operate on an empty list."):
+        with self.assertRaisesRegex(
+            EvaluationError, r"RuntimeError: 'car' cannot operate on an empty list."
+        ):
             run_lispy_string("(car (list))", self.env)
-        with self.assertRaisesRegex(EvaluationError, r"RuntimeError: 'car' cannot operate on an empty list."):
-            run_lispy_string("(car [])", self.env) # Vector literal, empty
+        with self.assertRaisesRegex(
+            EvaluationError, r"RuntimeError: 'car' cannot operate on an empty list."
+        ):
+            run_lispy_string("(car [])", self.env)  # Vector literal, empty
 
     def test_car_type_error(self):
-        with self.assertRaisesRegex(EvaluationError, r"TypeError: 'car' expects its argument to be a list, got int"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"TypeError: 'car' expects its argument to be a list, got int",
+        ):
             run_lispy_string("(car 123)", self.env)
-        with self.assertRaisesRegex(EvaluationError, r"TypeError: 'car' expects its argument to be a list, got Symbol"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"TypeError: 'car' expects its argument to be a list, got Symbol",
+        ):
             run_lispy_string("(car 'aSymbol)", self.env)
-        with self.assertRaisesRegex(EvaluationError, r"TypeError: 'car' expects its argument to be a list, got NoneType"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"TypeError: 'car' expects its argument to be a list, got NoneType",
+        ):
             run_lispy_string("(car nil)", self.env)
-    
+
     def test_car_argument_count_error(self):
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: 'car' expects 1 argument \(a list\), got 0"):
+        with self.assertRaisesRegex(
+            EvaluationError, r"SyntaxError: 'car' expects 1 argument \(a list\), got 0"
+        ):
             run_lispy_string("(car)", self.env)
-        with self.assertRaisesRegex(EvaluationError, r"SyntaxError: 'car' expects 1 argument \(a list\), got 2"):
+        with self.assertRaisesRegex(
+            EvaluationError, r"SyntaxError: 'car' expects 1 argument \(a list\), got 2"
+        ):
             run_lispy_string("(car mylist mylist)", self.env)
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

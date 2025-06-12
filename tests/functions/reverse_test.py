@@ -85,30 +85,40 @@ class ReverseFnTest(unittest.TestCase):
         """Test reverse with too few arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(reverse)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'reverse' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'reverse' expects 1 argument, got 0."
+        )
 
     def test_reverse_too_many_args(self):
         """Test reverse with too many arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(reverse [] 'extra)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'reverse' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'reverse' expects 1 argument, got 2."
+        )
 
     def test_reverse_collection_not_list_or_vector(self):
         """Test reverse when collection is not a list or vector."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(reverse "abc")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument to 'reverse' must be a list or vector, got <class 'str'>.")
-        
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument to 'reverse' must be a list or vector, got <class 'str'>.",
+        )
+
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(reverse 123)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument to 'reverse' must be a list or vector, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument to 'reverse' must be a list or vector, got <class 'int'>.",
+        )
 
     def test_reverse_with_thread_first(self):
         """Test reverse used with the -> (thread-first) macro."""
         result = run_lispy_string("(-> [1 2 3 4 5] (reverse))", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([5, 4, 3, 2, 1]))
-        
+
         result_list = run_lispy_string("(-> '(1 2 3 4 5) (reverse))", self.env)
         self.assertIsInstance(result_list, LispyList)
         self.assertEqual(result_list, LispyList([5, 4, 3, 2, 1]))
@@ -120,5 +130,5 @@ class ReverseFnTest(unittest.TestCase):
         self.assertEqual(result, Vector([1, 2, 3, 4, 5]))
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

@@ -18,10 +18,10 @@ def handle_doseq_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> None:
     """Handles the (doseq [binding collection] body...) special form.
-    
+
     Iterates over a collection, binding each element to a variable and executing
     the body expressions for their side effects. Returns nil.
-    
+
     Args:
         expression: List containing the doseq form:
             - expression[0]: 'doseq' symbol (already consumed)
@@ -29,10 +29,10 @@ def handle_doseq_form(
             - expression[2:]: Body expressions to execute for each element
         env: The current environment
         evaluate_fn: Function to evaluate expressions
-        
+
     Returns:
         None: Always returns nil (used for side effects)
-        
+
     Raises:
         EvaluationError: If incorrect syntax or invalid argument types
     """
@@ -40,49 +40,49 @@ def handle_doseq_form(
         raise EvaluationError(
             f"SyntaxError: 'doseq' expects at least 2 arguments ([binding collection] body...), got {len(expression) - 1}."
         )
-    
+
     binding_vector = expression[1]
     body_expressions = expression[2:]
-    
+
     # Validate binding vector
     if not isinstance(binding_vector, (Vector, LispyList, list)):
         raise EvaluationError(
             f"SyntaxError: 'doseq' first argument must be a vector [binding collection], got {type(binding_vector)}."
         )
-    
+
     if len(binding_vector) != 2:
         raise EvaluationError(
             f"SyntaxError: 'doseq' binding vector must have exactly 2 elements [binding collection], got {len(binding_vector)}."
         )
-    
+
     binding_symbol, collection_expr = binding_vector[0], binding_vector[1]
-    
+
     # Validate binding symbol
     if not isinstance(binding_symbol, Symbol):
         raise EvaluationError(
             f"SyntaxError: 'doseq' binding must be a symbol, got {type(binding_symbol)}."
         )
-    
+
     # Evaluate the collection expression
     collection = evaluate_fn(collection_expr, env)
-    
+
     # Validate collection
     if not isinstance(collection, (Vector, LispyList)):
         raise EvaluationError(
             f"TypeError: 'doseq' collection must be a vector or list, got {type(collection)}."
         )
-    
+
     # Create a new environment for the loop
     loop_env = Environment(outer=env)
-    
+
     # Iterate over collection and execute body for each element
     for item in collection:
         # Bind the current item to the binding symbol
         loop_env.define(binding_symbol.name, item)
-        
+
         # Execute all body expressions (for side effects)
         for body_expr in body_expressions:
             evaluate_fn(body_expr, loop_env)
-    
+
     # doseq returns nil
-    return None 
+    return None

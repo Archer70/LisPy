@@ -8,7 +8,6 @@ from lispy.utils import run_lispy_string
 
 
 class QuoteFormTest(unittest.TestCase):
-
     def setUp(self):
         self.env = create_global_env()
 
@@ -59,9 +58,9 @@ class QuoteFormTest(unittest.TestCase):
         # -> (a (b (quote c)) d) where c is Symbol('c')
         result = run_lispy_string("(quote (a (b (quote c)) d))", self.env)
         expected = [
-            Symbol("a"), 
+            Symbol("a"),
             [Symbol("b"), [Symbol("quote"), Symbol("c")]],
-            Symbol("d")
+            Symbol("d"),
         ]
         self.assertEqual(result, expected)
 
@@ -69,11 +68,18 @@ class QuoteFormTest(unittest.TestCase):
         # Too few arguments
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(quote)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'quote' requires exactly one argument. Usage: (quote your-expression)")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'quote' requires exactly one argument. Usage: (quote your-expression)",
+        )
         # Too many arguments
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(quote a b)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'quote' requires exactly one argument. Usage: (quote your-expression)")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'quote' requires exactly one argument. Usage: (quote your-expression)",
+        )
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

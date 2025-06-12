@@ -9,28 +9,40 @@ from lispy.evaluator import evaluate
 def builtin_promise(args: List[Any], env: Environment) -> LispyPromise:
     """Creates a promise from a function. (promise function)"""
     if len(args) != 1:
-        raise EvaluationError("SyntaxError: 'promise' expects 1 argument (function), got {}.".format(len(args)))
-    
+        raise EvaluationError(
+            "SyntaxError: 'promise' expects 1 argument (function), got {}.".format(
+                len(args)
+            )
+        )
+
     thunk = args[0]
-    
+
     # Validate that the argument is callable (either UserDefinedFunction or built-in)
     is_user_defined_fn = isinstance(thunk, Function)
     is_builtin_fn = callable(thunk) and not is_user_defined_fn
-    
+
     if not (is_user_defined_fn or is_builtin_fn):
-        raise EvaluationError("TypeError: 'promise' argument must be a function, got {}.".format(type(thunk).__name__))
-    
+        raise EvaluationError(
+            "TypeError: 'promise' argument must be a function, got {}.".format(
+                type(thunk).__name__
+            )
+        )
+
     # Validate arity for user-defined functions (should be zero-argument)
     if is_user_defined_fn and len(thunk.params) != 0:
-        raise EvaluationError("TypeError: 'promise' function must take 0 arguments, got {}.".format(len(thunk.params)))
-    
+        raise EvaluationError(
+            "TypeError: 'promise' function must take 0 arguments, got {}.".format(
+                len(thunk.params)
+            )
+        )
+
     # Create a promise that executes the thunk
     def executor():
         if is_user_defined_fn:
             # Call user-defined function
             call_env = Environment(outer=thunk.defining_env)
             # No parameters to bind since it's a zero-argument function
-            
+
             # Execute the function body
             result = None
             for expr_in_body in thunk.body:
@@ -39,7 +51,7 @@ def builtin_promise(args: List[Any], env: Environment) -> LispyPromise:
         else:
             # Call built-in function
             return thunk([], env)
-    
+
     return LispyPromise(executor)
 
 
@@ -73,4 +85,4 @@ Notes:
   - The function should be a zero-argument lambda (#(...))
   - Use with existing synchronous functions to make them async
   - Promises can be chained with then/catch methods
-  - Execution starts immediately when promise is created""" 
+  - Execution starts immediately when promise is created"""

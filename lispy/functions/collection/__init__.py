@@ -52,4 +52,4 @@ __all__ = [
     "documentation_reverse",
     "documentation_some",
     "documentation_sort",
-] 
+]

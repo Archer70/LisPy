@@ -39,4 +39,4 @@ Notes:
   - Empty list '() returns true
   - Use is_vector? to test for vectors specifically
   - Essential for distinguishing collection types
-  - Requires exactly one argument""" 
+  - Requires exactly one argument"""

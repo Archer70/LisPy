@@ -142,7 +142,9 @@ def _evaluate_list_form_as_call(
 def evaluate(expression: Any, env: Environment) -> Any:
     """Evaluates a LisPy expression (AST node) in a given environment."""
     if (
-        isinstance(expression, (int, float, str, bool, dict, Function, Vector, LispyPromise))
+        isinstance(
+            expression, (int, float, str, bool, dict, Function, Vector, LispyPromise)
+        )
         or expression is None
     ):
         # Self-evaluating types: numbers, strings, booleans, dicts (maps), Function objects, Vectors, Promises, None (nil)

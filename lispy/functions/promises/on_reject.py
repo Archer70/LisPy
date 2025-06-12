@@ -18,12 +18,12 @@ def builtin_on_reject(args, env):
         if it succeeds
 
     Examples:
-        (on-reject (reject "error") (fn [err] (str "Handled: " err))) 
+        (on-reject (reject "error") (fn [err] (str "Handled: " err)))
         ; => Promise that resolves to "Handled: error"
-        
+
         (on-reject (resolve 42) (fn [err] "not called"))
         ; => Promise that resolves to 42
-        
+
         ; Thread-first style error handling:
         (-> (fetch-user-data)
             (then extract-user-name)
@@ -34,43 +34,43 @@ def builtin_on_reject(args, env):
         raise EvaluationError(
             f"SyntaxError: 'on-reject' expects 2 arguments (promise error-callback), got {len(args)}."
         )
-    
+
     promise = args[0]
     error_callback = args[1]
-    
+
     # Validate promise argument
     if not isinstance(promise, LispyPromise):
         raise EvaluationError(
             f"TypeError: 'on-reject' first argument must be a promise, got {type(promise).__name__}."
         )
-    
+
     # Validate callback argument
     if not (isinstance(error_callback, Function) or callable(error_callback)):
         raise EvaluationError(
             f"TypeError: 'on-reject' second argument must be a function, got {type(error_callback).__name__}."
         )
-    
+
     # Validate callback parameter count immediately for user-defined functions
     if isinstance(error_callback, Function):
         if len(error_callback.params) != 1:
             raise EvaluationError(
                 f"TypeError: 'on-reject' callback must take exactly 1 argument, got {len(error_callback.params)}."
             )
-    
+
     # Create wrapper function that handles LisPy function calls
     def lispy_error_callback(error):
         if isinstance(error_callback, Function):
             # User-defined LisPy function
             from lispy.environment import Environment
             from lispy.evaluator import evaluate
-            
+
             # Create environment for function call
             call_env = Environment(outer=error_callback.defining_env)
-            
+
             # Bind the parameter (already validated to be exactly one parameter)
-            
+
             call_env.define(error_callback.params[0].name, error)
-            
+
             # Execute function body
             result = None
             for expr in error_callback.body:
@@ -79,7 +79,7 @@ def builtin_on_reject(args, env):
         else:
             # Built-in function
             return error_callback([error], env)
-    
+
     # Use the promise's catch method with our wrapper
     return promise.catch(lispy_error_callback)
 
@@ -128,4 +128,4 @@ Notes:
   - Can be chained multiple times for fallback strategies
   - If error-callback throws, returned promise is rejected with new error
   - Converts rejected promises to resolved promises (error recovery)
-""" 
+"""

@@ -13,7 +13,7 @@ from .subtract import builtin_subtract, documentation_subtract
 __all__ = [
     # Functions
     "builtin_abs",
-    "builtin_add", 
+    "builtin_add",
     "builtin_divide",
     "builtin_equals",
     "builtin_max",
@@ -24,7 +24,7 @@ __all__ = [
     # Documentation
     "documentation_abs",
     "documentation_add",
-    "documentation_divide", 
+    "documentation_divide",
     "documentation_equals",
     "documentation_max",
     "documentation_min",

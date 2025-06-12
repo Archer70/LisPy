@@ -40,4 +40,4 @@ Notes:
   - Use is_list? to test for lists specifically
   - Vectors provide indexed access and are often more efficient
   - Essential for distinguishing collection types
-  - Requires exactly one argument""" 
+  - Requires exactly one argument"""

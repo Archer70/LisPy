@@ -28,7 +28,7 @@ class IsVectorQFnTest(unittest.TestCase):
 
     def test_vector_q_mixed_types_vector(self):
         """Test (is_vector? [1 \"hello\" true nil]) returns true."""
-        self.assertTrue(run_lispy_string("(is_vector? [1 \"hello\" true nil])", self.env))
+        self.assertTrue(run_lispy_string('(is_vector? [1 "hello" true nil])', self.env))
 
     def test_vector_q_vector_with_list(self):
         """Test (is_vector? [1 '(2 3) 4]) returns true."""
@@ -78,24 +78,28 @@ class IsVectorQFnTest(unittest.TestCase):
         """Test (is_vector?) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_vector?)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_vector?' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_vector?' expects 1 argument, got 0."
+        )
 
     def test_vector_q_too_many_args(self):
         """Test (is_vector? [1] [2]) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_vector? [1] [2])", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_vector?' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_vector?' expects 1 argument, got 2."
+        )
 
     def test_vector_q_vs_list_q_distinction(self):
         """Test that is_vector? and is_list? correctly distinguish between vectors and lists."""
         # Test that is_vector? returns true for vectors but false for lists
         self.assertTrue(run_lispy_string("(is_vector? (vector 1 2 3))", self.env))
         self.assertFalse(run_lispy_string("(is_vector? (list 1 2 3))", self.env))
-        
-        # Test that is_list? returns true for lists but false for vectors  
+
+        # Test that is_list? returns true for lists but false for vectors
         self.assertTrue(run_lispy_string("(is_list? (list 1 2 3))", self.env))
         self.assertFalse(run_lispy_string("(is_list? (vector 1 2 3))", self.env))
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

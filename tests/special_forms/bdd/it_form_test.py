@@ -35,10 +35,10 @@ class TestItForm(unittest.TestCase):
 
     def test_it_arity_error_no_args(self):
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_feature_context('(it)')
+            self.helper_run_in_feature_context("(it)")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'it' expects at least a description string, got 0 arguments."
+            "SyntaxError: 'it' expects at least a description string, got 0 arguments.",
         )
 
     def test_it_arity_error_no_description_string(self):
@@ -47,7 +47,7 @@ class TestItForm(unittest.TestCase):
             self.helper_run_in_feature_context('(it (print "oops"))')
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'it' expects a description string as its first argument."
+            "SyntaxError: 'it' expects a description string as its first argument.",
         )
 
     def test_it_description_not_a_string(self):
@@ -56,7 +56,7 @@ class TestItForm(unittest.TestCase):
             self.helper_run_in_feature_context('(it 123 (print "oops"))')
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'it' expects a description string as its first argument."
+            "SyntaxError: 'it' expects a description string as its first argument.",
         )
 
     def test_it_outside_describe_block(self):
@@ -66,8 +66,9 @@ class TestItForm(unittest.TestCase):
             run_lispy_string('(it "should fail" (print "test"))', self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'it' form can only be used inside a 'describe' block."
+            "SyntaxError: 'it' form can only be used inside a 'describe' block.",
         )
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

@@ -96,7 +96,7 @@ class SplitFnTest(unittest.TestCase):
         """Test split with variables."""
         run_lispy_string('(define text "apple,banana,cherry")', self.env)
         run_lispy_string('(define sep ",")', self.env)
-        result = run_lispy_string('(split text sep)', self.env)
+        result = run_lispy_string("(split text sep)", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector(["apple", "banana", "cherry"]))
 
@@ -111,37 +111,55 @@ class SplitFnTest(unittest.TestCase):
         """Test split with too few arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(split)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'split' expects 2 arguments, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'split' expects 2 arguments, got 0."
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(split "hello")', self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'split' expects 2 arguments, got 1.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'split' expects 2 arguments, got 1."
+        )
 
     def test_split_too_many_args(self):
         """Test split with too many arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(split "hello" " " "extra")', self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'split' expects 2 arguments, got 3.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'split' expects 2 arguments, got 3."
+        )
 
     def test_split_invalid_string_type(self):
         """Test split with non-string first argument."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(split 123 ",")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'split' first argument must be a string, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'split' first argument must be a string, got <class 'int'>.",
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(split ["a" "b"] ",")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'split' first argument must be a string, got <class 'lispy.types.Vector'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'split' first argument must be a string, got <class 'lispy.types.Vector'>.",
+        )
 
     def test_split_invalid_separator_type(self):
         """Test split with non-string separator."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(split "hello" 123)', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'split' second argument (separator) must be a string, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'split' second argument (separator) must be a string, got <class 'int'>.",
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(split "hello" true)', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'split' second argument (separator) must be a string, got <class 'bool'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'split' second argument (separator) must be a string, got <class 'bool'>.",
+        )
 
     def test_split_with_thread_first(self):
         """Test split used with the -> (thread-first) special form."""
@@ -164,10 +182,12 @@ class SplitFnTest(unittest.TestCase):
     def test_split_join_roundtrip(self):
         """Test that split and join are inverse operations."""
         original = "apple,banana,cherry"
-        result = run_lispy_string('(-> "apple,banana,cherry" (split ",") (join ","))', self.env)
+        result = run_lispy_string(
+            '(-> "apple,banana,cherry" (split ",") (join ","))', self.env
+        )
         self.assertIsInstance(result, str)
         self.assertEqual(result, original)
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

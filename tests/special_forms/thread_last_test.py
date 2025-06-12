@@ -3,27 +3,28 @@ Tests for the thread-last (->>)  special form.
 
 Thread-last threads values as the LAST argument to each function in the pipeline.
 """
+
 import unittest
 
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
-from lispy.types import LispyList, Vector
+from lispy.types import Vector
 
 
 class ThreadLastTest(unittest.TestCase):
     def setUp(self):
         self.env = create_global_env()
-        
+
         # Helper functions for testing
         run_lispy_string("(define double (fn [x] (* x 2)))", self.env)
         run_lispy_string("(define add5 (fn [x] (+ x 5)))", self.env)
         run_lispy_string("(define subtract-from (fn [a b] (- a b)))", self.env)
         run_lispy_string("(define divide-by (fn [a b] (/ a b)))", self.env)
         # Create a string concatenation helper using Python's string concatenation
-        self.env.store['py-str-concat'] = lambda args, env: args[0] + args[1]
+        self.env.store["py-str-concat"] = lambda args, env: args[0] + args[1]
         run_lispy_string("(define str-concat (fn [a b] (py-str-concat a b)))", self.env)
-        
+
         # Multi-argument functions for comprehensive testing
         run_lispy_string("(define three-arg-sum (fn [a b c] (+ a b c)))", self.env)
         run_lispy_string("(define multiply-three (fn [a b c] (* a b c)))", self.env)
@@ -39,7 +40,7 @@ class ThreadLastTest(unittest.TestCase):
         # (->> 100 (- 10) (* 2)) => (* 2 (- 10 100)) => (* 2 -90) => -180
         result = run_lispy_string("(->> 100 (- 10) (* 2))", self.env)
         self.assertEqual(result, -180)
-        
+
         # Different order: (->> 10 (- 100) (* 2)) => (* 2 (- 100 10)) => (* 2 90) => 180
         result = run_lispy_string("(->> 10 (- 100) (* 2))", self.env)
         self.assertEqual(result, 180)
@@ -52,7 +53,7 @@ class ThreadLastTest(unittest.TestCase):
         result = run_lispy_string("(->> 3 (conj [1 2]))", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 2, 3]))
-        
+
         # Chain multiple conj operations
         # (->> 4 (conj [1 2 3]) (conj [0])) => (conj [0] (conj [1 2 3] 4)) => (conj [0] [1 2 3 4]) => [0 [1 2 3 4]]
         result = run_lispy_string("(->> 4 (conj [1 2 3]) (conj [0]))", self.env)
@@ -77,14 +78,14 @@ class ThreadLastTest(unittest.TestCase):
         # (->> 10 (three-arg-sum 1 2)) => (three-arg-sum 1 2 10) => 13
         result = run_lispy_string("(->> 10 (three-arg-sum 1 2))", self.env)
         self.assertEqual(result, 13)
-        
+
         # (->> 5 (multiply-three 2 3)) => (multiply-three 2 3 5) => 30
         result = run_lispy_string("(->> 5 (multiply-three 2 3))", self.env)
         self.assertEqual(result, 30)
 
     def test_thread_last_longer_pipeline(self):
         """Test thread-last with a longer pipeline."""
-        # (->> 1 (+ 2) (* 3) (- 10) (/ 2)) 
+        # (->> 1 (+ 2) (* 3) (- 10) (/ 2))
         # => (/ 2 (- 10 (* 3 (+ 2 1))))
         # => (/ 2 (- 10 (* 3 3)))
         # => (/ 2 (- 10 9))
@@ -123,7 +124,7 @@ class ThreadLastTest(unittest.TestCase):
         # Thread-first: (-> 10 (- 5)) => (- 10 5) => 5
         result_first = run_lispy_string("(-> 10 (- 5))", self.env)
         self.assertEqual(result_first, 5)
-        
+
         # Thread-last: (->> 10 (- 5)) => (- 5 10) => -5
         result_last = run_lispy_string("(->> 10 (- 5))", self.env)
         self.assertEqual(result_last, -5)
@@ -135,12 +136,14 @@ class ThreadLastTest(unittest.TestCase):
         result = run_lispy_string("(->> [4 5] (concat [1 2 3]))", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 2, 3, 4, 5]))
-        
+
         # Chain concat operations
-        # (->> [7 8] (concat [4 5 6]) (concat [1 2 3])) 
+        # (->> [7 8] (concat [4 5 6]) (concat [1 2 3]))
         # => (concat [1 2 3] (concat [4 5 6] [7 8]))
         # => (concat [1 2 3] [4 5 6 7 8]) => [1 2 3 4 5 6 7 8]
-        result = run_lispy_string("(->> [7 8] (concat [4 5 6]) (concat [1 2 3]))", self.env)
+        result = run_lispy_string(
+            "(->> [7 8] (concat [4 5 6]) (concat [1 2 3]))", self.env
+        )
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 2, 3, 4, 5, 6, 7, 8]))
 
@@ -149,19 +152,28 @@ class ThreadLastTest(unittest.TestCase):
         """Test thread-last with no arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(->>) ", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: '->>' special form expects at least an initial value.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: '->>' special form expects at least an initial value.",
+        )
 
     def test_thread_last_empty_list_in_pipeline(self):
         """Test thread-last with empty list in pipeline."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(->> 5 ())", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: Invalid empty list () found in '->>' pipeline.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: Invalid empty list () found in '->>' pipeline.",
+        )
 
     def test_thread_last_invalid_form_in_pipeline(self):
         """Test thread-last with invalid form in pipeline."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(->> 5 123)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Invalid form in '->>' pipeline. Expected function or (function ...), got <class 'int'>: 123")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Invalid form in '->>' pipeline. Expected function or (function ...), got <class 'int'>: 123",
+        )
 
     def test_thread_last_undefined_function(self):
         """Test thread-last with undefined function in pipeline."""
@@ -190,5 +202,5 @@ class ThreadLastTest(unittest.TestCase):
         self.assertEqual(result, expected)
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

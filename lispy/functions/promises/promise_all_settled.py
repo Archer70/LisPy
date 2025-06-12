@@ -15,14 +15,14 @@ def builtin_promise_all_settled(args, env):
 
     Returns:
         A promise that resolves with a collection of status objects.
-        Each object contains either {:status "fulfilled" :value result} 
+        Each object contains either {:status "fulfilled" :value result}
         or {:status "rejected" :reason error}
 
     Examples:
-        (promise-all-settled [(resolve 1) (reject "error") (resolve 3)]) 
+        (promise-all-settled [(resolve 1) (reject "error") (resolve 3)])
         ; => Promise that resolves to [
         ;      {:status "fulfilled" :value 1}
-        ;      {:status "rejected" :reason "error"} 
+        ;      {:status "rejected" :reason "error"}
         ;      {:status "fulfilled" :value 3}
         ;    ]
     """
@@ -60,37 +60,61 @@ def builtin_promise_all_settled(args, env):
         """Wait for all promises to settle and collect their status objects."""
         try:
             results = []
-            
+
             # Wait for each promise to settle (resolve or reject)
             for i, promise in enumerate(collection):
                 # Poll until the promise settles
                 while promise.state == "pending":
                     time.sleep(0.001)  # Small sleep to avoid busy waiting
-                
+
                 # Create status object based on settlement
                 if promise.state == "resolved":
                     # Create fulfilled status object using hash-map with Symbol keys
-                    status_obj = builtin_hash_map([Symbol(":status"), "fulfilled", Symbol(":value"), promise.value], env)
+                    status_obj = builtin_hash_map(
+                        [
+                            Symbol(":status"),
+                            "fulfilled",
+                            Symbol(":value"),
+                            promise.value,
+                        ],
+                        env,
+                    )
                 elif promise.state == "rejected":
                     # Create rejected status object using hash-map with Symbol keys
-                    status_obj = builtin_hash_map([Symbol(":status"), "rejected", Symbol(":reason"), promise.error], env)
+                    status_obj = builtin_hash_map(
+                        [
+                            Symbol(":status"),
+                            "rejected",
+                            Symbol(":reason"),
+                            promise.error,
+                        ],
+                        env,
+                    )
                 else:
                     # This should never happen, but handle gracefully
-                    status_obj = builtin_hash_map([Symbol(":status"), "unknown", Symbol(":error"), f"Unexpected state: {promise.state}"], env)
-                
+                    status_obj = builtin_hash_map(
+                        [
+                            Symbol(":status"),
+                            "unknown",
+                            Symbol(":error"),
+                            f"Unexpected state: {promise.state}",
+                        ],
+                        env,
+                    )
+
                 results.append(status_obj)
-            
+
             # All promises settled - return results in same collection type
             result_type = Vector if isinstance(collection, Vector) else LispyList
             all_settled_promise.resolve(result_type(results))
-            
+
         except Exception as e:
             # This should rarely happen since we never reject, but handle gracefully
             all_settled_promise.reject(e)
 
     # Start waiting in background thread
     threading.Thread(target=wait_for_all_settled, daemon=True).start()
-    
+
     return all_settled_promise
 
 
@@ -154,4 +178,4 @@ Notes:
   - Useful for gathering all results regardless of success/failure
   - Perfect for graceful degradation and comprehensive error reporting
   - Similar to Promise.allSettled() in JavaScript (ES2020)
-""" 
+"""

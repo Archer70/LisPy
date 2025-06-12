@@ -1,6 +1,5 @@
 import unittest
 
-from lispy.types import Vector, Symbol
 from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
 from lispy.utils import run_lispy_string
@@ -110,7 +109,9 @@ class EqualQTest(unittest.TestCase):
 
     def test_equal_vectors_mixed_types(self):
         """Test (equal? [1 \"hello\" true] [1 \"hello\" true]) returns true."""
-        result = run_lispy_string('(equal? [1 "hello" true] [1 "hello" true])', self.env)
+        result = run_lispy_string(
+            '(equal? [1 "hello" true] [1 "hello" true])', self.env
+        )
         self.assertEqual(result, True)
 
     def test_equal_vectors_with_nil(self):
@@ -194,12 +195,16 @@ class EqualQTest(unittest.TestCase):
 
     def test_equal_nested_maps(self):
         """Test (equal? {:user {:name \"Alice\"}} {:user {:name \"Alice\"}}) returns true."""
-        result = run_lispy_string('(equal? {:user {:name "Alice"}} {:user {:name "Alice"}})', self.env)
+        result = run_lispy_string(
+            '(equal? {:user {:name "Alice"}} {:user {:name "Alice"}})', self.env
+        )
         self.assertEqual(result, True)
 
     def test_equal_nested_maps_different(self):
         """Test (equal? {:user {:name \"Alice\"}} {:user {:name \"Bob\"}}) returns false."""
-        result = run_lispy_string('(equal? {:user {:name "Alice"}} {:user {:name "Bob"}})', self.env)
+        result = run_lispy_string(
+            '(equal? {:user {:name "Alice"}} {:user {:name "Bob"}})', self.env
+        )
         self.assertEqual(result, False)
 
     def test_equal_mixed_nested_structures(self):
@@ -209,11 +214,11 @@ class EqualQTest(unittest.TestCase):
 
     def test_equal_complex_nested_structure(self):
         """Test complex nested structure equality."""
-        code = '''(equal? 
+        code = """(equal? 
                     {:users [{:name "Alice" :active true} {:name "Bob" :active false}] 
                      :config {:debug true :version 1.0}}
                     {:users [{:name "Alice" :active true} {:name "Bob" :active false}] 
-                     :config {:debug true :version 1.0}})'''
+                     :config {:debug true :version 1.0}})"""
         result = run_lispy_string(code, self.env)
         self.assertEqual(result, True)
 
@@ -243,13 +248,19 @@ class EqualQTest(unittest.TestCase):
         """Test (equal?) raises SyntaxError."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(equal?)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'equal?' requires at least 2 arguments, got 0.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'equal?' requires at least 2 arguments, got 0.",
+        )
 
     def test_equal_one_arg(self):
         """Test (equal? 5) raises SyntaxError."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(equal? 5)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'equal?' requires at least 2 arguments, got 1.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'equal?' requires at least 2 arguments, got 1.",
+        )
 
     # Symbol equality tests
     def test_equal_symbols_same(self):
@@ -265,21 +276,25 @@ class EqualQTest(unittest.TestCase):
     # Practical usage tests
     def test_equal_with_get_function(self):
         """Test equal? works with get function for string comparison."""
-        result = run_lispy_string('(equal? (get {:status "active"} \':status) "active")', self.env)
+        result = run_lispy_string(
+            '(equal? (get {:status "active"} \':status) "active")', self.env
+        )
         self.assertEqual(result, True)
 
     def test_equal_with_variables(self):
         """Test equal? works with variables."""
-        run_lispy_string('(define my-vector [1 2 3])', self.env)
-        run_lispy_string('(define other-vector [1 2 3])', self.env)
+        run_lispy_string("(define my-vector [1 2 3])", self.env)
+        run_lispy_string("(define other-vector [1 2 3])", self.env)
         result = run_lispy_string("(equal? my-vector other-vector)", self.env)
         self.assertEqual(result, True)
 
     def test_equal_chained_comparison(self):
         """Test equal? in conditional expressions."""
-        result = run_lispy_string('(if (equal? "hello" "hello") "same" "different")', self.env)
+        result = run_lispy_string(
+            '(if (equal? "hello" "hello") "same" "different")', self.env
+        )
         self.assertEqual(result, "same")
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

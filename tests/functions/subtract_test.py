@@ -5,8 +5,8 @@ from lispy.utils import run_lispy_string
 from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
 
-class SubtractFunctionTest(unittest.TestCase):
 
+class SubtractFunctionTest(unittest.TestCase):
     def setUp(self):
         self.env = create_global_env()
 
@@ -25,14 +25,23 @@ class SubtractFunctionTest(unittest.TestCase):
         self.assertAlmostEqual(run_lispy_string("(- 10 0.5)", self.env), 9.5)
 
     def test_subtract_type_error_non_numeric(self):
-        with self.assertRaisesRegex(EvaluationError, r"TypeError: Argument 1 to '-' must be a number, got Vector: '\[.*\]'"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"TypeError: Argument 1 to '-' must be a number, got Vector: '\[.*\]'",
+        ):
             run_lispy_string("(- [] 5)", self.env)
-        with self.assertRaisesRegex(EvaluationError, r"TypeError: Argument 2 to '-' must be a number, got str: 'a'"):
-            run_lispy_string("(- 5 \"a\")", self.env)
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"TypeError: Argument 2 to '-' must be a number, got str: 'a'",
+        ):
+            run_lispy_string('(- 5 "a")', self.env)
 
     def test_subtract_type_error_no_args(self):
-        with self.assertRaisesRegex(EvaluationError, "SyntaxError: '-' requires at least one argument"):
+        with self.assertRaisesRegex(
+            EvaluationError, "SyntaxError: '-' requires at least one argument"
+        ):
             run_lispy_string("(-)", self.env)
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

@@ -39,4 +39,4 @@ Notes:
   - Returns false for booleans (even though they're numeric in Python)
   - Returns false for numeric strings like "123"
   - Essential for type validation in dynamic code
-  - Requires exactly one argument""" 
+  - Requires exactly one argument"""

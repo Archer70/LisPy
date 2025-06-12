@@ -37,4 +37,4 @@ Notes:
   - Returns true for strings containing numbers like "123"
   - Returns false for all non-string types
   - Essential for type validation and string processing
-  - Requires exactly one argument""" 
+  - Requires exactly one argument"""

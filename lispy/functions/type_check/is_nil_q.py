@@ -37,4 +37,4 @@ Notes:
   - Different from empty collections, zero, or false
   - Essential for null-checking and optional value handling
   - Often used in conditional logic and error handling
-  - Requires exactly one argument""" 
+  - Requires exactly one argument"""

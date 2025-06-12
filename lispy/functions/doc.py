@@ -21,10 +21,10 @@ def builtin_doc(args: List[Any], env: Environment) -> str:
 
     # The argument should be a function or symbol representing a function
     func_arg = args[0]
-    
+
     # Try to get the function name
     function_name = None
-    
+
     # If it's a callable (built-in function), try to find its name
     if callable(func_arg):
         # Look through the environment to find the name bound to this function
@@ -32,7 +32,7 @@ def builtin_doc(args: List[Any], env: Environment) -> str:
             if value is func_arg:
                 function_name = name
                 break
-        
+
         # Also check parent environments
         if function_name is None:
             current_env = env.outer
@@ -44,13 +44,13 @@ def builtin_doc(args: List[Any], env: Environment) -> str:
                 if function_name:
                     break
                 current_env = current_env.outer
-    
+
     if function_name is None:
         raise EvaluationError(
-            f"TypeError: Unable to find documentation for the given function. "
-            f"Make sure to pass a function reference like +, abs, etc."
+            "TypeError: Unable to find documentation for the given function. "
+            "Make sure to pass a function reference like +, abs, etc."
         )
-    
+
     # Look up documentation in registry
     if function_name in DOCUMENTATION_REGISTRY:
         doc_function = DOCUMENTATION_REGISTRY[function_name]
@@ -73,4 +73,4 @@ Examples:
 Notes:
   - Pass the function itself, not a string
   - Use with print-doc to display formatted output
-  - Returns a string that can be further processed""" 
+  - Returns a string that can be further processed"""

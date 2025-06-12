@@ -19,10 +19,10 @@ def builtin_on_complete(args, env):
     Examples:
         (on-complete (resolve 42) (fn [_] (println "Cleanup")))
         ; => Promise that resolves to 42, after printing "Cleanup"
-        
+
         (on-complete (reject "error") (fn [_] (println "Cleanup")))
         ; => Promise that rejects with "error", after printing "Cleanup"
-        
+
         ; Thread-first style with cleanup:
         (-> (fetch-data)
             (then process-data)
@@ -33,44 +33,44 @@ def builtin_on_complete(args, env):
         raise EvaluationError(
             f"SyntaxError: 'on-complete' expects 2 arguments (promise cleanup-callback), got {len(args)}."
         )
-    
+
     promise = args[0]
     cleanup_callback = args[1]
-    
+
     # Validate promise argument
     if not isinstance(promise, LispyPromise):
         raise EvaluationError(
             f"TypeError: 'on-complete' first argument must be a promise, got {type(promise).__name__}."
         )
-    
+
     # Validate callback argument
     if not (isinstance(cleanup_callback, Function) or callable(cleanup_callback)):
         raise EvaluationError(
             f"TypeError: 'on-complete' second argument must be a function, got {type(cleanup_callback).__name__}."
         )
-    
+
     # Validate callback parameter count immediately for user-defined functions
     if isinstance(cleanup_callback, Function):
         if len(cleanup_callback.params) != 1:
             raise EvaluationError(
                 f"TypeError: 'on-complete' callback must take exactly 1 argument, got {len(cleanup_callback.params)}."
             )
-    
+
     # Create wrapper function that handles LisPy function calls
     def lispy_cleanup_callback():
         if isinstance(cleanup_callback, Function):
             # User-defined LisPy function
             from lispy.environment import Environment
             from lispy.evaluator import evaluate
-            
+
             # Create environment for function call
             call_env = Environment(outer=cleanup_callback.defining_env)
-            
+
             # Bind the parameter (already validated to be exactly one parameter)
-            
+
             # Pass the promise itself as the argument (so callback can check state if needed)
             call_env.define(cleanup_callback.params[0].name, promise)
-            
+
             # Execute function body
             result = None
             for expr in cleanup_callback.body:
@@ -79,10 +79,10 @@ def builtin_on_complete(args, env):
         else:
             # Built-in function
             return cleanup_callback([promise], env)
-    
+
     # Create a new promise that mimics the original but adds cleanup
     new_promise = LispyPromise()
-    
+
     def handle_completion():
         """Handle promise completion and execute cleanup."""
         try:
@@ -92,20 +92,20 @@ def builtin_on_complete(args, env):
             # If cleanup fails, we still want to preserve the original outcome
             # but we should log or handle the cleanup error somehow
             print(f"Warning: Cleanup callback failed: {cleanup_error}")
-        
+
         # Preserve the original promise's outcome
         if promise.state == "resolved":
             new_promise.resolve(promise.value)
         elif promise.state == "rejected":
             new_promise.reject(promise.error)
-    
+
     # Register our completion handler
     if promise.state == "pending":
         promise.callbacks.append(handle_completion)
     else:
         # Promise already settled, execute immediately
         handle_completion()
-    
+
     return new_promise
 
 
@@ -156,4 +156,4 @@ Notes:
   - Can be chained multiple times for multiple cleanup operations
   - Similar to 'finally' in try/catch but for promises
   - Guarantees cleanup execution in async contexts
-""" 
+"""

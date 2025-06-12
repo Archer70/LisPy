@@ -5,17 +5,14 @@ from lispy.functions import global_env
 from lispy.exceptions import EvaluationError
 from lispy.types import Symbol
 from lispy.environment import Environment
-from lispy.closure import Function
+
 # We might need to parse some simple expressions to feed the evaluator
 # from lispy.parser import parse # If needed for more complex test cases later
-from lispy.parser import parse as lisp_parse
-from lispy.lexer import tokenize
 
 
 class EvaluatorTest(unittest.TestCase):
-
     def setUp(self):
-        """Set up a new environment for each test. 
+        """Set up a new environment for each test.
         For tests involving global_env, we'll pass it directly."""
         self.env = Environment(outer=global_env)
         self.empty_env = Environment()
@@ -39,7 +36,9 @@ class EvaluatorTest(unittest.TestCase):
 
     def test_evaluate_unbound_symbol(self):
         test_symbol = Symbol("my_var_really_unbound")
-        with self.assertRaisesRegex(EvaluationError, "Unbound symbol: my_var_really_unbound"):
+        with self.assertRaisesRegex(
+            EvaluationError, "Unbound symbol: my_var_really_unbound"
+        ):
             evaluate(test_symbol, self.empty_env)
 
     def test_evaluate_bound_symbol(self):
@@ -58,8 +57,11 @@ class EvaluatorTest(unittest.TestCase):
         # Example of another unhandled type
         class UnhandledType:
             pass
+
         test_obj = UnhandledType()
-        with self.assertRaisesRegex(EvaluationError, "Cannot evaluate type: UnhandledType"):
+        with self.assertRaisesRegex(
+            EvaluationError, "Cannot evaluate type: UnhandledType"
+        ):
             evaluate(test_obj, self.env)
 
     # --- New tests for function calls ---
@@ -77,13 +79,19 @@ class EvaluatorTest(unittest.TestCase):
 
     def test_evaluate_addition_type_error(self):
         expr = [Symbol("+"), 1, "foo"]
-        with self.assertRaisesRegex(EvaluationError, r"TypeError: Argument 2 to '\+' must be a number, got str: 'foo'"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"TypeError: Argument 2 to '\+' must be a number, got str: 'foo'",
+        ):
             evaluate(expr, self.env)
 
     def test_evaluate_call_non_function_symbol(self):
         # Trying to call a symbol that is bound to a non-function (e.g. a number)
         self.env.define("not_a_function", 123)
-        with self.assertRaisesRegex(EvaluationError, r"Object '.*' is not a function or a recognized callable procedure. \(Called with operator: 'not_a_function'\)"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"Object '.*' is not a function or a recognized callable procedure. \(Called with operator: 'not_a_function'\)",
+        ):
             evaluate([Symbol("not_a_function"), "arg"], self.env)
 
     def test_evaluate_call_non_function_literal(self):
@@ -93,15 +101,21 @@ class EvaluatorTest(unittest.TestCase):
 
     def test_evaluate_empty_list_call(self):
         # An empty list itself, when evaluated as a form, should be an error.
-        with self.assertRaisesRegex(EvaluationError, "Cannot evaluate an empty list as a function call or special form"):
+        with self.assertRaisesRegex(
+            EvaluationError,
+            "Cannot evaluate an empty list as a function call or special form",
+        ):
             evaluate([], self.env)
 
     def test_evaluate_call_empty_list_as_operator(self):
         # Evaluating (()) which parses to [[]]
         # This means trying to call [] as a function.
         # Now, the inner [] evaluation causes the error directly.
-        expr = [[]] 
-        with self.assertRaisesRegex(EvaluationError, r"Cannot evaluate an empty list as a function call or special form"):
+        expr = [[]]
+        with self.assertRaisesRegex(
+            EvaluationError,
+            r"Cannot evaluate an empty list as a function call or special form",
+        ):
             evaluate(expr, self.env)
 
     def test_evaluate_nested_call(self):
@@ -113,5 +127,6 @@ class EvaluatorTest(unittest.TestCase):
         expr = [Symbol("+"), 5, 5]
         self.assertEqual(evaluate(expr, local_env), 10)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

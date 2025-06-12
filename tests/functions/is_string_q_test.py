@@ -66,14 +66,18 @@ class IsStringQFnTest(unittest.TestCase):
         """Test (is_string?) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_string?)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_string?' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_string?' expects 1 argument, got 0."
+        )
 
     def test_string_q_too_many_args(self):
         """Test (is_string? \"a\" \"b\") raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(is_string? "a" "b")', self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_string?' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_string?' expects 1 argument, got 2."
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

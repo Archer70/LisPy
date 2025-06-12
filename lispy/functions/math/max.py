@@ -9,9 +9,7 @@ Numeric = Union[int, float]
 def builtin_max(args: List[Any], env: Environment) -> Numeric:
     """Returns the maximum of the given numbers. (max num1 num2 ...)"""
     if len(args) == 0:
-        raise EvaluationError(
-            f"SyntaxError: 'max' expects at least 1 argument, got 0."
-        )
+        raise EvaluationError("SyntaxError: 'max' expects at least 1 argument, got 0.")
 
     # Validate all arguments are numbers and find maximum
     maximum = None
@@ -20,7 +18,7 @@ def builtin_max(args: List[Any], env: Environment) -> Numeric:
             raise EvaluationError(
                 f"TypeError: Argument {i + 1} to 'max' must be a number, got {type(arg).__name__}: '{arg}'"
             )
-        
+
         if maximum is None or arg > maximum:
             maximum = arg
 
@@ -44,4 +42,4 @@ Examples:
 Notes:
   - Requires at least one argument
   - Works with both integers and floating-point numbers
-  - All arguments must be numbers""" 
+  - All arguments must be numbers"""

@@ -3,7 +3,8 @@ import unittest
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
-from lispy.types import Vector, Symbol
+from lispy.types import Vector
+
 
 class SortFnTest(unittest.TestCase):
     def setUp(self):
@@ -67,7 +68,9 @@ class SortFnTest(unittest.TestCase):
 
     def test_sort_with_absolute_value_comparison(self):
         """Test sort with custom comparison based on absolute values."""
-        run_lispy_string("(define abs-compare (fn [a b] (< (abs a) (abs b))))", self.env)
+        run_lispy_string(
+            "(define abs-compare (fn [a b] (< (abs a) (abs b))))", self.env
+        )
         # Define abs function for the test
         self.env.define("abs", lambda args, env: abs(args[0]))
         result = run_lispy_string("(sort [-3 1 -2 4 -1] abs-compare)", self.env)
@@ -88,54 +91,74 @@ class SortFnTest(unittest.TestCase):
         """Test sort with too few arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(sort)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'sort' expects 1 or 2 arguments, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'sort' expects 1 or 2 arguments, got 0."
+        )
 
     def test_sort_too_many_args(self):
         """Test sort with too many arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(sort [1 2 3] + 'extra)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'sort' expects 1 or 2 arguments, got 3.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'sort' expects 1 or 2 arguments, got 3."
+        )
 
     def test_sort_invalid_collection_type(self):
         """Test sort with invalid collection type."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(sort \"not-a-vector\")", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'sort' first argument must be a vector, got <class 'str'>.")
-        
+            run_lispy_string('(sort "not-a-vector")', self.env)
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'sort' first argument must be a vector, got <class 'str'>.",
+        )
+
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(sort 123)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'sort' first argument must be a vector, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'sort' first argument must be a vector, got <class 'int'>.",
+        )
 
     def test_sort_invalid_comparison_function(self):
         """Test sort with invalid comparison function."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(sort [1 2 3] 123)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Second argument to 'sort' must be a procedure, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Second argument to 'sort' must be a procedure, got <class 'int'>.",
+        )
 
     def test_sort_comparison_function_wrong_arity(self):
         """Test sort with comparison function that has wrong arity."""
         run_lispy_string("(define wrong-arity (fn [x] true))", self.env)
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(sort [1 2 3] wrong-arity)", self.env)
-        self.assertEqual(str(cm.exception), "Comparison function <UserDefinedFunction params:(x)> passed to 'sort' expects 2 arguments, got 1.")
+        self.assertEqual(
+            str(cm.exception),
+            "Comparison function <UserDefinedFunction params:(x)> passed to 'sort' expects 2 arguments, got 1.",
+        )
 
     def test_sort_comparison_function_invalid_return(self):
         """Test sort with comparison function that returns invalid type."""
-        run_lispy_string("(define bad-return (fn [a b] \"not-a-number\"))", self.env)
+        run_lispy_string('(define bad-return (fn [a b] "not-a-number"))', self.env)
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(sort [1 2 3] bad-return)", self.env)
-        self.assertEqual(str(cm.exception), "Comparison function must return a number or boolean, got <class 'str'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "Comparison function must return a number or boolean, got <class 'str'>.",
+        )
 
     def test_sort_with_thread_first(self):
         """Test sort used with the -> (thread-first) macro."""
         result = run_lispy_string("(-> [3 1 4 1 5] sort)", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 1, 3, 4, 5]))
-        
+
         run_lispy_string("(define desc (fn [a b] (> a b)))", self.env)
         result = run_lispy_string("(-> [3 1 4 1 5] (sort desc))", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([5, 4, 3, 1, 1]))
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

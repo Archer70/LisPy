@@ -1,6 +1,6 @@
 import unittest
 
-from lispy.types import Symbol, LispyList
+from lispy.types import LispyList
 from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
 from lispy.utils import run_lispy_string
@@ -15,7 +15,7 @@ class ValsFnTest(unittest.TestCase):
         run_lispy_string("(define my-map {:a 1 :b 2 :c 3})", self.env)
         lispy_code = "(vals my-map)"
         result = run_lispy_string(lispy_code, self.env)
-        
+
         self.assertIsInstance(result, LispyList)
         self.assertEqual(len(result), 3)
         # Convert to set for order-independent comparison of elements if values are simple and hashable
@@ -43,22 +43,29 @@ class ValsFnTest(unittest.TestCase):
         lispy_code = "(vals '(1 2))"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'vals' expects a map or nil, got <class 'lispy.types.LispyList'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'vals' expects a map or nil, got <class 'lispy.types.LispyList'>.",
+        )
 
     def test_vals_too_many_args(self):
         """Test (vals {} {}) raises SyntaxError."""
         lispy_code = "(vals {} {})"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'vals' expects 1 argument (a map), got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'vals' expects 1 argument (a map), got 2."
+        )
 
     def test_vals_no_args(self):
         """Test (vals) raises SyntaxError."""
         lispy_code = "(vals)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'vals' expects 1 argument (a map), got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'vals' expects 1 argument (a map), got 0."
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

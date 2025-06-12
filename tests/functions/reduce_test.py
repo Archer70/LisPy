@@ -3,26 +3,38 @@ import unittest
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError, ArityError
-from lispy.types import LispyList, Vector
+from lispy.types import LispyList
+
 
 class ReduceFnTest(unittest.TestCase):
     def setUp(self):
         self.env = create_global_env()
         # Helper for string concatenation - needs a proper string-append eventually
         # For now, using a simplified Python-backed version for testing reduce
-        self.env.store['py-concat'] = lambda args, env: args[0] + args[1]
-        run_lispy_string("(define string-append (fn [s1 s2] (py-concat s1 s2)))", self.env)
-        run_lispy_string("""
+        self.env.store["py-concat"] = lambda args, env: args[0] + args[1]
+        run_lispy_string(
+            "(define string-append (fn [s1 s2] (py-concat s1 s2)))", self.env
+        )
+        run_lispy_string(
+            """
         (define concat-str (fn [acc item]
                              (string-append acc item)))
-        """, self.env)
-        run_lispy_string("""
+        """,
+            self.env,
+        )
+        run_lispy_string(
+            """
         (define cons-onto (fn [acc item]
-                            (cons item acc)))""", self.env)
-        run_lispy_string("""
+                            (cons item acc)))""",
+            self.env,
+        )
+        run_lispy_string(
+            """
         (define sum-of-doubles (fn [acc item]
                                  (+ acc (* item 2))))
-        """, self.env)
+        """,
+            self.env,
+        )
         run_lispy_string("(define zero-arg-reducer (fn [] 0))", self.env)
         run_lispy_string("(define one-arg-reducer (fn [x] x))", self.env)
         run_lispy_string("(define three-arg-reducer (fn [a b c] (+ a b c)))", self.env)
@@ -31,13 +43,19 @@ class ReduceFnTest(unittest.TestCase):
         """Test (reduce [] +) raises error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(reduce [] +)", self.env)
-        self.assertEqual(str(cm.exception), "ValueError: reduce() of empty sequence with no initial value.")
+        self.assertEqual(
+            str(cm.exception),
+            "ValueError: reduce() of empty sequence with no initial value.",
+        )
 
     def test_reduce_empty_list_no_initial(self):
         """Test (reduce '() +) raises error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(reduce '() +)", self.env)
-        self.assertEqual(str(cm.exception), "ValueError: reduce() of empty sequence with no initial value.")
+        self.assertEqual(
+            str(cm.exception),
+            "ValueError: reduce() of empty sequence with no initial value.",
+        )
 
     def test_reduce_empty_vector_with_initial(self):
         """Test (reduce [] + 0) returns 0."""
@@ -91,12 +109,12 @@ class ReduceFnTest(unittest.TestCase):
 
     def test_reduce_string_concat_vector_with_initial(self):
         """Test (reduce ["a" "b" "c"] concat-str "") returns "abc"."""
-        result = run_lispy_string("(reduce [\"a\" \"b\" \"c\"] concat-str \"\")", self.env)
+        result = run_lispy_string('(reduce ["a" "b" "c"] concat-str "")', self.env)
         self.assertEqual(result, "abc")
 
     def test_reduce_string_concat_list_no_initial(self):
         """Test (reduce '("a" "b" "c") concat-str) returns "abc"."""
-        result = run_lispy_string("(reduce '(\"a\" \"b\" \"c\") concat-str)", self.env)
+        result = run_lispy_string('(reduce \'("a" "b" "c") concat-str)', self.env)
         self.assertEqual(result, "abc")
 
     def test_reduce_custom_fn_build_list(self):
@@ -109,52 +127,79 @@ class ReduceFnTest(unittest.TestCase):
         """Test reduce with too few arguments (0 or 1)."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(reduce)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'reduce' expects 2 or 3 arguments, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'reduce' expects 2 or 3 arguments, got 0."
+        )
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(reduce [])", self.env) # Was (reduce +)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'reduce' expects 2 or 3 arguments, got 1.")
+            run_lispy_string("(reduce [])", self.env)  # Was (reduce +)
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'reduce' expects 2 or 3 arguments, got 1."
+        )
 
     def test_reduce_too_many_args(self):
         """Test reduce with too many arguments (4)."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(reduce [1 2] + 0 'extra)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'reduce' expects 2 or 3 arguments, got 4.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'reduce' expects 2 or 3 arguments, got 4."
+        )
 
     def test_reduce_collection_not_list_or_vector(self):
         """Test reduce when collection is not a list or vector."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(reduce \"abc\" + 0)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: First argument to 'reduce' must be a list or vector, got <class 'str'>.")
+            run_lispy_string('(reduce "abc" + 0)', self.env)
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: First argument to 'reduce' must be a list or vector, got <class 'str'>.",
+        )
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(reduce 123 + 0)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: First argument to 'reduce' must be a list or vector, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: First argument to 'reduce' must be a list or vector, got <class 'int'>.",
+        )
 
     def test_reduce_procedure_not_callable(self):
         """Test reduce when the procedure argument is not callable."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(reduce [1 2] 123 0)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Second argument to 'reduce' must be a procedure, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Second argument to 'reduce' must be a procedure, got <class 'int'>.",
+        )
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(reduce [1 2] \'(not-a-fn) 0)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Second argument to 'reduce' must be a procedure, got <class 'lispy.types.LispyList'>.")
+            run_lispy_string("(reduce [1 2] '(not-a-fn) 0)", self.env)
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Second argument to 'reduce' must be a procedure, got <class 'lispy.types.LispyList'>.",
+        )
 
     def test_reduce_proc_arity_incorrect_zero_args(self):
         """Test reduce when the reducing procedure expects 0 arguments."""
         with self.assertRaises(ArityError) as cm:
             run_lispy_string("(reduce [1 2] zero-arg-reducer 0)", self.env)
-        self.assertEqual(str(cm.exception), "Procedure <UserDefinedFunction params:()> passed to 'reduce' expects 2 arguments, got 0.")
+        self.assertEqual(
+            str(cm.exception),
+            "Procedure <UserDefinedFunction params:()> passed to 'reduce' expects 2 arguments, got 0.",
+        )
 
     def test_reduce_proc_arity_incorrect_one_arg(self):
         """Test reduce when the reducing procedure expects 1 argument."""
         with self.assertRaises(ArityError) as cm:
             run_lispy_string("(reduce [1 2] one-arg-reducer 0)", self.env)
-        self.assertEqual(str(cm.exception), "Procedure <UserDefinedFunction params:(x)> passed to 'reduce' expects 2 arguments, got 1.")
+        self.assertEqual(
+            str(cm.exception),
+            "Procedure <UserDefinedFunction params:(x)> passed to 'reduce' expects 2 arguments, got 1.",
+        )
 
     def test_reduce_proc_arity_incorrect_three_args(self):
         """Test reduce when the reducing procedure expects 3 arguments."""
         with self.assertRaises(ArityError) as cm:
             run_lispy_string("(reduce [1 2] three-arg-reducer 0)", self.env)
-        self.assertEqual(str(cm.exception), "Procedure <UserDefinedFunction params:(a, b, c)> passed to 'reduce' expects 2 arguments, got 3.")
+        self.assertEqual(
+            str(cm.exception),
+            "Procedure <UserDefinedFunction params:(a, b, c)> passed to 'reduce' expects 2 arguments, got 3.",
+        )
 
     def test_reduce_with_thread_first(self):
         """Test reduce used with the -> (thread-first) special form."""
@@ -165,5 +210,6 @@ class ReduceFnTest(unittest.TestCase):
         result3 = run_lispy_string("(-> [1 2 3] (reduce sum-of-doubles 0))", self.env)
         self.assertEqual(result3, 12)
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

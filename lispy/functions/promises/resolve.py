@@ -7,10 +7,14 @@ from lispy.types import LispyPromise
 def builtin_resolve(args: List[Any], env: Environment) -> LispyPromise:
     """Creates a resolved promise with the given value. (resolve value)"""
     if len(args) != 1:
-        raise EvaluationError("SyntaxError: 'resolve' expects 1 argument (value), got {}.".format(len(args)))
-    
+        raise EvaluationError(
+            "SyntaxError: 'resolve' expects 1 argument (value), got {}.".format(
+                len(args)
+            )
+        )
+
     value = args[0]
-    
+
     # Create a promise that's already resolved
     promise = LispyPromise()
     promise.resolve(value)
@@ -48,4 +52,4 @@ Notes:
   - Can be mixed with pending promises in combinators
   - More efficient than promise when value is already available
   - Maintains consistent async interface
-  - Can be used to convert sync values to async context""" 
+  - Can be used to convert sync values to async context"""

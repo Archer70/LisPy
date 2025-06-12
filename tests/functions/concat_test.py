@@ -76,7 +76,9 @@ class ConcatFnTest(unittest.TestCase):
 
     def test_concat_mixed_data_types(self):
         """Test concat with different data types."""
-        result = run_lispy_string('(concat [1 "hello"] [true 3.14] ["world"])', self.env)
+        result = run_lispy_string(
+            '(concat [1 "hello"] [true 3.14] ["world"])', self.env
+        )
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, "hello", True, 3.14, "world"]))
 
@@ -85,10 +87,10 @@ class ConcatFnTest(unittest.TestCase):
         run_lispy_string("(define vec1 [1 2])", self.env)
         run_lispy_string("(define vec2 [3 4])", self.env)
         run_lispy_string("(concat vec1 vec2)", self.env)
-        
+
         original_vec1 = run_lispy_string("vec1", self.env)
         original_vec2 = run_lispy_string("vec2", self.env)
-        
+
         self.assertIsInstance(original_vec1, Vector)
         self.assertEqual(original_vec1, Vector([1, 2]))
         self.assertIsInstance(original_vec2, Vector)
@@ -99,28 +101,40 @@ class ConcatFnTest(unittest.TestCase):
         """Test concat with invalid first argument type."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(concat "not-a-collection")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'concat' arguments must be lists or vectors, got <class 'str'> as first argument.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'concat' arguments must be lists or vectors, got <class 'str'> as first argument.",
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(concat 123)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'concat' arguments must be lists or vectors, got <class 'int'> as first argument.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'concat' arguments must be lists or vectors, got <class 'int'> as first argument.",
+        )
 
     def test_concat_invalid_subsequent_argument(self):
         """Test concat with invalid subsequent argument types."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(concat [1 2] "not-a-collection")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'concat' arguments must be lists or vectors, got <class 'str'> at position 1.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'concat' arguments must be lists or vectors, got <class 'str'> at position 1.",
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(concat [1] [2] 123 [4])", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'concat' arguments must be lists or vectors, got <class 'int'> at position 2.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'concat' arguments must be lists or vectors, got <class 'int'> at position 2.",
+        )
 
     def test_concat_with_thread_first(self):
         """Test concat used with the -> (thread-first) special form."""
         result = run_lispy_string("(-> [1 2] (concat [3 4] [5]))", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 2, 3, 4, 5]))
-        
+
         result_list = run_lispy_string("(-> '(1 2) (concat '(3 4) '(5)))", self.env)
         self.assertIsInstance(result_list, LispyList)
         self.assertEqual(result_list, LispyList([1, 2, 3, 4, 5]))
@@ -133,10 +147,12 @@ class ConcatFnTest(unittest.TestCase):
 
     def test_concat_large_number_of_collections(self):
         """Test concat with many collections."""
-        result = run_lispy_string("(concat [1] [2] [3] [4] [5] [6] [7] [8] [9] [10])", self.env)
+        result = run_lispy_string(
+            "(concat [1] [2] [3] [4] [5] [6] [7] [8] [9] [10])", self.env
+        )
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

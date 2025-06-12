@@ -33,14 +33,14 @@ class LexerError(LisPyError):
 
 class UserThrownError(LisPyError):
     """Exception thrown by user code via (throw ...)."""
-    
+
     def __init__(self, value):
         self.value = value
         super().__init__(str(value))
-    
+
     def __str__(self):
         return str(self.value)
-    
+
     def __repr__(self):
         return f"UserThrownError({repr(self.value)})"
 

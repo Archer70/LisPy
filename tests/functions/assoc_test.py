@@ -1,6 +1,6 @@
 import unittest
 
-from lispy.types import Symbol, LispyList
+from lispy.types import Symbol
 from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
 from lispy.utils import run_lispy_string
@@ -78,29 +78,41 @@ class AssocFnTest(unittest.TestCase):
         lispy_code = "(assoc {})"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'assoc' expects at least 3 arguments (map, key, value), got 1.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'assoc' expects at least 3 arguments (map, key, value), got 1.",
+        )
 
     def test_assoc_odd_number_of_key_value_args(self):
         """Test (assoc {} :a) raises SyntaxError due to insufficient arguments."""
         lispy_code = "(assoc {} ':a)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'assoc' expects at least 3 arguments (map, key, value), got 2.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'assoc' expects at least 3 arguments (map, key, value), got 2.",
+        )
 
     def test_assoc_map_arg_not_map_or_nil(self):
         """Test (assoc '(1 2) :a 1) raises TypeError."""
         lispy_code = "(assoc '(1 2) ':a 1)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: First argument to 'assoc' must be a map or nil, got <class 'lispy.types.LispyList'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: First argument to 'assoc' must be a map or nil, got <class 'lispy.types.LispyList'>.",
+        )
 
     def test_assoc_key_not_symbol(self):
         """Test (assoc {} 1 2) raises TypeError (key must be a symbol)."""
         lispy_code = "(assoc {} 1 2)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Map keys in 'assoc' must be symbols, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Map keys in 'assoc' must be symbols, got <class 'int'>.",
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

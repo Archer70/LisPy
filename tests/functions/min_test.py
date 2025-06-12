@@ -84,44 +84,64 @@ class MinFnTest(unittest.TestCase):
         """Test (min) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(min)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'min' expects at least 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'min' expects at least 1 argument, got 0."
+        )
 
     def test_min_non_number_first(self):
         """Test (min \"hello\" 5) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(min "hello" 5)', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument 1 to 'min' must be a number, got str: 'hello'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument 1 to 'min' must be a number, got str: 'hello'",
+        )
 
     def test_min_non_number_middle(self):
         """Test (min 3 \"hello\" 7) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(min 3 "hello" 7)', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument 2 to 'min' must be a number, got str: 'hello'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument 2 to 'min' must be a number, got str: 'hello'",
+        )
 
     def test_min_non_number_last(self):
         """Test (min 3 5 \"hello\") raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(min 3 5 "hello")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument 3 to 'min' must be a number, got str: 'hello'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument 3 to 'min' must be a number, got str: 'hello'",
+        )
 
     def test_min_boolean(self):
         """Test (min 5 true) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(min 5 true)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument 2 to 'min' must be a number, got bool: 'True'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument 2 to 'min' must be a number, got bool: 'True'",
+        )
 
     def test_min_nil(self):
         """Test (min 5 nil) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(min 5 nil)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument 2 to 'min' must be a number, got NoneType: 'None'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument 2 to 'min' must be a number, got NoneType: 'None'",
+        )
 
     def test_min_collection(self):
         """Test (min 5 [1 2]) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(min 5 [1 2])", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument 2 to 'min' must be a number, got Vector: '[1 2]'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument 2 to 'min' must be a number, got Vector: '[1 2]'",
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

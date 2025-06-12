@@ -7,7 +7,6 @@ from lispy.utils import run_lispy_string
 
 
 class DefineFormTest(unittest.TestCase):
-
     def setUp(self):
         self.env = create_global_env()
 
@@ -15,7 +14,7 @@ class DefineFormTest(unittest.TestCase):
     def test_define_simple_value(self):
         # (define x 10)
         result = run_lispy_string("(define x 10)", self.env)
-        self.assertEqual(result, 10) # define returns the value
+        self.assertEqual(result, 10)  # define returns the value
         self.assertEqual(self.env.lookup("x"), 10)
 
     def test_define_expression_value(self):
@@ -37,19 +36,28 @@ class DefineFormTest(unittest.TestCase):
         # (define x)
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(define x)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'define' requires a symbol and a value. Usage: (define symbol value)")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'define' requires a symbol and a value. Usage: (define symbol value)",
+        )
 
     def test_define_incorrect_args_count_too_many(self):
         # (define x 10 20)
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(define x 10 20)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'define' requires a symbol and a value. Usage: (define symbol value)")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'define' requires a symbol and a value. Usage: (define symbol value)",
+        )
 
     def test_define_first_arg_not_symbol(self):
         # (define "not-a-symbol" 10)
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(define "not-a-symbol" 10)', self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: First argument to 'define' must be a symbol, got str")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: First argument to 'define' must be a symbol, got str",
+        )
 
     def test_define_in_empty_env(self):
         # (define new_var "hello_empty")
@@ -58,5 +66,6 @@ class DefineFormTest(unittest.TestCase):
         self.assertEqual(result, "hello_empty")
         self.assertEqual(empty_env.lookup("new_var"), "hello_empty")
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

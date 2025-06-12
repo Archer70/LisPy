@@ -4,7 +4,7 @@ import unittest
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
-from lispy.bdd import registry # Import registry
+from lispy.bdd import registry  # Import registry
 
 
 class TestGivenForm(unittest.TestCase):
@@ -30,8 +30,7 @@ class TestGivenForm(unittest.TestCase):
         )
         self.assertEqual(result, 10)
         # We can also check the side effect if define adds to env
-        self.assertEqual(self.env.lookup('x'), 10)
-
+        self.assertEqual(self.env.lookup("x"), 10)
 
     def test_given_body_evaluates_and_returns_last_expression(self):
         result = self.helper_run_in_scenario_context(
@@ -41,33 +40,35 @@ class TestGivenForm(unittest.TestCase):
 
     def test_given_no_body(self):
         # (given "a precondition without actions")
-        result = self.helper_run_in_scenario_context('(given "a precondition without actions")')
+        result = self.helper_run_in_scenario_context(
+            '(given "a precondition without actions")'
+        )
         self.assertIsNone(result)
 
     def test_given_arity_error_no_args(self):
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_scenario_context('(given)')
+            self.helper_run_in_scenario_context("(given)")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'given' expects at least a description string, got 0 arguments."
+            "SyntaxError: 'given' expects at least a description string, got 0 arguments.",
         )
 
     def test_given_arity_error_no_description_string(self):
         # (given (define x 10))
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_scenario_context('(given (define x 10))')
+            self.helper_run_in_scenario_context("(given (define x 10))")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'given' expects a description string as its first argument."
+            "SyntaxError: 'given' expects a description string as its first argument.",
         )
 
     def test_given_description_not_a_string(self):
         # (given 123 (define x 10))
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_scenario_context('(given 123 (define x 10))')
+            self.helper_run_in_scenario_context("(given 123 (define x 10))")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'given' expects a description string as its first argument."
+            "SyntaxError: 'given' expects a description string as its first argument.",
         )
 
     def test_given_outside_it_block(self):
@@ -77,9 +78,10 @@ class TestGivenForm(unittest.TestCase):
             run_lispy_string('(given "a condition" (print "test"))', self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'given' form can only be used inside an 'it' block."
+            "SyntaxError: 'given' form can only be used inside an 'it' block.",
         )
-        registry.end_feature() # Clean up
+        registry.end_feature()  # Clean up
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

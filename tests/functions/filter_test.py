@@ -5,16 +5,19 @@ from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError, ArityError
 from lispy.types import LispyList, Vector
 
+
 class FilterFnTest(unittest.TestCase):
     def setUp(self):
         self.env = create_global_env()
         run_lispy_string("(define even? (fn [x] (= (% x 2) 0)))", self.env)
         run_lispy_string("(define odd? (fn [x] (not (= (% x 2) 0))))", self.env)
-        
-        self.env.store['py-is-number?'] = lambda args, env: isinstance(args[0], (int, float))
+
+        self.env.store["py-is-number?"] = lambda args, env: isinstance(
+            args[0], (int, float)
+        )
         run_lispy_string("(define is-number? (fn [x] (py-is-number? x)))", self.env)
-        
-        self.env.store['py-is-string?'] = lambda args, env: isinstance(args[0], str)
+
+        self.env.store["py-is-string?"] = lambda args, env: isinstance(args[0], str)
         run_lispy_string("(define is-string? (fn [x] (py-is-string? x)))", self.env)
 
         run_lispy_string("(define always-true (fn [x] true))", self.env)
@@ -74,14 +77,14 @@ class FilterFnTest(unittest.TestCase):
 
     def test_filter_mixed_collection_vector(self):
         """Test filtering a mixed vector, result is a vector."""
-        lispy_code = "(filter [1 \"a\" 2.0 \"b\" 3] is-number?)"
+        lispy_code = '(filter [1 "a" 2.0 "b" 3] is-number?)'
         result = run_lispy_string(lispy_code, self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 2.0, 3]))
 
     def test_filter_mixed_collection_list(self):
         """Test filtering a mixed list, result is a list."""
-        lispy_code = "(filter '(1 \"a\" 2.0 \"b\" 3) is-string?)"
+        lispy_code = '(filter \'(1 "a" 2.0 "b" 3) is-string?)'
         result = run_lispy_string(lispy_code, self.env)
         self.assertIsInstance(result, LispyList)
         self.assertEqual(result, LispyList(["a", "b"]))
@@ -99,54 +102,76 @@ class FilterFnTest(unittest.TestCase):
         """Test filter with too few arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(filter)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'filter' expects 2 arguments, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'filter' expects 2 arguments, got 0."
+        )
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(filter [])", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'filter' expects 2 arguments, got 1.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'filter' expects 2 arguments, got 1."
+        )
 
     def test_filter_too_many_args(self):
         """Test filter with too many arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(filter [] odd? 'extra)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'filter' expects 2 arguments, got 3.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'filter' expects 2 arguments, got 3."
+        )
 
     def test_filter_collection_not_list_or_vector(self):
         """Test filter when collection is not a list or vector."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(filter \"abc\" odd?)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: First argument to 'filter' must be a list or vector, got <class 'str'>.")
+            run_lispy_string('(filter "abc" odd?)', self.env)
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: First argument to 'filter' must be a list or vector, got <class 'str'>.",
+        )
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(filter 123 odd?)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: First argument to 'filter' must be a list or vector, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: First argument to 'filter' must be a list or vector, got <class 'int'>.",
+        )
 
     def test_filter_predicate_not_callable(self):
         """Test filter when the predicate argument is not callable."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(filter [1 2 3] 123)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Second argument to 'filter' must be a procedure, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Second argument to 'filter' must be a procedure, got <class 'int'>.",
+        )
 
     # --- Predicate Arity Tests ---
     def test_filter_pred_arity_zero(self):
         """Test filter when the predicate expects 0 arguments."""
         with self.assertRaises(ArityError) as cm:
             run_lispy_string("(filter [1 2] zero-arg-pred)", self.env)
-        self.assertEqual(str(cm.exception), "Procedure <UserDefinedFunction params:()> passed to 'filter' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception),
+            "Procedure <UserDefinedFunction params:()> passed to 'filter' expects 1 argument, got 0.",
+        )
 
     def test_filter_pred_arity_two(self):
         """Test filter when the predicate expects 2 arguments."""
         with self.assertRaises(ArityError) as cm:
             run_lispy_string("(filter [1 2] two-arg-pred)", self.env)
-        self.assertEqual(str(cm.exception), "Procedure <UserDefinedFunction params:(a, b)> passed to 'filter' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception),
+            "Procedure <UserDefinedFunction params:(a, b)> passed to 'filter' expects 1 argument, got 2.",
+        )
 
     def test_filter_with_thread_first(self):
         """Test filter used with the -> (thread-first) special form."""
         result = run_lispy_string("(-> [1 2 3 4 5] (filter odd?))", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 3, 5]))
-        
+
         result_list = run_lispy_string("(-> '(1 2 3 4 5) (filter even?))", self.env)
         self.assertIsInstance(result_list, LispyList)
         self.assertEqual(result_list, LispyList([2, 4]))
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

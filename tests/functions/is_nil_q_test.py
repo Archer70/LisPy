@@ -90,14 +90,18 @@ class IsNilQFnTest(unittest.TestCase):
         """Test (is_nil?) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_nil?)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_nil?' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_nil?' expects 1 argument, got 0."
+        )
 
     def test_nil_q_too_many_args(self):
         """Test (is_nil? nil nil) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_nil? nil nil)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_nil?' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_nil?' expects 1 argument, got 2."
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

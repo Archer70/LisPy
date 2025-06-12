@@ -7,7 +7,10 @@ from .promise_all import builtin_promise_all, documentation_promise_all
 from .promise_race import builtin_promise_race, documentation_promise_race
 
 from .promise_any import builtin_promise_any, documentation_promise_any
-from .promise_all_settled import builtin_promise_all_settled, documentation_promise_all_settled
+from .promise_all_settled import (
+    builtin_promise_all_settled,
+    documentation_promise_all_settled,
+)
 from .then import builtin_promise_then, documentation_promise_then
 from .on_reject import builtin_on_reject, documentation_on_reject
 from .on_complete import builtin_on_complete, documentation_on_complete
@@ -19,13 +22,12 @@ from .async_filter import builtin_async_filter, documentation_async_filter
 __all__ = [
     # Functions
     "builtin_promise",
-    "builtin_resolve", 
+    "builtin_resolve",
     "builtin_reject",
     "builtin_promise_all",
     "builtin_promise_race",
     "builtin_promise_any",
     "builtin_promise_all_settled",
-
     "builtin_promise_then",
     "builtin_on_reject",
     "builtin_on_complete",
@@ -41,7 +43,6 @@ __all__ = [
     "documentation_promise_race",
     "documentation_promise_any",
     "documentation_promise_all_settled",
-
     "documentation_promise_then",
     "documentation_on_reject",
     "documentation_on_complete",
@@ -49,4 +50,4 @@ __all__ = [
     "documentation_with_timeout",
     "documentation_async_map",
     "documentation_async_filter",
-] 
+]

@@ -20,7 +20,7 @@ def builtin_timeout(args, env):
     Examples:
         (timeout 1000)           ; => Promise that resolves to nil after 1 second
         (timeout 500 "done")     ; => Promise that resolves to "done" after 500ms
-        
+
         ; Thread-first usage:
         (-> (timeout 1000 "ready")
             (promise-then (fn [msg] (println msg))))
@@ -29,33 +29,33 @@ def builtin_timeout(args, env):
         raise EvaluationError(
             f"SyntaxError: 'timeout' expects 1 or 2 arguments (ms [value]), got {len(args)}."
         )
-    
+
     ms = args[0]
     value = args[1] if len(args) > 1 else None
-    
+
     # Validate timeout argument
     if not isinstance(ms, (int, float)):
         raise EvaluationError(
             f"TypeError: 'timeout' first argument (ms) must be a number, got {type(ms).__name__}."
         )
-    
+
     if ms < 0:
         raise EvaluationError(
             f"ValueError: 'timeout' ms must be non-negative, got {ms}."
         )
-    
+
     # Create promise that resolves after timeout
     promise = LispyPromise()
-    
+
     def timeout_handler():
         """Handle timeout by resolving the promise."""
         time.sleep(ms / 1000.0)  # Convert ms to seconds
         promise.resolve(value)
-    
+
     # Start timeout in background thread
     timeout_thread = threading.Thread(target=timeout_handler, daemon=True)
     timeout_thread.start()
-    
+
     return promise
 
 
@@ -94,4 +94,4 @@ Notes:
   - Works seamlessly with thread-first (->) operator
   - Similar to JavaScript's setTimeout but returns a promise
   - Can be used with promise-race for timeout patterns
-""" 
+"""

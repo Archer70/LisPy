@@ -23,10 +23,10 @@ class TestDescribeForm(unittest.TestCase):
 
     def test_describe_arity_error_no_args(self):
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string('(describe)', self.env)
+            run_lispy_string("(describe)", self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'describe' expects at least a description string, got 0 arguments."
+            "SyntaxError: 'describe' expects at least a description string, got 0 arguments.",
         )
 
     def test_describe_arity_error_no_description_string(self):
@@ -34,7 +34,7 @@ class TestDescribeForm(unittest.TestCase):
             run_lispy_string('(describe (print "uh oh"))', self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'describe' expects a description string as its first argument."
+            "SyntaxError: 'describe' expects a description string as its first argument.",
         )
 
     def test_describe_basic_structure_with_body(self):
@@ -43,5 +43,6 @@ class TestDescribeForm(unittest.TestCase):
         # Also check registry if feature was added (as a side effect)
         self.assertEqual(len(registry.BDD_RESULTS), 1)
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

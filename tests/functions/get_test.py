@@ -116,22 +116,28 @@ class GetFnTest(unittest.TestCase):
         """Test get with vectors containing mixed data types."""
         result = run_lispy_string('(get [1 "hello" true nil] 1)', self.env)
         self.assertEqual(result, "hello")
-        
+
         result = run_lispy_string('(get [1 "hello" true nil] 2)', self.env)
         self.assertEqual(result, True)
-        
+
         result = run_lispy_string('(get [1 "hello" true nil] 3)', self.env)
         self.assertIsNone(result)
 
     def test_get_map_mixed_value_types(self):
         """Test get with maps containing mixed value types."""
-        result = run_lispy_string('(get {:num 42 :str "hello" :bool true :nil nil} \':str)', self.env)
+        result = run_lispy_string(
+            '(get {:num 42 :str "hello" :bool true :nil nil} \':str)', self.env
+        )
         self.assertEqual(result, "hello")
-        
-        result = run_lispy_string('(get {:num 42 :str "hello" :bool true :nil nil} \':bool)', self.env)
+
+        result = run_lispy_string(
+            '(get {:num 42 :str "hello" :bool true :nil nil} \':bool)', self.env
+        )
         self.assertEqual(result, True)
-        
-        result = run_lispy_string('(get {:num 42 :str "hello" :bool true :nil nil} \':nil)', self.env)
+
+        result = run_lispy_string(
+            '(get {:num 42 :str "hello" :bool true :nil nil} \':nil)', self.env
+        )
         self.assertIsNone(result)
 
     # Default value tests
@@ -140,22 +146,22 @@ class GetFnTest(unittest.TestCase):
         # String default
         result = run_lispy_string('(get [] 0 "default")', self.env)
         self.assertEqual(result, "default")
-        
+
         # Number default
         result = run_lispy_string("(get [] 0 42)", self.env)
         self.assertEqual(result, 42)
-        
+
         # Boolean default
         result = run_lispy_string("(get [] 0 true)", self.env)
         self.assertEqual(result, True)
-        
+
         # Vector default
         result = run_lispy_string("(get [] 0 [1 2 3])", self.env)
         self.assertEqual(result, Vector([1, 2, 3]))
-        
+
         # Map default
         result = run_lispy_string("(get [] 0 {:default true})", self.env)
-        self.assertEqual(result, {Symbol(':default'): True})
+        self.assertEqual(result, {Symbol(":default"): True})
 
     # Error handling tests
     def test_get_wrong_collection_type(self):
@@ -183,49 +189,61 @@ class GetFnTest(unittest.TestCase):
         """Test (get) raises SyntaxError."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(get)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'get' expects 2 or 3 arguments, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'get' expects 2 or 3 arguments, got 0."
+        )
 
     def test_get_one_arg(self):
         """Test (get [1 2 3]) raises SyntaxError."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(get [1 2 3])", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'get' expects 2 or 3 arguments, got 1.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'get' expects 2 or 3 arguments, got 1."
+        )
 
     def test_get_too_many_args(self):
         """Test (get [1 2 3] 0 \"default\" \"extra\") raises SyntaxError."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(get [1 2 3] 0 "default" "extra")', self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'get' expects 2 or 3 arguments, got 4.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'get' expects 2 or 3 arguments, got 4."
+        )
 
     # Nested structure tests
     def test_get_nested_vectors(self):
         """Test get with nested vectors."""
         result = run_lispy_string("(get [[1 2] [3 4] [5 6]] 1)", self.env)
         self.assertEqual(result, Vector([3, 4]))
-        
+
         # Get element from nested vector
         result = run_lispy_string("(get (get [[1 2] [3 4] [5 6]] 1) 0)", self.env)
         self.assertEqual(result, 3)
 
     def test_get_nested_maps(self):
         """Test get with nested maps."""
-        result = run_lispy_string("(get {:user {:name \"Alice\" :age 30}} ':user)", self.env)
-        expected = {Symbol(':name'): "Alice", Symbol(':age'): 30}
+        result = run_lispy_string(
+            '(get {:user {:name "Alice" :age 30}} \':user)', self.env
+        )
+        expected = {Symbol(":name"): "Alice", Symbol(":age"): 30}
         self.assertEqual(result, expected)
-        
+
         # Get from nested map
-        result = run_lispy_string("(get (get {:user {:name \"Alice\" :age 30}} ':user) ':name)", self.env)
+        result = run_lispy_string(
+            "(get (get {:user {:name \"Alice\" :age 30}} ':user) ':name)", self.env
+        )
         self.assertEqual(result, "Alice")
 
     def test_get_vector_containing_maps(self):
         """Test get with vector containing maps."""
         result = run_lispy_string("(get [{:a 1} {:b 2} {:c 3}] 1)", self.env)
-        expected = {Symbol(':b'): 2}
+        expected = {Symbol(":b"): 2}
         self.assertEqual(result, expected)
 
     def test_get_map_containing_vectors(self):
         """Test get with map containing vectors."""
-        result = run_lispy_string("(get {:nums [1 2 3] :letters [\"a\" \"b\" \"c\"]} ':letters)", self.env)
+        result = run_lispy_string(
+            '(get {:nums [1 2 3] :letters ["a" "b" "c"]} \':letters)', self.env
+        )
         expected = Vector(["a", "b", "c"])
         self.assertEqual(result, expected)
 
@@ -234,11 +252,11 @@ class GetFnTest(unittest.TestCase):
         """Test get using variables for collections and keys."""
         run_lispy_string("(define my-vector [10 20 30])", self.env)
         run_lispy_string("(define my-index 1)", self.env)
-        
+
         result = run_lispy_string("(get my-vector my-index)", self.env)
         self.assertEqual(result, 20)
-        
-        run_lispy_string("(define my-map {:name \"Bob\" :age 25})", self.env)
+
+        run_lispy_string('(define my-map {:name "Bob" :age 25})', self.env)
         result = run_lispy_string("(get my-map ':name)", self.env)
         self.assertEqual(result, "Bob")
 
@@ -247,13 +265,17 @@ class GetFnTest(unittest.TestCase):
         # Get + arithmetic
         result = run_lispy_string("(+ (get [1 2 3] 0) (get [1 2 3] 2))", self.env)
         self.assertEqual(result, 4)  # 1 + 3
-        
+
         # Get + comparison (using equal? for general equality)
-        result = run_lispy_string('(equal? (get {:status "active"} \':status) "active")', self.env)
+        result = run_lispy_string(
+            '(equal? (get {:status "active"} \':status) "active")', self.env
+        )
         self.assertEqual(result, True)
-        
+
         # Get + conditionals
-        result = run_lispy_string('(if (get {:enabled true} \':enabled) "yes" "no")', self.env)
+        result = run_lispy_string(
+            '(if (get {:enabled true} \':enabled) "yes" "no")', self.env
+        )
         self.assertEqual(result, "yes")
 
     def test_get_with_nil_values(self):
@@ -261,18 +283,18 @@ class GetFnTest(unittest.TestCase):
         # Vector containing nil
         result = run_lispy_string("(get [1 nil 3] 1)", self.env)
         self.assertIsNone(result)
-        
+
         # Map with nil value
         result = run_lispy_string("(get {:key nil} ':key)", self.env)
         self.assertIsNone(result)
-        
+
         # Distinguish between nil value and missing key
         result = run_lispy_string("(get {:key nil} ':key)", self.env)
         self.assertIsNone(result)  # nil value exists
-        
+
         result = run_lispy_string("(get {:key nil} ':missing)", self.env)
         self.assertIsNone(result)  # missing key returns nil
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

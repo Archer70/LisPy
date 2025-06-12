@@ -35,17 +35,17 @@ def _call_predicate(
 
 def builtin_every_q(args: List[Any], env: Environment) -> bool:
     """Implementation of the (every? collection predicate) LisPy function.
-    
+
     Returns true if all elements in the collection satisfy the predicate,
     false if any element fails the predicate.
-    
+
     Args:
         args: List containing exactly two arguments - collection and predicate function
         env: The current environment
-        
+
     Returns:
         bool: True if all elements satisfy predicate, False if any element fails
-        
+
     Raises:
         EvaluationError: If incorrect number of arguments or invalid argument types
     """
@@ -81,7 +81,7 @@ def builtin_every_q(args: List[Any], env: Environment) -> bool:
         # In LisPy, False and None are falsy, everything else is truthy
         if result is False or result is None:
             return False
-    
+
     # All elements satisfied the predicate
     return True
 
@@ -109,4 +109,4 @@ Notes:
   - False and nil are considered falsy, everything else is truthy
   - Empty collection returns true (vacuous truth)
   - Complement of some: every? tests all, some tests any
-  - Useful for validating that all elements meet criteria""" 
+  - Useful for validating that all elements meet criteria"""

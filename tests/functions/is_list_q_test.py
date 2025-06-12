@@ -28,7 +28,7 @@ class IsListQFnTest(unittest.TestCase):
 
     def test_list_q_mixed_types_list(self):
         """Test (is_list? '(1 \"hello\" true nil)) returns true."""
-        self.assertTrue(run_lispy_string("(is_list? '(1 \"hello\" true nil))", self.env))
+        self.assertTrue(run_lispy_string('(is_list? \'(1 "hello" true nil))', self.env))
 
     def test_list_q_vector(self):
         """Test (is_list? [1 2 3]) returns false."""
@@ -74,24 +74,28 @@ class IsListQFnTest(unittest.TestCase):
         """Test (is_list?) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_list?)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_list?' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_list?' expects 1 argument, got 0."
+        )
 
     def test_list_q_too_many_args(self):
         """Test (is_list? '(1) '(2)) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_list? '(1) '(2))", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_list?' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_list?' expects 1 argument, got 2."
+        )
 
     def test_list_q_vs_is_vector_q_distinction(self):
         """Test that is_list? and is_vector? correctly distinguish between lists and vectors."""
         # Test that is_list? returns true for lists but false for vectors
         self.assertTrue(run_lispy_string("(is_list? (list 1 2 3))", self.env))
         self.assertFalse(run_lispy_string("(is_list? (vector 1 2 3))", self.env))
-        
-        # Test that is_vector? returns true for vectors but false for lists  
+
+        # Test that is_vector? returns true for vectors but false for lists
         self.assertTrue(run_lispy_string("(is_vector? (vector 1 2 3))", self.env))
         self.assertFalse(run_lispy_string("(is_vector? (list 1 2 3))", self.env))
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

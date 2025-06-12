@@ -1,15 +1,14 @@
 # tests/functions/list_test.py
 import unittest
 
-from lispy.functions import global_env, create_global_env
+from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
-from lispy.exceptions import EvaluationError # Though list itself may not raise, its args might
 from lispy.types import Symbol, LispyList
 
-class ListFunctionTest(unittest.TestCase):
 
+class ListFunctionTest(unittest.TestCase):
     def setUp(self):
-        self.env = create_global_env() # Use a fresh env to ensure 'list' is defined
+        self.env = create_global_env()  # Use a fresh env to ensure 'list' is defined
 
     def test_list_empty(self):
         result = run_lispy_string("(list)", self.env)
@@ -27,12 +26,12 @@ class ListFunctionTest(unittest.TestCase):
         self.assertEqual(result, LispyList(["a", "b", "c"]))
 
     def test_list_with_mixed_types(self):
-        expected_list = LispyList([1, "hello", True, None, Symbol('sym')])
+        expected_list = LispyList([1, "hello", True, None, Symbol("sym")])
         # Define sym for the run_lispy_string context if needed, or quote it
         # For (list 1 "hello" true nil 'sym), 'sym needs to be quoted or defined
         # Or, if Symbol('sym') is the direct result of some evaluation, that's fine.
         # Let's test with literals primarily, as list just constructs from evaluated args.
-        result = run_lispy_string("(list 1 \"hello\" true nil 'sym)", self.env)
+        result = run_lispy_string('(list 1 "hello" true nil \'sym)', self.env)
         self.assertIsInstance(result, LispyList)
         self.assertEqual(result, expected_list)
 
@@ -52,5 +51,6 @@ class ListFunctionTest(unittest.TestCase):
         self.assertIsInstance(result, LispyList)
         self.assertEqual(result, LispyList([None, True, False]))
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

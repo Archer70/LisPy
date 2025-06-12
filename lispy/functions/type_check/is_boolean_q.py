@@ -40,4 +40,4 @@ Notes:
   - Returns false for "truthy" or "falsy" values that aren't booleans
   - Returns false for nil, numbers, strings, collections
   - Essential for strict boolean validation
-  - Requires exactly one argument""" 
+  - Requires exactly one argument"""

@@ -17,10 +17,10 @@ def builtin_promise_all(args, env):
         or rejects if any promise rejects
 
     Examples:
-        (promise-all [(resolve 1) (resolve 2) (resolve 3)]) 
+        (promise-all [(resolve 1) (resolve 2) (resolve 3)])
         ; => Promise that resolves to [1 2 3]
-        
-        (async 
+
+        (async
           (let [results (await (promise-all [(resolve "a") (resolve "b")]))]
             results)) ; => ["a" "b"]
     """
@@ -58,31 +58,31 @@ def builtin_promise_all(args, env):
         """Wait for all promises to complete in a background thread."""
         try:
             results = []
-            
+
             # Wait for each promise to complete
             for i, promise in enumerate(collection):
                 # Poll until the promise completes
                 while promise.state == "pending":
                     time.sleep(0.001)  # Small sleep to avoid busy waiting
-                
+
                 # Check if any promise rejected
                 if promise.state == "rejected":
                     all_promise.reject(promise.error)
                     return
-                
+
                 # Collect the resolved value
                 results.append(promise.value)
-            
+
             # All promises resolved - return results in same collection type
             result_type = Vector if isinstance(collection, Vector) else LispyList
             all_promise.resolve(result_type(results))
-            
+
         except Exception as e:
             all_promise.reject(e)
 
     # Start waiting in background thread
     threading.Thread(target=wait_for_all, daemon=True).start()
-    
+
     return all_promise
 
 
@@ -126,4 +126,4 @@ Notes:
   - Useful for waiting on multiple concurrent operations
   - Essential for coordinating parallel async work
   - Similar to Promise.all() in JavaScript
-""" 
+"""

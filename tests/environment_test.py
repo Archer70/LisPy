@@ -1,11 +1,10 @@
 import unittest
 
 from lispy.environment import Environment
-from lispy.exceptions import EvaluationError # For checking expected errors
-from lispy.types import Symbol # Though Environment uses string keys mostly
+from lispy.exceptions import EvaluationError  # For checking expected errors
+
 
 class EnvironmentTest(unittest.TestCase):
-
     def test_define_and_lookup_simple(self):
         env = Environment()
         env.define("x", 100)
@@ -28,12 +27,12 @@ class EnvironmentTest(unittest.TestCase):
         outer_env = Environment()
         outer_env.define("x", "outer_x")
         inner_env = Environment(outer=outer_env)
-        inner_env.define("x", "inner_x") # Shadows outer_env's x
-        
+        inner_env.define("x", "inner_x")  # Shadows outer_env's x
+
         self.assertEqual(inner_env.lookup("x"), "inner_x")
         # To verify outer_env is not affected, we'd ideally look it up there directly.
         # For now, this structure assumes lookup in outer_env itself still works.
-        self.assertEqual(outer_env.lookup("x"), "outer_x") 
+        self.assertEqual(outer_env.lookup("x"), "outer_x")
 
     def test_lookup_unbound_through_outer(self):
         outer_env = Environment()
@@ -45,18 +44,19 @@ class EnvironmentTest(unittest.TestCase):
     def test_define_does_not_affect_outer(self):
         outer_env = Environment()
         outer_env.define("y", 30)
-        
+
         inner_env = Environment(outer=outer_env)
-        inner_env.define("z", 40) # New symbol in inner
-        inner_env.define("y", 50) # Shadowing y in inner
+        inner_env.define("z", 40)  # New symbol in inner
+        inner_env.define("y", 50)  # Shadowing y in inner
 
         self.assertEqual(inner_env.lookup("z"), 40)
         self.assertEqual(inner_env.lookup("y"), 50)
-        
+
         # Check outer environment remains unchanged
         self.assertEqual(outer_env.lookup("y"), 30)
         with self.assertRaisesRegex(EvaluationError, "Unbound symbol: z"):
-            outer_env.lookup("z") # z should not be in outer
+            outer_env.lookup("z")  # z should not be in outer
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

@@ -45,13 +45,17 @@ class DocFnTest(unittest.TestCase):
         """Test (doc) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(doc)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'doc' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'doc' expects 1 argument, got 0."
+        )
 
     def test_doc_too_many_args(self):
         """Test (doc + abs) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(doc + abs)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'doc' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'doc' expects 1 argument, got 2."
+        )
 
     def test_doc_with_non_function(self):
         """Test doc with non-function argument."""
@@ -60,5 +64,5 @@ class DocFnTest(unittest.TestCase):
         self.assertIn("Unable to find documentation", str(cm.exception))
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

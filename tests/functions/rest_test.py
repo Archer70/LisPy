@@ -57,29 +57,39 @@ class RestFnTest(unittest.TestCase):
         lispy_code = "(rest {:a 1})"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'rest' expects a list, vector, or nil, got <class 'dict'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'rest' expects a list, vector, or nil, got <class 'dict'>.",
+        )
 
     def test_rest_too_many_args(self):
         """Test (rest '(1 2) '(3 4)) raises SyntaxError."""
         lispy_code = "(rest '(1 2) '(3 4))"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'rest' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'rest' expects 1 argument, got 2."
+        )
 
     def test_rest_no_args(self):
         """Test (rest) raises SyntaxError."""
         lispy_code = "(rest)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'rest' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'rest' expects 1 argument, got 0."
+        )
 
     def test_rest_on_string_error(self):
         """Test (rest \"hello\") raises TypeError."""
         lispy_code = '(rest "hello")'
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'rest' expects a list, vector, or nil, got <class 'str'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'rest' expects a list, vector, or nil, got <class 'str'>.",
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

@@ -34,7 +34,7 @@ class HashMapFnTest(unittest.TestCase):
         expected_map = {
             Symbol(":name"): "LisPy",
             Symbol(":version"): 0.1,
-            Symbol(":active"): True
+            Symbol(":active"): True,
         }
         self.assertEqual(result, expected_map)
 
@@ -45,10 +45,7 @@ class HashMapFnTest(unittest.TestCase):
         lispy_code = "(hash-map key-a (+ 10 20) ':key_b val-b)"
         result = run_lispy_string(lispy_code, self.env)
         self.assertIsInstance(result, dict)
-        expected_map = {
-            Symbol(":key_a"): 30,
-            Symbol(":key_b"): 200
-        }
+        expected_map = {Symbol(":key_a"): 30, Symbol(":key_b"): 200}
         self.assertEqual(result, expected_map)
 
     def test_hash_map_fn_odd_number_of_args(self):
@@ -56,7 +53,10 @@ class HashMapFnTest(unittest.TestCase):
         lispy_code = "(hash-map ':a 1 ':b)"
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'hash-map' requires an even number of arguments (key-value pairs), got 3.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'hash-map' requires an even number of arguments (key-value pairs), got 3.",
+        )
 
     def test_hash_map_fn_non_symbol_key(self):
         """Test (hash-map \"key\" 1) raises an error for non-symbol key."""
@@ -64,7 +64,10 @@ class HashMapFnTest(unittest.TestCase):
         # Error caught by hash-map: evaluated args must have symbol keys.
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'hash-map' keys must be symbols, got <class 'str'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'hash-map' keys must be symbols, got <class 'str'>.",
+        )
 
     def test_hash_map_fn_non_symbol_evaluated_key(self):
         """Test hash-map with an evaluated key that is not a symbol."""
@@ -72,8 +75,11 @@ class HashMapFnTest(unittest.TestCase):
         lispy_code = '(hash-map mykey "value")'
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'hash-map' keys must be symbols, got <class 'int'>.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'hash-map' keys must be symbols, got <class 'int'>.",
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

@@ -35,17 +35,17 @@ def _call_predicate(
 
 def builtin_some(args: List[Any], env: Environment) -> Any:
     """Implementation of the (some collection predicate) LisPy function.
-    
+
     Returns the first logical true value of applying the predicate to each element
     in the collection, or nil if no element satisfies the predicate.
-    
+
     Args:
         args: List containing exactly two arguments - collection and predicate function
         env: The current environment
-        
+
     Returns:
         The first truthy result of applying predicate to collection elements, or None
-        
+
     Raises:
         EvaluationError: If incorrect number of arguments or invalid argument types
     """
@@ -77,7 +77,7 @@ def builtin_some(args: List[Any], env: Environment) -> Any:
         # In LisPy, False and None are falsy, everything else is truthy
         if result is not False and result is not None:
             return result
-    
+
     # No element satisfied the predicate
     return None
 
@@ -105,4 +105,4 @@ Notes:
   - False and nil are considered falsy, everything else is truthy
   - Empty collection returns nil
   - Useful for finding if any element satisfies a condition
-  - Can return different types depending on predicate return values""" 
+  - Can return different types depending on predicate return values"""

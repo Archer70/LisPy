@@ -48,13 +48,17 @@ class PrintDocFnTest(unittest.TestCase):
         """Test (print-doc) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(print-doc)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'print-doc' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'print-doc' expects 1 argument, got 0."
+        )
 
     def test_print_doc_too_many_args(self):
         """Test (print-doc \"a\" \"b\") raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(print-doc "a" "b")', self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'print-doc' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'print-doc' expects 1 argument, got 2."
+        )
 
     def test_print_doc_with_non_string(self):
         """Test (print-doc 42) raises an error."""
@@ -101,22 +105,22 @@ class PrintDocFnTest(unittest.TestCase):
         # Capture output from direct function call
         result1 = run_lispy_string("(print-doc +)", self.env)
         direct_output = self.captured_output.getvalue()
-        
+
         # Reset captured output
         self.captured_output.truncate(0)
         self.captured_output.seek(0)
-        
+
         # Capture output from chained call
         result2 = run_lispy_string("(print-doc (doc +))", self.env)
         chained_output = self.captured_output.getvalue()
-        
+
         # Both should return nil
         self.assertIsNone(result1)
         self.assertIsNone(result2)
-        
+
         # Both should produce identical output
         self.assertEqual(direct_output, chained_output)
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

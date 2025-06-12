@@ -13,14 +13,14 @@ def builtin_promise_race(args, env):
         collection: A vector or list of promises
 
     Returns:
-        A promise that settles with the same value and state as 
+        A promise that settles with the same value and state as
         the first promise to settle (resolve or reject)
 
     Examples:
-        (promise-race [(timeout 100 "slow") (timeout 50 "fast")]) 
+        (promise-race [(timeout 100 "slow") (timeout 50 "fast")])
         ; => Promise that resolves to "fast"
-        
-        (async 
+
+        (async
           (let [result (await (promise-race [(resolve "immediate") (timeout 1000 "slow")]))]
             result)) ; => "immediate"
     """
@@ -46,7 +46,7 @@ def builtin_promise_race(args, env):
 
     # Handle empty collection - return a promise that never settles
     if len(collection) == 0:
-        # According to Promise.race([]) behavior in JavaScript, 
+        # According to Promise.race([]) behavior in JavaScript,
         # this should return a promise that never settles
         return LispyPromise()  # Returns pending promise
 
@@ -57,7 +57,7 @@ def builtin_promise_race(args, env):
         """Monitor all promises and settle with the first one to complete."""
         try:
             settled = False
-            
+
             while not settled:
                 # Check each promise to see if any have settled
                 for i, promise in enumerate(collection):
@@ -69,17 +69,17 @@ def builtin_promise_race(args, env):
                             race_promise.reject(promise.error)
                         settled = True
                         return
-                
+
                 # Small sleep to avoid busy waiting
                 time.sleep(0.001)
-                
+
         except Exception as e:
             if not settled:
                 race_promise.reject(e)
 
     # Start monitoring in background thread
     threading.Thread(target=race_monitor, daemon=True).start()
-    
+
     return race_promise
 
 
@@ -123,4 +123,4 @@ Notes:
   - Useful for timeouts, racing multiple data sources, fail-fast patterns
   - Common pattern: race actual operation vs timeout promise
   - Similar to Promise.race() in JavaScript
-""" 
+"""

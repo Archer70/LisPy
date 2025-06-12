@@ -64,38 +64,54 @@ class AbsFnTest(unittest.TestCase):
         """Test (abs) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(abs)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'abs' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'abs' expects 1 argument, got 0."
+        )
 
     def test_abs_too_many_args(self):
         """Test (abs 1 2) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(abs 1 2)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'abs' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'abs' expects 1 argument, got 2."
+        )
 
     def test_abs_non_number(self):
         """Test (abs \"hello\") raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(abs "hello")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument to 'abs' must be a number, got str: 'hello'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument to 'abs' must be a number, got str: 'hello'",
+        )
 
     def test_abs_boolean(self):
         """Test (abs true) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(abs true)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument to 'abs' must be a number, got bool: 'True'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument to 'abs' must be a number, got bool: 'True'",
+        )
 
     def test_abs_nil(self):
         """Test (abs nil) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(abs nil)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument to 'abs' must be a number, got NoneType: 'None'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument to 'abs' must be a number, got NoneType: 'None'",
+        )
 
     def test_abs_list(self):
         """Test (abs [1 2 3]) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(abs [1 2 3])", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: Argument to 'abs' must be a number, got Vector: '[1 2 3]'")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: Argument to 'abs' must be a number, got Vector: '[1 2 3]'",
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

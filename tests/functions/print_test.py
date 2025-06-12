@@ -5,8 +5,8 @@ from io import StringIO
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 
-class PrintFunctionTest(unittest.TestCase):
 
+class PrintFunctionTest(unittest.TestCase):
     def setUp(self):
         self.env = create_global_env()
         # Capture stdout for testing
@@ -41,19 +41,19 @@ class PrintFunctionTest(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_print_booleans(self):
-        result = run_lispy_string('(print true false)', self.env)
+        result = run_lispy_string("(print true false)", self.env)
         output = sys.stdout.getvalue()
         self.assertEqual(output, "true false")
         self.assertIsNone(result)
 
     def test_print_nil(self):
-        result = run_lispy_string('(print nil)', self.env)
+        result = run_lispy_string("(print nil)", self.env)
         output = sys.stdout.getvalue()
         self.assertEqual(output, "nil")
         self.assertIsNone(result)
 
     def test_print_vector(self):
-        result = run_lispy_string('(print [1 2 3])', self.env)
+        result = run_lispy_string("(print [1 2 3])", self.env)
         output = sys.stdout.getvalue()
         self.assertEqual(output, "[1 2 3]")
         self.assertIsNone(result)
@@ -69,7 +69,7 @@ class PrintFunctionTest(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_print_no_arguments(self):
-        result = run_lispy_string('(print)', self.env)
+        result = run_lispy_string("(print)", self.env)
         output = sys.stdout.getvalue()
         self.assertEqual(output, "")
         self.assertIsNone(result)
@@ -81,5 +81,6 @@ class PrintFunctionTest(unittest.TestCase):
         output = sys.stdout.getvalue()
         self.assertEqual(output, "HelloWorld")
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

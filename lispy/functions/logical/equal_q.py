@@ -6,49 +6,58 @@ from ...environment import Environment
 
 def builtin_equal_q(args: List[Any], env: Environment) -> bool:
     """Checks if all arguments are structurally equal.
-    
+
     Supports deep equality comparison for:
     - Primitives: numbers, strings, booleans, symbols, nil
     - Collections: vectors, lists, maps (recursively)
-    
+
     Returns True only if ALL arguments are equal.
     """
     if len(args) < 2:
-        raise EvaluationError("SyntaxError: 'equal?' requires at least 2 arguments, got {}.".format(len(args)))
+        raise EvaluationError(
+            "SyntaxError: 'equal?' requires at least 2 arguments, got {}.".format(
+                len(args)
+            )
+        )
 
     first_item = args[0]
-    
+
     for i in range(1, len(args)):
         if not _are_equal(first_item, args[i]):
             return False
-    
+
     return True
 
 
 def _are_equal(a: Any, b: Any) -> bool:
     """Helper function to determine structural equality between two values."""
-    
+
     # Handle None/nil case
     if a is None and b is None:
         return True
     if a is None or b is None:
         return False
-    
+
     # Check if types are different (strict type checking)
     if type(a) != type(b):
         # Special case: numbers (int and float can be equal, but not bool)
-        if isinstance(a, (int, float)) and isinstance(b, (int, float)) and not isinstance(a, bool) and not isinstance(b, bool):
+        if (
+            isinstance(a, (int, float))
+            and isinstance(b, (int, float))
+            and not isinstance(a, bool)
+            and not isinstance(b, bool)
+        ):
             return a == b
         return False
-    
+
     # Primitive types: direct comparison
     if isinstance(a, (int, float, str, bool)):
         return a == b
-    
+
     # Symbol comparison
     if isinstance(a, Symbol):
         return a == b
-    
+
     # Vector comparison (order matters)
     if isinstance(a, Vector):
         if len(a) != len(b):
@@ -57,7 +66,7 @@ def _are_equal(a: Any, b: Any) -> bool:
             if not _are_equal(a[i], b[i]):
                 return False
         return True
-    
+
     # List comparison (order matters)
     if isinstance(a, list):
         if len(a) != len(b):
@@ -66,21 +75,21 @@ def _are_equal(a: Any, b: Any) -> bool:
             if not _are_equal(a[i], b[i]):
                 return False
         return True
-    
+
     # Map/dict comparison (order doesn't matter)
     if isinstance(a, dict):
         if len(a) != len(b):
             return False
-        
+
         # Check all keys and values
         for key in a:
             if key not in b:
                 return False
             if not _are_equal(a[key], b[key]):
                 return False
-        
+
         return True
-    
+
     # For any other types, fall back to Python's equality
     return a == b
 
@@ -114,4 +123,4 @@ Notes:
   - Maps: order doesn't matter, {:a 1 :b 2} = {:b 2 :a 1}
   - Lists: order matters, same as vectors
   - Cross-type comparison always returns false
-  - Supports nested structures recursively""" 
+  - Supports nested structures recursively"""

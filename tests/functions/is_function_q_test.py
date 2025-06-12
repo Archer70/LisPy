@@ -26,12 +26,30 @@ class IsFunctionQFnTest(unittest.TestCase):
 
     def test_function_q_other_builtin_functions(self):
         """Test that is_function? returns true for various built-in functions."""
-        builtin_functions = ["+", "-", "*", "/", "=", "<", ">", "list", "vector", 
-                           "count", "first", "rest", "cons", "map", "filter", "reduce"]
-        
+        builtin_functions = [
+            "+",
+            "-",
+            "*",
+            "/",
+            "=",
+            "<",
+            ">",
+            "list",
+            "vector",
+            "count",
+            "first",
+            "rest",
+            "cons",
+            "map",
+            "filter",
+            "reduce",
+        ]
+
         for func_name in builtin_functions:
             with self.subTest(function=func_name):
-                self.assertTrue(run_lispy_string(f"(is_function? {func_name})", self.env))
+                self.assertTrue(
+                    run_lispy_string(f"(is_function? {func_name})", self.env)
+                )
 
     def test_function_q_number(self):
         """Test (is_function? 42) returns false."""
@@ -92,16 +110,18 @@ class IsFunctionQFnTest(unittest.TestCase):
         # Define a function that returns a function
         run_lispy_string("(define make-adder (fn [n] (fn [x] (+ x n))))", self.env)
         run_lispy_string("(define add-10 (make-adder 10))", self.env)
-        
+
         self.assertTrue(run_lispy_string("(is_function? make-adder)", self.env))
         self.assertTrue(run_lispy_string("(is_function? add-10)", self.env))
 
     def test_function_q_function_result(self):
         """Test that is_function? correctly identifies functions returned from other functions."""
         # Test helper functions that return functions or non-functions
-        self.env.define("get-function", lambda args, env: lambda x, e: x[0] if x else None)
+        self.env.define(
+            "get-function", lambda args, env: lambda x, e: x[0] if x else None
+        )
         self.env.define("get-value", lambda args, env: 42)
-        
+
         self.assertTrue(run_lispy_string("(is_function? (get-function))", self.env))
         self.assertFalse(run_lispy_string("(is_function? (get-value))", self.env))
 
@@ -109,19 +129,23 @@ class IsFunctionQFnTest(unittest.TestCase):
         """Test (is_function?) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_function?)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_function?' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_function?' expects 1 argument, got 0."
+        )
 
     def test_function_q_too_many_args(self):
         """Test (is_function? + -) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_function? + -)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_function?' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_function?' expects 1 argument, got 2."
+        )
 
     def test_function_q_vs_other_types(self):
         """Test that is_function? correctly distinguishes functions from other callable-like constructs."""
         # Test all other type checking functions to ensure they return false for functions
         run_lispy_string("(define test-fn (fn [x] x))", self.env)
-        
+
         self.assertFalse(run_lispy_string("(is_number? test-fn)", self.env))
         self.assertFalse(run_lispy_string("(is_string? test-fn)", self.env))
         self.assertFalse(run_lispy_string("(is_list? test-fn)", self.env))
@@ -129,7 +153,7 @@ class IsFunctionQFnTest(unittest.TestCase):
         self.assertFalse(run_lispy_string("(is_map? test-fn)", self.env))
         self.assertFalse(run_lispy_string("(is_boolean? test-fn)", self.env))
         self.assertFalse(run_lispy_string("(is_nil? test-fn)", self.env))
-        
+
         # And vice versa - test that is_function? returns false for other types
         self.assertFalse(run_lispy_string("(is_function? 42)", self.env))
         self.assertFalse(run_lispy_string('(is_function? "string")', self.env))
@@ -140,5 +164,5 @@ class IsFunctionQFnTest(unittest.TestCase):
         self.assertFalse(run_lispy_string("(is_function? nil)", self.env))
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

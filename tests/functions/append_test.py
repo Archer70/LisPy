@@ -65,7 +65,9 @@ class AppendFnTest(unittest.TestCase):
 
     def test_append_long_strings(self):
         """Test append with longer strings."""
-        result = run_lispy_string('(append "The quick brown fox " "jumps over " "the lazy dog")', self.env)
+        result = run_lispy_string(
+            '(append "The quick brown fox " "jumps over " "the lazy dog")', self.env
+        )
         self.assertIsInstance(result, str)
         self.assertEqual(result, "The quick brown fox jumps over the lazy dog")
 
@@ -89,21 +91,33 @@ class AppendFnTest(unittest.TestCase):
         """Test append with non-string arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(append 123)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'append' arguments must be strings, got <class 'int'> at position 0.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'append' arguments must be strings, got <class 'int'> at position 0.",
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(append [1 2 3])", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'append' arguments must be strings, got <class 'lispy.types.Vector'> at position 0.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'append' arguments must be strings, got <class 'lispy.types.Vector'> at position 0.",
+        )
 
     def test_append_mixed_valid_invalid_args(self):
         """Test append with mix of valid and invalid arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(append "hello" 123 "world")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'append' arguments must be strings, got <class 'int'> at position 1.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'append' arguments must be strings, got <class 'int'> at position 1.",
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(append "a" "b" true "d")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'append' arguments must be strings, got <class 'bool'> at position 2.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'append' arguments must be strings, got <class 'bool'> at position 2.",
+        )
 
     def test_append_with_thread_first(self):
         """Test append used with the -> (thread-first) special form."""
@@ -113,13 +127,17 @@ class AppendFnTest(unittest.TestCase):
 
     def test_append_chaining_with_thread_first(self):
         """Test chaining multiple append operations via thread-first."""
-        result = run_lispy_string('(-> "Start" (append " middle") (append " end"))', self.env)
+        result = run_lispy_string(
+            '(-> "Start" (append " middle") (append " end"))', self.env
+        )
         self.assertIsInstance(result, str)
         self.assertEqual(result, "Start middle end")
 
     def test_append_complex_thread_first(self):
         """Test complex append operation with thread-first."""
-        result = run_lispy_string('(-> "Hello" (append " beautiful") (append " " "World" "!"))', self.env)
+        result = run_lispy_string(
+            '(-> "Hello" (append " beautiful") (append " " "World" "!"))', self.env
+        )
         self.assertIsInstance(result, str)
         self.assertEqual(result, "Hello beautiful World!")
 
@@ -127,15 +145,15 @@ class AppendFnTest(unittest.TestCase):
         """Test that append does not modify the original string variables."""
         run_lispy_string('(define str1 "Hello")', self.env)
         run_lispy_string('(define str2 " World")', self.env)
-        run_lispy_string('(append str1 str2)', self.env)
-        
+        run_lispy_string("(append str1 str2)", self.env)
+
         # Check that original strings are unchanged (though strings are immutable in Python anyway)
         original_str1 = run_lispy_string("str1", self.env)
         original_str2 = run_lispy_string("str2", self.env)
-        
+
         self.assertEqual(original_str1, "Hello")
         self.assertEqual(original_str2, " World")
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

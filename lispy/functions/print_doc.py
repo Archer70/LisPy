@@ -12,12 +12,12 @@ def builtin_print_doc(args: List[Any], env: Environment) -> None:
         )
 
     arg = args[0]
-    
+
     # If it's a string, print it directly (original behavior)
     if isinstance(arg, str):
         print(arg)
         return None
-    
+
     # For anything else, try to get documentation using doc function
     try:
         doc_string = builtin_doc([arg], env)
@@ -25,9 +25,7 @@ def builtin_print_doc(args: List[Any], env: Environment) -> None:
         return None
     except EvaluationError as e:
         # Re-raise with context about print-doc
-        raise EvaluationError(
-            f"Error in 'print-doc': {str(e)}"
-        )
+        raise EvaluationError(f"Error in 'print-doc': {str(e)}")
 
 
 def documentation_print_doc() -> str:
@@ -51,4 +49,4 @@ Notes:
   - New: Can take functions directly without needing (doc ...)
   - Still accepts strings for custom documentation
   - Returns nil, like other print functions
-  - Perfect for scripts and debugging""" 
+  - Perfect for scripts and debugging"""

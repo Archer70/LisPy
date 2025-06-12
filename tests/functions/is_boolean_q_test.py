@@ -107,14 +107,18 @@ class IsBooleanQFnTest(unittest.TestCase):
         """Test (is_boolean?) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_boolean?)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_boolean?' expects 1 argument, got 0.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_boolean?' expects 1 argument, got 0."
+        )
 
     def test_boolean_q_too_many_args(self):
         """Test (is_boolean? true false) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(is_boolean? true false)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'is_boolean?' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'is_boolean?' expects 1 argument, got 2."
+        )
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

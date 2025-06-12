@@ -32,7 +32,9 @@ class MergeFnTest(unittest.TestCase):
 
     def test_merge_two_maps_with_overlap(self):
         """Test merging two maps where later map overrides earlier keys."""
-        result = run_lispy_string("(merge (hash-map ':a 1 ':b 2) (hash-map ':a 3 ':c 4))", self.env)
+        result = run_lispy_string(
+            "(merge (hash-map ':a 1 ':b 2) (hash-map ':a 3 ':c 4))", self.env
+        )
         self.assertIsInstance(result, dict)
         expected = {Symbol(":a"): 3, Symbol(":b"): 2, Symbol(":c"): 4}
         self.assertEqual(result, expected)
@@ -46,7 +48,7 @@ class MergeFnTest(unittest.TestCase):
             Symbol(":a"): 1,
             Symbol(":b"): 3,  # Overridden by second map
             Symbol(":c"): 5,  # Overridden by third map
-            Symbol(":d"): 6
+            Symbol(":d"): 6,
         }
         self.assertEqual(result, expected)
 
@@ -58,20 +60,22 @@ class MergeFnTest(unittest.TestCase):
 
     def test_merge_with_empty_map(self):
         """Test merging maps where some are empty."""
-        result = run_lispy_string("(merge (hash-map ':a 1) (hash-map) (hash-map ':b 2))", self.env)
+        result = run_lispy_string(
+            "(merge (hash-map ':a 1) (hash-map) (hash-map ':b 2))", self.env
+        )
         self.assertIsInstance(result, dict)
         expected = {Symbol(":a"): 1, Symbol(":b"): 2}
         self.assertEqual(result, expected)
 
     def test_merge_mixed_value_types(self):
         """Test merge with different value types."""
-        lispy_code = '(merge (hash-map \':name "LisPy" \':version 1) (hash-map \':active true \':version 2.0))'
+        lispy_code = "(merge (hash-map ':name \"LisPy\" ':version 1) (hash-map ':active true ':version 2.0))"
         result = run_lispy_string(lispy_code, self.env)
         self.assertIsInstance(result, dict)
         expected = {
             Symbol(":name"): "LisPy",
             Symbol(":version"): 2.0,  # Overridden
-            Symbol(":active"): True
+            Symbol(":active"): True,
         }
         self.assertEqual(result, expected)
 
@@ -80,14 +84,14 @@ class MergeFnTest(unittest.TestCase):
         run_lispy_string("(define map1 (hash-map ':a 1 ':b 2))", self.env)
         run_lispy_string("(define map2 (hash-map ':a 3 ':c 4))", self.env)
         run_lispy_string("(merge map1 map2)", self.env)
-        
+
         # Check that original maps are unchanged
         original_map1 = run_lispy_string("map1", self.env)
         original_map2 = run_lispy_string("map2", self.env)
-        
+
         expected_map1 = {Symbol(":a"): 1, Symbol(":b"): 2}
         expected_map2 = {Symbol(":a"): 3, Symbol(":c"): 4}
-        
+
         self.assertEqual(original_map1, expected_map1)
         self.assertEqual(original_map2, expected_map2)
 
@@ -106,7 +110,7 @@ class MergeFnTest(unittest.TestCase):
             Symbol(":a"): 1,
             Symbol(":b"): 2,
             Symbol(":c"): 3,
-            Symbol(":d"): 4
+            Symbol(":d"): 4,
         }
         self.assertEqual(result, expected)
 
@@ -115,28 +119,42 @@ class MergeFnTest(unittest.TestCase):
         """Test merge with non-hash-map arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(merge [1 2 3])", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'merge' arguments must be hash maps, got <class 'lispy.types.Vector'> at position 0.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'merge' arguments must be hash maps, got <class 'lispy.types.Vector'> at position 0.",
+        )
 
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(merge (hash-map \':a 1) "not-a-map")', self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'merge' arguments must be hash maps, got <class 'str'> at position 1.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'merge' arguments must be hash maps, got <class 'str'> at position 1.",
+        )
 
     def test_merge_mixed_valid_invalid_args(self):
         """Test merge with mix of valid and invalid arguments."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(merge (hash-map ':a 1) (hash-map ':b 2) 123)", self.env)
-        self.assertEqual(str(cm.exception), "TypeError: 'merge' arguments must be hash maps, got <class 'int'> at position 2.")
+        self.assertEqual(
+            str(cm.exception),
+            "TypeError: 'merge' arguments must be hash maps, got <class 'int'> at position 2.",
+        )
 
     def test_merge_with_thread_first(self):
         """Test merge used with the -> (thread-first) special form."""
-        result = run_lispy_string("(-> (hash-map ':a 1) (merge (hash-map ':b 2) (hash-map ':c 3)))", self.env)
+        result = run_lispy_string(
+            "(-> (hash-map ':a 1) (merge (hash-map ':b 2) (hash-map ':c 3)))", self.env
+        )
         self.assertIsInstance(result, dict)
         expected = {Symbol(":a"): 1, Symbol(":b"): 2, Symbol(":c"): 3}
         self.assertEqual(result, expected)
 
     def test_merge_override_with_thread_first(self):
         """Test merge with key override via thread-first."""
-        result = run_lispy_string("(-> (hash-map ':key 'original) (merge (hash-map ':key 'override)))", self.env)
+        result = run_lispy_string(
+            "(-> (hash-map ':key 'original) (merge (hash-map ':key 'override)))",
+            self.env,
+        )
         self.assertIsInstance(result, dict)
         expected = {Symbol(":key"): Symbol("override")}
         self.assertEqual(result, expected)
@@ -145,11 +163,13 @@ class MergeFnTest(unittest.TestCase):
         """Test chaining merge with other operations via thread-first."""
         # This would require additional functions to work with hash maps in a chain
         # For now, just test that merge works in a thread-first context
-        result = run_lispy_string("(-> (hash-map ':base 1) (merge (hash-map ':extra 2)))", self.env)
+        result = run_lispy_string(
+            "(-> (hash-map ':base 1) (merge (hash-map ':extra 2)))", self.env
+        )
         self.assertIsInstance(result, dict)
         expected = {Symbol(":base"): 1, Symbol(":extra"): 2}
         self.assertEqual(result, expected)
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

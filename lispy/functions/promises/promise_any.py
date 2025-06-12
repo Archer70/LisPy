@@ -17,9 +17,9 @@ def builtin_promise_any(args, env):
         or rejects with a collection of all rejection reasons if all promises reject
 
     Examples:
-        (promise-any [(reject "error1") (resolve "success") (reject "error2")]) 
+        (promise-any [(reject "error1") (resolve "success") (reject "error2")])
         ; => Promise that resolves to "success"
-        
+
         (promise-any [(reject "error1") (reject "error2") (reject "error3")])
         ; => Promise that rejects with ["error1" "error2" "error3"]
     """
@@ -46,7 +46,9 @@ def builtin_promise_any(args, env):
     # Handle empty collection - reject immediately with appropriate error
     if len(collection) == 0:
         empty_promise = LispyPromise()
-        empty_promise.reject("AggregateError: All promises were rejected (empty collection)")
+        empty_promise.reject(
+            "AggregateError: All promises were rejected (empty collection)"
+        )
         return empty_promise
 
     # Create the any promise
@@ -58,7 +60,7 @@ def builtin_promise_any(args, env):
             settled_count = 0
             rejection_reasons = [None] * len(collection)  # Track rejections in order
             resolved = False
-            
+
             while not resolved and settled_count < len(collection):
                 # Check each promise to see if any have resolved
                 for i, promise in enumerate(collection):
@@ -71,26 +73,28 @@ def builtin_promise_any(args, env):
                         # Track this rejection
                         rejection_reasons[i] = promise.error
                         settled_count += 1
-                
+
                 # If all promises have rejected, reject with aggregate error
                 if settled_count == len(collection) and not resolved:
                     # Create aggregate error with all rejection reasons
                     # Preserve collection type for consistency
-                    result_type = Vector if isinstance(collection, Vector) else LispyList
+                    result_type = (
+                        Vector if isinstance(collection, Vector) else LispyList
+                    )
                     aggregate_error = f"AggregateError: All promises were rejected - {result_type(rejection_reasons)}"
                     any_promise.reject(aggregate_error)
                     return
-                
+
                 # Small sleep to avoid busy waiting
                 time.sleep(0.001)
-                
+
         except Exception as e:
             if not resolved:
                 any_promise.reject(e)
 
     # Start monitoring in background thread
     threading.Thread(target=any_monitor, daemon=True).start()
-    
+
     return any_promise
 
 
@@ -136,4 +140,4 @@ Notes:
   - Useful for fallback patterns, redundant data sources, resilient operations
   - Common pattern: try multiple endpoints, use first successful response
   - Similar to Promise.any() in JavaScript (ES2021)
-""" 
+"""

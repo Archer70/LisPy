@@ -9,10 +9,13 @@ from lispy.exceptions import EvaluationError
 # Helper Python function for string-append for testing purposes
 def _py_string_append(args, env):
     if not all(isinstance(arg, str) for arg in args):
-        raise EvaluationError("TypeError: string-append expects all arguments to be strings.")
+        raise EvaluationError(
+            "TypeError: string-append expects all arguments to be strings."
+        )
     if len(args) == 0:
         return ""
     return "".join(args)
+
 
 class ThreadFirstTest(unittest.TestCase):
     def setUp(self):
@@ -22,7 +25,9 @@ class ThreadFirstTest(unittest.TestCase):
         run_lispy_string("(define mul2 (fn [x] (* x 2)))", self.env)
         # Register our Python helper for string-append
         self.env.define("string-append", _py_string_append)
-        run_lispy_string("(define str-concat (fn [s1 s2] (string-append s1 s2)))", self.env)
+        run_lispy_string(
+            "(define str-concat (fn [s1 s2] (string-append s1 s2)))", self.env
+        )
         run_lispy_string("(define wrap-in-list (fn [x] (list x)))", self.env)
         run_lispy_string("(define to-vector (fn [x y] (vector x y)))", self.env)
 
@@ -54,7 +59,10 @@ class ThreadFirstTest(unittest.TestCase):
         """Test (->) raises SyntaxError."""
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(->)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: '->' special form expects at least an initial value.")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: '->' special form expects at least an initial value.",
+        )
 
     def test_invalid_form_in_pipeline(self):
         """Test (-> initial-value 123) where 123 is not a function or list."""
@@ -64,8 +72,11 @@ class ThreadFirstTest(unittest.TestCase):
 
     def test_pipeline_with_string_concat_function(self):
         """Test piping through str-concat which uses string-append."""
-        result = run_lispy_string('(-> "hello" (str-concat "-") (str-concat "world"))', self.env)
+        result = run_lispy_string(
+            '(-> "hello" (str-concat "-") (str-concat "world"))', self.env
+        )
         self.assertEqual(result, "hello-world")
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

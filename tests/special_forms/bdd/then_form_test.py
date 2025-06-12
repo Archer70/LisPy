@@ -36,31 +36,33 @@ class TestThenForm(unittest.TestCase):
         self.assertTrue(result)
 
     def test_then_no_body(self):
-        result = self.helper_run_in_scenario_context('(then "an outcome without specific checks")')
+        result = self.helper_run_in_scenario_context(
+            '(then "an outcome without specific checks")'
+        )
         self.assertIsNone(result)
 
     def test_then_arity_error_no_args(self):
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_scenario_context('(then)')
+            self.helper_run_in_scenario_context("(then)")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'then' expects at least a description string, got 0 arguments."
+            "SyntaxError: 'then' expects at least a description string, got 0 arguments.",
         )
 
     def test_then_arity_error_no_description_string(self):
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_scenario_context('(then (= result-value 42))')
+            self.helper_run_in_scenario_context("(then (= result-value 42))")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'then' expects a description string as its first argument."
+            "SyntaxError: 'then' expects a description string as its first argument.",
         )
 
     def test_then_description_not_a_string(self):
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_scenario_context('(then 123 (= result-value 42))')
+            self.helper_run_in_scenario_context("(then 123 (= result-value 42))")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'then' expects a description string as its first argument."
+            "SyntaxError: 'then' expects a description string as its first argument.",
         )
 
     def test_then_outside_it_block(self):
@@ -69,9 +71,10 @@ class TestThenForm(unittest.TestCase):
             run_lispy_string('(then "an outcome" (print "test"))', self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'then' form can only be used inside an 'it' block."
+            "SyntaxError: 'then' form can only be used inside an 'it' block.",
         )
         registry.end_feature()
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

@@ -26,9 +26,7 @@ class TestActionForm(unittest.TestCase):
         return result
 
     def test_action_basic_structure_with_body(self):
-        result = self.helper_run_in_scenario_context(
-            '(action "an action occurs" nil)'
-        )
+        result = self.helper_run_in_scenario_context('(action "an action occurs" nil)')
         self.assertIsNone(result)
 
     def test_action_body_evaluates_and_returns_last_expression(self):
@@ -36,34 +34,36 @@ class TestActionForm(unittest.TestCase):
             '(action "an action occurs" (define new-value (+ initial-value 5)) new-value)'
         )
         self.assertEqual(result, 105)
-        self.assertEqual(self.env.lookup('new-value'), 105)
+        self.assertEqual(self.env.lookup("new-value"), 105)
 
     def test_action_no_body(self):
-        result = self.helper_run_in_scenario_context('(action "an action without specific steps")')
+        result = self.helper_run_in_scenario_context(
+            '(action "an action without specific steps")'
+        )
         self.assertIsNone(result)
 
     def test_action_arity_error_no_args(self):
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_scenario_context('(action)')
+            self.helper_run_in_scenario_context("(action)")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'action' expects at least a description string, got 0 arguments."
+            "SyntaxError: 'action' expects at least a description string, got 0 arguments.",
         )
 
     def test_action_arity_error_no_description_string(self):
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_scenario_context('(action 42)')
+            self.helper_run_in_scenario_context("(action 42)")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'action' expects a description string as its first argument."
+            "SyntaxError: 'action' expects a description string as its first argument.",
         )
 
     def test_action_description_not_a_string(self):
         with self.assertRaises(EvaluationError) as cm:
-            self.helper_run_in_scenario_context('(action 123 nil)')
+            self.helper_run_in_scenario_context("(action 123 nil)")
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'action' expects a description string as its first argument."
+            "SyntaxError: 'action' expects a description string as its first argument.",
         )
 
     def test_action_outside_it_block(self):
@@ -73,9 +73,10 @@ class TestActionForm(unittest.TestCase):
             run_lispy_string('(action "an action" nil)', self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'action' form can only be used inside an 'it' block."
+            "SyntaxError: 'action' form can only be used inside an 'it' block.",
         )
         registry.end_feature()
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

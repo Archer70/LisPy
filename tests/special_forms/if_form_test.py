@@ -7,7 +7,6 @@ from lispy.utils import run_lispy_string
 
 
 class IfFormTest(unittest.TestCase):
-
     def setUp(self):
         self.env = create_global_env()
 
@@ -36,7 +35,7 @@ class IfFormTest(unittest.TestCase):
         # (if "hello" 10 20) -> 10 ("hello" is truthy)
         result = run_lispy_string('(if "hello" 10 20)', self.env)
         self.assertEqual(result, 10)
-    
+
     def test_if_truthy_condition_empty_list(self):
         # (if '() 10 20) -> 10 (empty list is truthy in LisPy)
         # Empty lists are truthy, not an error
@@ -62,25 +61,39 @@ class IfFormTest(unittest.TestCase):
         # Define x, then (if true (define x 100) (define x 200)), x should be 100
         run_lispy_string("(define x 1)", self.env)
         run_lispy_string("(if true (define x 100) (define x 200))", self.env)
-        self.assertEqual(self.env.lookup("x"), 100, "True branch should have been evaluated")
+        self.assertEqual(
+            self.env.lookup("x"), 100, "True branch should have been evaluated"
+        )
 
         # Reset x, then (if false (define x 300) (define x 400)), x should be 400
-        run_lispy_string("(define x 1)", self.env) # Reset x
+        run_lispy_string("(define x 1)", self.env)  # Reset x
         run_lispy_string("(if false (define x 300) (define x 400))", self.env)
-        self.assertEqual(self.env.lookup("x"), 400, "False branch should have been evaluated")
+        self.assertEqual(
+            self.env.lookup("x"), 400, "False branch should have been evaluated"
+        )
 
     def test_if_syntax_errors(self):
         # Too few arguments
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(if true)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'if' requires a condition, a then-expression, and an optional else-expression. Usage: (if cond then) or (if cond then else)")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'if' requires a condition, a then-expression, and an optional else-expression. Usage: (if cond then) or (if cond then else)",
+        )
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(if)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'if' requires a condition, a then-expression, and an optional else-expression. Usage: (if cond then) or (if cond then else)")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'if' requires a condition, a then-expression, and an optional else-expression. Usage: (if cond then) or (if cond then else)",
+        )
         # Too many arguments
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(if true 1 2 3)", self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'if' requires a condition, a then-expression, and an optional else-expression. Usage: (if cond then) or (if cond then else)")
+        self.assertEqual(
+            str(cm.exception),
+            "SyntaxError: 'if' requires a condition, a then-expression, and an optional else-expression. Usage: (if cond then) or (if cond then else)",
+        )
 
-if __name__ == '__main__':
-    unittest.main() 
+
+if __name__ == "__main__":
+    unittest.main()

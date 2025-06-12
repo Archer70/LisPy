@@ -6,15 +6,23 @@ from lispy.exceptions import EvaluationError
 def builtin_read_line(args: List[Any], env: Environment) -> str:
     """Reads a line of input from the console. (read-line [prompt])"""
     if len(args) > 1:
-        raise EvaluationError("SyntaxError: 'read-line' expects 0 or 1 arguments (optional prompt), got {}.".format(len(args)))
-    
+        raise EvaluationError(
+            "SyntaxError: 'read-line' expects 0 or 1 arguments (optional prompt), got {}.".format(
+                len(args)
+            )
+        )
+
     prompt = ""
     if len(args) == 1:
         prompt_arg = args[0]
         if not isinstance(prompt_arg, str):
-            raise EvaluationError("TypeError: 'read-line' prompt must be a string, got {}.".format(type(prompt_arg).__name__))
+            raise EvaluationError(
+                "TypeError: 'read-line' prompt must be a string, got {}.".format(
+                    type(prompt_arg).__name__
+                )
+            )
         prompt = prompt_arg
-    
+
     try:
         if prompt:
             return input(prompt)
@@ -51,4 +59,4 @@ Notes:
   - Allows KeyboardInterrupt (Ctrl+C) to propagate
   - Essential for interactive programs and user input
   - Pairs well with print functions for user interaction
-  - Input is returned as-is (no automatic type conversion)""" 
+  - Input is returned as-is (no automatic type conversion)"""
