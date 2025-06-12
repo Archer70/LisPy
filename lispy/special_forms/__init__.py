@@ -26,6 +26,8 @@ from .quote_form import handle_quote_form
 from .recur_form import handle_recur
 from .thread_first import handle_thread_first
 from .thread_last import handle_thread_last
+from .throw_form import handle_throw_form
+from .try_form import handle_try_form
 from .when_form import handle_when_form
 
 # A registry for special form handlers (alphabetized by key)
@@ -54,6 +56,8 @@ special_form_handlers: Dict[str, Callable[[List[Any], Environment, Callable], An
     "quote": handle_quote_form,
     "recur": handle_recur,
     "then": then_form_handler,
+    "throw": handle_throw_form,
+    "try": handle_try_form,
     "when": handle_when_form,
 }
 

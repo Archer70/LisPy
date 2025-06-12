@@ -1,7 +1,7 @@
 # LisPy Evaluator
 
 from .types import Symbol, Vector, LispyList
-from .exceptions import EvaluationError, AssertionFailure
+from .exceptions import EvaluationError, AssertionFailure, UserThrownError
 from .environment import Environment
 from .closure import Function
 from .special_forms import special_form_handlers
@@ -86,6 +86,8 @@ def _execute_builtin_function(
         # Pass env to the built-in callable
         return py_callable(evaluated_args, env)
     except AssertionFailure:  # Added: Let AssertionFailure propagate directly
+        raise
+    except UserThrownError:  # Added: Let UserThrownError propagate directly
         raise
     except EvaluationError:
         raise
