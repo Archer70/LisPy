@@ -70,7 +70,7 @@ class TestAsyncIntegration(unittest.TestCase):
         """Test async with I/O operations wrapped in promises."""
         # Test with simple string operation wrapped in promise
         result = run_lispy_string(
-            '(async (await (promise (fn [] (str "hello world")))))', self.env
+            '(async (await (promise (fn [] (to-str "hello world")))))', self.env
         )
         self.assertEqual(result, "hello world")
 

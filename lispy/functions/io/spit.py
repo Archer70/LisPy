@@ -84,9 +84,9 @@ Examples:
   (spit "config.json" "{\\"key\\": \\"value\\"}") ; => nil (writes JSON)
   
   ; Using with other functions:
-  (spit "numbers.txt" (str 42))            ; => nil (convert number to string)
+  (spit "numbers.txt" (to-str 42))            ; => nil (convert number to string)
   (spit "lines.txt" (join ["a" "b" "c"] "\\n")) ; => nil (join and write lines)
-  (spit "report.txt" (str "Count: " (count data))) ; => nil (build and write report)
+  (spit "report.txt" (to-str "Count: " (count data))) ; => nil (build and write report)
 
 Notes:
   - Requires exactly two arguments (filename and content strings)

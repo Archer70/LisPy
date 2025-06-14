@@ -179,10 +179,10 @@ class SpitFunctionTest(unittest.TestCase):
         )
 
     def test_spit_integration_with_str(self):
-        # Test using spit with str function
+        # Test using spit with to-str function
         filepath = self._get_test_filepath("str_test.txt")
 
-        result = run_lispy_string(f'(spit "{filepath}" (str 42))', self.env)
+        result = run_lispy_string(f'(spit "{filepath}" (to-str 42))', self.env)
         self.assertIsNone(result)
 
         # Verify content

@@ -2,10 +2,10 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyList, Vector, Symbol
 
 
-def str_fn(args, env):
+def to_str_fn(args, env):
     """Convert a value to its string representation.
 
-    Usage: (str value)
+    Usage: (to-str value)
 
     Args:
         value: The value to convert to a string
@@ -14,19 +14,19 @@ def str_fn(args, env):
         A string representation of the input value
 
     Examples:
-        (str 42) => "42"
-        (str 3.14) => "3.14"
-        (str true) => "true"
-        (str false) => "false"
-        (str nil) => "nil"
-        (str "hello") => "hello"  ; Pass through
-        (str [1 2 3]) => "[1 2 3]"
-        (str '(a b c)) => "(a b c)"
-        (str ':keyword) => ":keyword"
+        (to-str 42) => "42"
+        (to-str 3.14) => "3.14"
+        (to-str true) => "true"
+        (to-str false) => "false"
+        (to-str nil) => "nil"
+        (to-str "hello") => "hello"  ; Pass through
+        (to-str [1 2 3]) => "[1 2 3]"
+        (to-str '(a b c)) => "(a b c)"
+        (to-str ':keyword) => ":keyword"
     """
     if len(args) != 1:
         raise EvaluationError(
-            f"SyntaxError: 'str' expects 1 argument, got {len(args)}."
+            f"SyntaxError: 'to-str' expects 1 argument, got {len(args)}."
         )
 
     value = args[0]
@@ -52,8 +52,8 @@ def str_fn(args, env):
         # For hash maps, create a simple representation
         items = []
         for k, v in value.items():
-            key_str = str_fn([k], env) if hasattr(k, "name") else str(k)
-            val_str = str_fn([v], env)
+            key_str = to_str_fn([k], env) if hasattr(k, "name") else str(k)
+            val_str = to_str_fn([v], env)
             items.append(f"{key_str} {val_str}")
         return "{" + " ".join(items) + "}"
     else:
@@ -62,23 +62,23 @@ def str_fn(args, env):
 
 
 def documentation_str() -> str:
-    """Returns documentation for the str function."""
-    return """Function: str
-Arguments: (str value)
+    """Returns documentation for the to-str function."""
+    return """Function: to-str
+Arguments: (to-str value)
 Description: Converts a value to its string representation.
 
 Examples:
-  (str 42)                              ; => "42"
-  (str 3.14)                            ; => "3.14"
-  (str true)                            ; => "true"
-  (str false)                           ; => "false"
-  (str nil)                             ; => "nil"
-  (str "hello")                         ; => "hello" (unchanged)
-  (str 'symbol)                         ; => "symbol"
-  (str ':keyword)                       ; => ":keyword"
-  (str [1 2 3])                         ; => "[1 2 3]"
-  (str '(a b c))                        ; => "(a b c)"
-  (str {:a 1 :b 2})                     ; => "{:a 1 :b 2}"
+  (to-str 42)                              ; => "42"
+  (to-str 3.14)                            ; => "3.14"
+  (to-str true)                            ; => "true"
+  (to-str false)                           ; => "false"
+  (to-str nil)                             ; => "nil"
+  (to-str "hello")                         ; => "hello" (unchanged)
+  (to-str 'symbol)                         ; => "symbol"
+  (to-str ':keyword)                       ; => ":keyword"
+  (to-str [1 2 3])                         ; => "[1 2 3]"
+  (to-str '(a b c))                        ; => "(a b c)"
+  (to-str {:a 1 :b 2})                     ; => "{:a 1 :b 2}"
 
 Notes:
   - Requires exactly one argument

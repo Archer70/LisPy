@@ -94,7 +94,7 @@ class TestPromiseChainingFunctions(unittest.TestCase):
     def test_on_reject_basic_error_handling(self):
         """Test basic error handling with on-reject."""
         result = run_lispy_string(
-            '(on-reject (reject "error") (fn [err] (append "Handled: " (str err))))',
+            '(on-reject (reject "error") (fn [err] (append "Handled: " (to-str err))))',
             self.env,
         )
         self.assertIsInstance(result, LispyPromise)
@@ -115,7 +115,7 @@ class TestPromiseChainingFunctions(unittest.TestCase):
         code = """
         (-> (reject "network-error")
             (on-reject (fn [err] "fallback-data"))
-            (promise-then (fn [data] (append "Result: " (str data)))))
+            (promise-then (fn [data] (append "Result: " (to-str data)))))
         """
         result = run_lispy_string(code, self.env)
         self.assertIsInstance(result, LispyPromise)
@@ -216,7 +216,7 @@ class TestPromiseChainingFunctions(unittest.TestCase):
         code = """
         (-> (reject "primary-failed")
             (on-reject (fn [err] "backup-data"))
-            (promise-then (fn [data] (append "Using: " (str data)))))
+            (promise-then (fn [data] (append "Using: " (to-str data)))))
         """
         result = run_lispy_string(code, self.env)
         self.assertIsInstance(result, LispyPromise)

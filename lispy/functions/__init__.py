@@ -148,8 +148,18 @@ from .string import (
     documentation_join,
     split_fn,
     documentation_split,
-    str_fn,
+)
+
+# Type conversion functions
+from .typing import (
+    to_str_fn,
     documentation_str,
+    to_int_fn,
+    documentation_to_int,
+    to_float_fn,
+    documentation_to_float,
+    to_bool_fn,
+    documentation_to_bool,
 )
 
 # Promise functions
@@ -279,7 +289,7 @@ def create_global_env() -> Environment:
     env.define("some", builtin_some)
     env.define("sort", sort_fn)
     env.define("split", split_fn)
-    env.define("str", str_fn)
+    env.define("str", to_str_fn)
     env.define("is_string?", builtin_is_string_q)
     env.define("timeout", builtin_timeout)
     env.define("promise-then", builtin_promise_then)
@@ -287,6 +297,10 @@ def create_global_env() -> Environment:
     env.define("with-timeout", builtin_with_timeout)
     env.define("vector", builtin_vector)
     env.define("is_vector?", builtin_is_vector_q)
+    env.define("to-str", to_str_fn)
+    env.define("to-int", to_int_fn)
+    env.define("to-float", to_float_fn)
+    env.define("to-bool", to_bool_fn)
 
     # Add BDD assertion functions
     for name, func in bdd_assertion_functions.items():
@@ -383,6 +397,10 @@ def setup_documentation_registry():
     register_documentation("vals", documentation_vals)
     register_documentation("with-timeout", documentation_with_timeout)
     register_documentation("vector", documentation_vector)
+    register_documentation("to-str", documentation_str)
+    register_documentation("to-int", documentation_to_int)
+    register_documentation("to-float", documentation_to_float)
+    register_documentation("to-bool", documentation_to_bool)
 
 
 # Create a single global environment instance when the module is loaded.
@@ -448,4 +466,5 @@ __all__ = [
     "sort_fn",
     "split_fn",
     "str_fn",
+    "to_str_fn",
 ]
