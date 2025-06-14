@@ -1,0 +1,1 @@
+# Type check function tests 
