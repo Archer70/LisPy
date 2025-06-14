@@ -1,2 +1,7 @@
 __pycache__/
 planning/
+
+# Coverage reports
+coverage_reports/
+.coverage
+htmlcov/
