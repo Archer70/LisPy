@@ -196,6 +196,10 @@ from .promises import (
     documentation_async_reduce,
     builtin_debounce,
     documentation_debounce,
+    builtin_retry,
+    documentation_retry,
+    builtin_throttle,
+    documentation_throttle,
 )
 
 # Other function imports (alphabetized)
@@ -282,6 +286,8 @@ def create_global_env() -> Environment:
     env.define("reduce", builtin_reduce)
     env.define("reject", builtin_reject)
     env.define("resolve", builtin_resolve)
+    env.define("retry", builtin_retry)
+    env.define("throttle", builtin_throttle)
     env.define("slurp", builtin_slurp)
     env.define("spit", builtin_spit)
     env.define("rest", builtin_rest)
@@ -384,6 +390,8 @@ def setup_documentation_registry():
     register_documentation("reduce", documentation_reduce)
     register_documentation("reject", documentation_reject)
     register_documentation("resolve", documentation_resolve)
+    register_documentation("retry", documentation_retry)
+    register_documentation("throttle", documentation_throttle)
     register_documentation("slurp", documentation_slurp)
     register_documentation("spit", documentation_spit)
     register_documentation("rest", documentation_rest)
