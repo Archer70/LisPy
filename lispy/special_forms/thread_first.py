@@ -2,6 +2,32 @@ from ..types import Symbol, LispyList
 from ..exceptions import EvaluationError
 
 
+def documentation_thread_first():
+    """Returns documentation for the '->' special form."""
+    return """Special Form: ->
+Arguments: (-> initial-value step1 step2 ...)
+Description: Thread-first macro - pipes initial value as first argument through function calls.
+
+Examples:
+  (-> 5 (+ 3) (* 2))              ; Returns 16: (* 2 (+ 5 3))
+  (-> "hello" (str " world"))     ; Returns "hello world"
+  (-> [1 2] (conj 3) (conj 4))    ; Returns [1 2 3 4] (first arg threading)
+  (-> {:a 1} (assoc :b 2))        ; Returns {:a 1 :b 2}
+  (-> x inc (* 2) (- 10))         ; Returns (- 10 (* 2 (inc x)))
+
+Step Forms:
+  Symbol:     (-> x f)              ; Becomes (f x)
+  List:       (-> x (f a b))        ; Becomes (f x a b)
+
+Notes:
+  - Threads value as FIRST argument to each function
+  - Improves readability of nested function calls
+  - Each step receives the result of the previous step
+  - Can mix symbols and function calls with additional arguments
+
+See Also: ->>, let"""
+
+
 def handle_thread_first(expression, env, evaluate_fn):
     """Handles the (-> initial_value step1 step2 ...) special form.
 

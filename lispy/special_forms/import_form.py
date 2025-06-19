@@ -3,6 +3,34 @@ from ..types import Symbol
 from ..module_system import get_module_loader
 
 
+def documentation_import():
+    """Returns documentation for the 'import' special form."""
+    return """Special Form: import
+Arguments: (import "module-name" [options])
+Description: Imports functions and values from a module into the current environment.
+
+Examples:
+  (import "math-utils")                          ; Import all exports
+  (import "string-utils" :as "str")              ; Import with prefix
+  (import "collection-utils" :only (map filter)) ; Import specific symbols
+  (import "example.lpy")                         ; Import LisPy file
+
+Import Styles:
+  All exports:    (import "module")              ; Imports all exported symbols
+  With prefix:    (import "module" :as "prefix") ; Access as prefix/symbol
+  Selective:      (import "module" :only (sym1 sym2)) ; Import only specified
+
+Notes:
+  - Module name must be a string
+  - Imported symbols are available in current environment
+  - Prefix style helps avoid naming conflicts
+  - Selective import only brings in specified symbols
+  - Returns nil (import is for side effects)
+  - Module files should export symbols with 'export' form
+
+See Also: export"""
+
+
 def import_form(expression, env, evaluate):
     """
     Handle the import special form.

@@ -6,6 +6,27 @@ from ..exceptions import EvaluationError
 from ..environment import Environment
 
 
+def documentation_if():
+    """Returns documentation for the 'if' special form."""
+    return """Special Form: if
+Arguments: (if condition then-expr else-expr?)
+Description: Evaluates condition and returns then-expr if truthy, else-expr if falsy.
+
+Examples:
+  (if true "yes" "no")             ; Returns "yes" (basic true condition)
+  (if false "yes" "no")            ; Returns "no" (basic false condition)
+  (if nil "yes" "no")              ; Returns "no" (nil is falsy)
+  (if 0 "yes" "no")                ; Returns "yes" (zero is truthy)
+  (if (> 5 3) "bigger" "smaller")  ; Returns "bigger" (with comparison)
+  (if false "yes")                 ; Returns nil (optional else clause)
+
+Notes:
+  - Only the condition and chosen branch are evaluated
+  - Else clause is optional and defaults to nil
+  - false and nil are falsy, everything else is truthy
+
+See Also: cond, when, and, or"""
+
 def handle_if_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> Any:

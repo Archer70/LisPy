@@ -5,6 +5,31 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 
 
+def documentation_await():
+    """Returns documentation for the 'await' special form."""
+    return """Special Form: await
+Arguments: (await promise-expr)
+Description: Waits for a promise to resolve and returns its resolved value.
+
+Examples:
+  (await (timeout 1000 "done"))           ; Waits 1 second, returns "done"
+  (await (promise (fn [] (+ 1 2))))       ; Returns 3 after async execution
+  (async (await (resolve "immediate")))   ; Returns "immediate" immediately
+  (async 
+    (define p (timeout 500 42))
+    (await p))                            ; Define promise, then await it
+
+Notes:
+  - Can only be used with promise objects
+  - Blocks execution until promise resolves or rejects
+  - Returns the resolved value on success
+  - Throws exception if promise rejects
+  - Must be used within an async context
+  - Integrates with async event loop when available
+
+See Also: async, promise, timeout, resolve, reject"""
+
+
 def handle_await_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> Any:

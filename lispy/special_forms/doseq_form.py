@@ -14,6 +14,30 @@ from ..exceptions import EvaluationError
 from ..environment import Environment
 
 
+def documentation_doseq():
+    """Returns documentation for the 'doseq' special form."""
+    return """Special Form: doseq
+Arguments: (doseq [binding collection] body-expr1 body-expr2 ...)
+Description: Iterates over a collection, executing body for each element (for side effects).
+
+Examples:
+  (doseq [x [1 2 3]] (println x))         ; Prints: 1, 2, 3 (on separate lines)
+  (doseq [item items] (process-item item)) ; Process each item
+  (doseq [n (range 5)] (print n))         ; Prints: 0 1 2 3 4
+  (doseq [line file-lines] 
+    (println (str "Line: " line)))        ; Process file lines
+
+Notes:
+  - Used for side effects (printing, mutations, etc.)
+  - Always returns nil
+  - Binding symbol is available in body expressions
+  - Creates new scope for binding variable
+  - Collection must be a vector or list
+  - Binding vector must have exactly 2 elements
+
+See Also: map, for, let, loop"""
+
+
 def handle_doseq_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> None:

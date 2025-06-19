@@ -1,6 +1,30 @@
 from lispy.exceptions import EvaluationError
 
 
+def documentation_when():
+    """Returns documentation for the 'when' special form."""
+    return """Special Form: when
+Arguments: (when test-expr body-expr1 body-expr2 ...)
+Description: Conditional execution - evaluates body expressions only if test is truthy.
+
+Examples:
+  (when (> x 0) (print "positive"))     ; Prints only if x > 0
+  (when debug-mode (log "debug info"))  ; Conditional logging
+  (when (> x 0) 
+    (print "x is positive") 
+    (* x 2))                           ; Returns (* x 2) if x > 0, else nil
+  (when false (print "never"))          ; Returns nil, doesn't print
+
+Notes:
+  - Returns nil if test is falsy (false or nil)
+  - If test is truthy, evaluates all body expressions in sequence
+  - Returns the value of the last body expression
+  - If no body expressions and test is truthy, returns the test value
+  - Like 'if' but for multiple expressions without an else clause
+
+See Also: if, cond"""
+
+
 def handle_when_form(expression, env, evaluate_fn):
     """Handle the when special form for conditional execution of multiple expressions.
 

@@ -4,6 +4,28 @@ from typing import List, Any, Callable
 from ..environment import Environment
 
 
+def documentation_or():
+    """Returns documentation for the 'or' special form."""
+    return """Special Form: or
+Arguments: (or expr1 expr2 ...)
+Description: Logical OR with short-circuiting. Returns first truthy value or last falsy value.
+
+Examples:
+  (or false nil "hello" "world")   ; Returns "hello" (first truthy value)
+  (or false nil)                   ; Returns nil (all falsy)
+  (or "first" "never evaluated")   ; Returns "first" (short-circuit)
+  (or)                             ; Returns nil (no arguments)
+  (or (< 5 3) (> 10 2))            ; Returns true (logical conditions)
+  (or user-input "default")        ; Returns "default" if user-input is falsy
+
+Notes:
+  - Uses short-circuit evaluation (stops at first truthy value)
+  - false and nil are falsy, everything else is truthy
+  - Returns actual values, not just true/false
+  - Useful for default values and fallback chains
+
+See Also: and, if, when"""
+
 def handle_or_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> Any:

@@ -4,6 +4,31 @@ from lispy.exceptions import EvaluationError, UserThrownError
 from lispy.types import Symbol
 
 
+def documentation_try():
+    """Returns documentation for the 'try' special form."""
+    return """Special Form: try
+Arguments: (try body-expr (catch exception-var catch-body) (finally finally-body))
+Description: Executes body with exception handling. Catch and finally blocks are optional.
+
+Examples:
+  (try (/ 10 0) (catch e "Error occurred"))     ; Returns "Error occurred"
+  (try (+ 1 2) (catch e "Won't run"))           ; Returns 3
+  (try (throw "oops") (catch e e))              ; Returns "oops"
+  (try (print "hi") (finally (print "done")))  ; Prints both, returns nil
+  (try 
+    (if (< x 0) (throw "negative") x)
+    (catch e (str "Error: " e)))                ; Conditional exception handling
+
+Notes:
+  - Body expression is always evaluated first
+  - Catch block runs only if an exception occurs
+  - Finally block always runs (if present)
+  - Exception variable in catch block is bound to the thrown value
+  - Both catch and finally are optional
+  - Returns the value of the successful body or catch block
+
+See Also: throw"""
+
 def handle_try_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> Any:

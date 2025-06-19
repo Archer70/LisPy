@@ -27,11 +27,19 @@ class DocFnTest(unittest.TestCase):
         self.assertIn("absolute value", result)
 
     def test_doc_with_doc_function(self):
-        """Test (doc doc) returns documentation for doc function itself."""
-        result = run_lispy_string("(doc doc)", self.env)
+        """Test (doc 'doc) returns documentation for doc function itself."""
+        result = run_lispy_string("(doc 'doc)", self.env)
         self.assertIsInstance(result, str)
         self.assertIn("Function: doc", result)
-        self.assertIn("(doc function)", result)
+        self.assertIn("(doc 'symbol-name)", result)
+
+    def test_doc_with_special_form(self):
+        """Test (doc 'and) returns documentation for and special form."""
+        result = run_lispy_string("(doc 'and)", self.env)
+        self.assertIsInstance(result, str)
+        self.assertIn("Special Form: and", result)
+        self.assertIn("(and expr1 expr2 ...)", result)
+        self.assertIn("short-circuiting", result)
 
     def test_doc_with_undocumented_function(self):
         """Test doc with a function that has no documentation."""
@@ -62,6 +70,24 @@ class DocFnTest(unittest.TestCase):
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(doc 42)", self.env)
         self.assertIn("Unable to find documentation", str(cm.exception))
+
+    def test_doc_with_quoted_function(self):
+        """Test (doc '+) works with quoted function names."""
+        result = run_lispy_string("(doc '+)", self.env)
+        self.assertIsInstance(result, str)
+        self.assertIn("Function: +", result)
+        self.assertIn("(+ number1 number2 ...)", result)
+
+    def test_doc_consistency_both_forms_work(self):
+        """Test that both (doc +) and (doc '+) work for functions."""
+        # Test unquoted form 
+        result_unquoted = run_lispy_string("(doc abs)", self.env)
+        # Test quoted form
+        result_quoted = run_lispy_string("(doc 'abs)", self.env)
+        
+        # Both should return the same documentation
+        self.assertEqual(result_unquoted, result_quoted)
+        self.assertIn("Function: abs", result_unquoted)
 
 
 if __name__ == "__main__":

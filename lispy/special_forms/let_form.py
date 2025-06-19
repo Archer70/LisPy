@@ -6,6 +6,29 @@ from ..exceptions import EvaluationError
 from ..environment import Environment
 
 
+def documentation_let():
+    """Returns documentation for the 'let' special form."""
+    return """Special Form: let
+Arguments: (let [var1 val1 var2 val2 ...] body-expr1 body-expr2 ...)
+Description: Creates local variable bindings and evaluates body expressions in that scope.
+
+Examples:
+  (let [x 5] x)                    ; Returns 5 (simple binding)
+  (let [x 5 y 10] (+ x y))         ; Returns 15 (multiple bindings)
+  (let [x 5 y (* x 2)] y)          ; Returns 10 (sequential binding, y uses x)
+  (let [name "Alice"] (str "Hello, " name))  ; Returns "Hello, Alice"
+  (let [x 1] (let [y 2] (+ x y)))  ; Returns 3 (nested let expressions)
+  (let [x 5] (print "x is" x) (* x 2))  ; Returns 10 (multiple body expressions)
+
+Notes:
+  - Bindings are evaluated sequentially (let* semantics)
+  - Later bindings can reference earlier ones
+  - Variables are scoped to the let expression
+  - Binding vector must have even number of elements
+  - At least one body expression is required
+
+See Also: define, fn"""
+
 def handle_let_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> Any:

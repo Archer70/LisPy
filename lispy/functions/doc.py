@@ -1,6 +1,7 @@
 from typing import List, Any
 from ..exceptions import EvaluationError
 from ..environment import Environment
+from ..types import Symbol
 
 
 # Documentation registry - maps function names to their documentation functions
@@ -25,8 +26,11 @@ def builtin_doc(args: List[Any], env: Environment) -> str:
     # Try to get the function name
     function_name = None
 
+    # If it's a Symbol, use its name directly (for special forms and quoted functions)
+    if isinstance(func_arg, Symbol):
+        function_name = func_arg.name
     # If it's a callable (built-in function), try to find its name
-    if callable(func_arg):
+    elif callable(func_arg):
         # Look through the environment to find the name bound to this function
         for name, value in env.store.items():
             if value is func_arg:
@@ -48,7 +52,7 @@ def builtin_doc(args: List[Any], env: Environment) -> str:
     if function_name is None:
         raise EvaluationError(
             "TypeError: Unable to find documentation for the given function. "
-            "Make sure to pass a function reference like +, abs, etc."
+            "Make sure to pass a function reference like +, abs, etc. or a symbol like 'and, 'or, etc."
         )
 
     # Look up documentation in registry
@@ -56,21 +60,25 @@ def builtin_doc(args: List[Any], env: Environment) -> str:
         doc_function = DOCUMENTATION_REGISTRY[function_name]
         return doc_function()
     else:
-        return f"No documentation available for function '{function_name}'"
+        return f"No documentation available for function or special form '{function_name}'"
 
 
 def documentation_doc() -> str:
     """Returns documentation for the doc function."""
     return """Function: doc
-Arguments: (doc function)
-Description: Returns documentation string for the specified function.
+Arguments: (doc 'symbol-name)
+Description: Returns documentation string for the specified function or special form.
 
 Examples:
-  (doc +)       ; Returns documentation for the + function
-  (doc abs)     ; Returns documentation for the abs function
-  (doc doc)     ; Returns this documentation
+  (doc '+)        ; Returns documentation for the + function
+  (doc 'abs)      ; Returns documentation for the abs function  
+  (doc 'and)      ; Returns documentation for the 'and special form
+  (doc 'if)       ; Returns documentation for the 'if special form
+  (doc 'doc)      ; Returns this documentation
 
 Notes:
-  - Pass the function itself, not a string
+  - Recommended: Always quote the symbol name for consistency
+  - Works with both functions and special forms: (doc 'name)
+  - Unquoted function references also work: (doc +)
   - Use with print-doc to display formatted output
   - Returns a string that can be further processed"""

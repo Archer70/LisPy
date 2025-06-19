@@ -4,7 +4,7 @@
 
 LisPy brings the elegance of Lisp to the modern world with clean syntax, comprehensive data structures, and a robust module system that makes building real applications a joy.
 
-[![Tests](https://img.shields.io/badge/tests-1236%20passing-green)](tests/)
+[![Tests](https://img.shields.io/badge/tests-1239%20passing-green)](tests/)
 [![Python](https://img.shields.io/badge/python-3.7%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
@@ -62,16 +62,16 @@ Every function in LisPy comes with comprehensive built-in documentation:
 
 ```lisp
 ; Get documentation for any function
-(doc +)          ; Shows detailed documentation for addition
-(doc map)        ; Shows how to use the map function
-(doc vector)     ; Documentation for vector creation
+(doc `+)          ; Shows detailed documentation for addition
+(doc `map)        ; Shows how to use the map function
+(doc `vector)     ; Documentation for vector creation
 
 ; Print documentation directly to console
 (print-doc +)    ; Prints documentation with examples
 (print-doc conj) ; Shows collection building documentation
 
 ; Explore all available functions
-(doc doc)        ; Learn about the documentation system itself
+(doc `doc)        ; Learn about the documentation system itself
 ```
 
 ### Console Output

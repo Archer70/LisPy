@@ -4,6 +4,37 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, Symbol
 
 
+def documentation_defn_async():
+    """Returns documentation for the 'defn-async' special form."""
+    return """Special Form: defn-async
+Arguments: (defn-async name [param1 param2 ...] body-expr1 body-expr2 ...)
+Description: Defines an async function that returns a promise when called.
+
+Examples:
+  (defn-async delay-add [x y ms]
+    (await (timeout ms (+ x y))))         ; Async function with delay
+  
+  (defn-async fetch-data [url]
+    (await (http-get url)))               ; Async HTTP operation
+  
+  (defn-async process-items [items]
+    (async-map process-item items))       ; Async collection processing
+
+Usage:
+  (define result (delay-add 5 3 1000))    ; Returns promise immediately
+  (async (await result))                  ; Wait for promise to resolve (returns 8)
+
+Notes:
+  - Function always returns a promise
+  - Function body is executed asynchronously when promise is awaited
+  - Can use await and other async operations in body
+  - Parameters work like regular functions
+  - Caller must use await in async context to get result
+  - Returns nil (defines function as side effect)
+
+See Also: fn, async, await, promise"""
+
+
 def handle_defn_async_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> None:

@@ -1,6 +1,38 @@
 from lispy.exceptions import EvaluationError
 
 
+def documentation_cond():
+    """Returns documentation for the 'cond' special form."""
+    return """Special Form: cond
+Arguments: (cond test1 result1 test2 result2 ... testN resultN)
+Description: Multi-way conditional that evaluates test-result pairs in order.
+
+Examples:
+  (cond 
+    (< x 0) "negative"
+    (= x 0) "zero" 
+    (> x 0) "positive")              ; Returns based on x value
+  (cond 
+    (empty? lst) "empty"
+    (= (count lst) 1) "single"
+    true "multiple")                 ; Use 'true' as catch-all
+  (cond 
+    (> grade 90) "A"
+    (> grade 80) "B"
+    (> grade 70) "C"
+    true "F")                        ; Grade assignment
+
+Notes:
+  - Evaluates test-result pairs from left to right
+  - Returns result of first truthy test
+  - If no test is truthy, returns nil
+  - Must have even number of arguments (test-result pairs)
+  - Use 'true' or other truthy value as final catch-all test
+  - More readable than nested 'if' statements
+
+See Also: if, when, case"""
+
+
 def handle_cond(expression, env, evaluate_fn):
     """Handle the cond special form for multi-way conditionals.
 

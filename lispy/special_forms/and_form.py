@@ -4,6 +4,28 @@ from ..environment import Environment
 # No EvaluationError needed here as argument count is flexible
 
 
+def documentation_and():
+    """Returns documentation for the 'and' special form."""
+    return """Special Form: and
+Arguments: (and expr1 expr2 ...)
+Description: Logical AND with short-circuiting. Returns first falsy value or last truthy value.
+
+Examples:
+  (and true 1 "hello")        ; Returns "hello" (last truthy value)
+  (and true false "never")    ; Returns false (first falsy value)
+  (and 1 2 nil 4)             ; Returns nil (first falsy value)
+  (and)                       ; Returns true (no arguments)
+  (and (> 5 3) (< 2 10))      ; Returns true (logical conditions)
+  (and "hello" 42 [1 2 3])    ; Returns [1 2 3] (various truthy types)
+
+Notes:
+  - Uses short-circuit evaluation (stops at first falsy value)
+  - false and nil are falsy, everything else is truthy
+  - Returns actual values, not just true/false
+  - Useful for validation chains
+
+See Also: or, if, when"""
+
 def handle_and_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> Any:

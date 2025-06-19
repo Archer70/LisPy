@@ -6,6 +6,30 @@ from ..environment import Environment
 from ..closure import Function  # For creating Function instances
 
 
+def documentation_fn():
+    """Returns documentation for the 'fn' special form."""
+    return """Special Form: fn
+Arguments: (fn [param1 param2 ...] body-expr1 body-expr2 ...)
+Description: Creates an anonymous function (lambda) with given parameters and body.
+
+Examples:
+  (fn [x] (+ x 1))                    ; Returns function that adds 1
+  ((fn [x] (+ x 1)) 5)                ; Returns 6 (call immediately)
+  (fn [x y] (* x y))                  ; Returns function that multiplies
+  (fn [] "hello")                     ; Returns function with no parameters
+  (define square (fn [x] (* x x)))    ; Define named function
+  (fn [n] (if (= n 0) 1 (* n (recur (- n 1)))))  ; Recursive function
+
+Notes:
+  - Creates a closure that captures the defining environment
+  - Parameters must be symbols in a vector/list
+  - Body can contain multiple expressions; returns value of last one
+  - Can be used with 'recur' for tail recursion
+  - Functions capture their lexical environment (closures)
+
+See Also: define, recur, let"""
+
+
 def handle_fn_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> Function:

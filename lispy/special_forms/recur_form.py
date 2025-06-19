@@ -12,6 +12,33 @@ from ..exceptions import EvaluationError
 from ..tail_call import TailCall
 
 
+def documentation_recur():
+    """Returns documentation for the 'recur' special form."""
+    return """Special Form: recur
+Arguments: (recur arg1 arg2 ...)
+Description: Tail-recursive call to the current function with new arguments.
+
+Examples:
+  (fn [n acc] 
+    (if (= n 0) acc (recur (- n 1) (+ acc n))))  ; Factorial with accumulator
+  (loop [x 0] 
+    (if (< x 5) (recur (+ x 1)) x))              ; Count to 5 in loop
+  (fn [lst] 
+    (if (empty? lst) 
+      nil 
+      (recur (rest lst))))                       ; Process list recursively
+
+Notes:
+  - Can only be used in tail position (last expression) 
+  - Must be inside a function or loop form
+  - Provides stack-safe recursion (no stack overflow)
+  - Number of arguments must match function parameters
+  - Jumps back to function start with new argument values
+  - More efficient than regular recursive calls
+
+See Also: fn, loop"""
+
+
 def handle_recur(expression, env, evaluate_fn):
     """
     Handle the recur special form for explicit tail call optimization.

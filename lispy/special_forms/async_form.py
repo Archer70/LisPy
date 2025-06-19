@@ -5,6 +5,31 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 
 
+def documentation_async():
+    """Returns documentation for the 'async' special form."""
+    return """Special Form: async
+Arguments: (async body-expr)
+Description: Creates an async execution context and evaluates body, handling promises.
+
+Examples:
+  (async (timeout 1000 "hello"))           ; Returns "hello" after 1 second
+  (async (await (promise (fn [] "done"))))  ; Execute async operation
+  (async (+ 1 2))                          ; Returns 3 (sync operations work too)
+  (async 
+    (define p (timeout 500 "ready"))
+    (await p))                             ; Define and await promise
+
+Notes:
+  - Creates an event loop context for promise execution
+  - If body returns a promise, waits for it to resolve
+  - Synchronous operations execute normally
+  - Manages promise lifecycle and cleanup
+  - Required for using await with promises
+  - Blocks until all async operations complete
+
+See Also: await, promise, timeout"""
+
+
 class AsyncContext:
     """Manages async execution state and simple event loop."""
 

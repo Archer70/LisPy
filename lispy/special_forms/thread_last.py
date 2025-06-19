@@ -22,6 +22,32 @@ from ..types import Symbol, LispyList
 from ..exceptions import EvaluationError
 
 
+def documentation_thread_last():
+    """Returns documentation for the '->>' special form."""
+    return """Special Form: ->>
+Arguments: (->> initial-value step1 step2 ...)
+Description: Thread-last macro - pipes initial value as last argument through function calls.
+
+Examples:
+  (->> 5 (- 10) (* 2))            ; Returns 10: (* 2 (- 10 5))
+  (->> [1 2] (conj 3) (conj 4))   ; Returns [1 2 3 4] (last arg threading)
+  (->> "world" (str "hello "))    ; Returns "hello world"
+  (->> {:a 1} (merge {:b 2}))     ; Returns {:a 1 :b 2}
+  (->> items (filter odd?) (map inc))  ; Chain collection operations
+
+Step Forms:
+  Symbol:     (->> x f)           ; Becomes (f x)
+  List:       (->> x (f a b))     ; Becomes (f a b x)
+
+Notes:
+  - Threads value as LAST argument to each function
+  - Ideal for collection processing pipelines
+  - Each step receives the result of the previous step
+  - Particularly useful with functions expecting collections as last arg
+
+See Also: ->, map, filter"""
+
+
 def handle_thread_last(expression, env, evaluate_fn):
     """Handles the (->> initial_value step1 step2 ...) special form.
 

@@ -18,6 +18,31 @@ Examples:
         (recur (rest items) (conj result (first items)))))
 """
 
+def documentation_loop():
+    """Returns documentation for the 'loop' special form."""
+    return """Special Form: loop
+Arguments: (loop [var1 init1 var2 init2 ...] body-expr1 body-expr2 ...)
+Description: Creates a recursion point with local bindings. Use 'recur' to loop back with new values.
+
+Examples:
+  (loop [x 0] (if (< x 5) (recur (+ x 1)) x))  ; Returns 5 (counts to 5)
+  (loop [acc 0 n 10] 
+    (if (= n 0) acc (recur (+ acc n) (- n 1)))) ; Returns 55 (sum 1-10)
+  (loop [items [1 2 3] result []]
+    (if (empty? items) 
+      result 
+      (recur (rest items) (conj result (first items)))))  ; Copy list
+
+Notes:
+  - Creates local bindings like 'let'
+  - Establishes a recursion point for 'recur'
+  - 'recur' jumps back to loop with new binding values
+  - Provides efficient tail-call optimization
+  - Binding vector must have even number of elements
+  - At least one body expression is required
+
+See Also: recur, let, fn"""
+
 from typing import List, Any, Callable
 from ..types import Symbol
 from ..exceptions import EvaluationError

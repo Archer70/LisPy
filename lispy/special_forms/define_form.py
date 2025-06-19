@@ -5,6 +5,28 @@ from ..exceptions import EvaluationError
 from ..environment import Environment
 
 
+def documentation_define():
+    """Returns documentation for the 'define' special form."""
+    return """Special Form: define
+Arguments: (define symbol value)
+Description: Creates a global variable binding by evaluating value and binding it to symbol.
+
+Examples:
+  (define x 42)                    ; Returns 42 (define a number)
+  (define greeting "Hello")        ; Returns "Hello" (define a string)
+  (define sum (+ 10 20))           ; Returns 30 (define with expression)
+  (define pi 3.14159)              ; Returns 3.14159 (define a constant)
+  (define square (fn [x] (* x x))) ; Returns function (define a function)
+  (define items [1 2 3])           ; Returns [1 2 3] (define a collection)
+
+Notes:
+  - Creates global bindings that persist
+  - Value expression is evaluated before binding
+  - Returns the evaluated value
+  - Redefining overwrites the previous value
+
+See Also: let, fn"""
+
 def handle_define_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable
 ) -> Any:
