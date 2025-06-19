@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# LisPy Pre-Commit Hook
+# 
+# This hook automatically updates the test count in README.md before each commit.
+# To install this hook, run: git config core.hooksPath .githooks
+#
+
+echo "Pre-commit: Updating test count in README.md..."
+
+# Run the test count update script
+python bin/update_test_count.py
+
+# Check if the script succeeded
+if [ $? -ne 0 ]; then
+    echo "Failed to update test count"
+    exit 1
+fi
+
+# If README.md was modified, add it to the commit
+if git diff --name-only | grep -q "README.md"; then
+    echo "Adding updated README.md to commit"
+    git add README.md
+fi
+
+echo "Pre-commit checks completed successfully"
+exit 0 
