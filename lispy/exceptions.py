@@ -31,6 +31,12 @@ class LexerError(LisPyError):
     pass
 
 
+class PromiseError(LisPyError):
+    """Custom exception for promise-related errors."""
+
+    pass
+
+
 class UserThrownError(LisPyError):
     """Exception thrown by user code via (throw ...)."""
 

@@ -1,4 +1,4 @@
-from lispy.exceptions import EvaluationError
+from lispy.exceptions import EvaluationError, PromiseError
 from lispy.closure import Function
 import threading
 import time
@@ -84,8 +84,7 @@ def builtin_throttle(args, env):
                         
                         # Validate argument count
                         if len(inner_args) != len(fn.params):
-                            print(f"Throttle error: Function expects {len(fn.params)} arguments, got {len(inner_args)}.")
-                            return None
+                            raise PromiseError(f"Throttled function expects {len(fn.params)} arguments, got {len(inner_args)}.")
                         
                         # Create new environment for function execution using the function's defining environment
                         call_env = Environment(outer=fn.defining_env)
@@ -103,9 +102,8 @@ def builtin_throttle(args, env):
                         # Call built-in function
                         return fn(inner_args, inner_env)
                 except Exception as e:
-                    # Handle execution errors gracefully
-                    print(f"Throttled function error: {e}")
-                    return None
+                    # Re-raise as PromiseError to maintain error context
+                    raise PromiseError(f"Throttled function execution failed: {e}")
             else:
                 # Within rate period - ignore the call
                 return None

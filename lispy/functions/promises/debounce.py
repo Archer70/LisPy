@@ -1,4 +1,4 @@
-from lispy.exceptions import EvaluationError
+from lispy.exceptions import EvaluationError, PromiseError
 from lispy.closure import Function
 import threading
 import time
@@ -75,8 +75,7 @@ def builtin_debounce(args, env):
                     
                     # Validate argument count
                     if len(inner_args) != len(fn.params):
-                        print(f"Debounce error: Function expects {len(fn.params)} arguments, got {len(inner_args)}.")
-                        return
+                        raise PromiseError(f"Debounced function expects {len(fn.params)} arguments, got {len(inner_args)}.")
                     
                     # Create new environment for function execution
                     call_env = Environment(outer=fn.defining_env)
@@ -94,9 +93,8 @@ def builtin_debounce(args, env):
                     # Call built-in function
                     return fn(inner_args, inner_env)
             except Exception as e:
-                # In a background thread, we can't propagate exceptions easily
-                # For now, just print the error (could be improved with logging)
-                print(f"Debounced function error: {e}")
+                # Re-raise as PromiseError to maintain error context
+                raise PromiseError(f"Debounced function execution failed: {e}")
             finally:
                 # Clear the timer reference
                 timer['current'] = None

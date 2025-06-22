@@ -16,7 +16,7 @@ import time
 import threading
 from lispy.functions import create_global_env
 from lispy.types import Vector
-from lispy.exceptions import EvaluationError
+from lispy.exceptions import EvaluationError, PromiseError
 from lispy.utils import run_lispy_string
 
 
@@ -410,11 +410,12 @@ class TestThrottle(unittest.TestCase):
         
         run_lispy_string("(define throttled-error (throttle error-fn 100))", self.env)
         
-        # First call should handle error gracefully (returns None)
-        result1 = run_lispy_string("(throttled-error)", self.env)
-        self.assertIsNone(result1)
+        # First call should raise EvaluationError (which wraps the PromiseError)
+        with self.assertRaises(EvaluationError) as cm:
+            run_lispy_string("(throttled-error)", self.env)
+        self.assertIn("First call error", str(cm.exception))
         
-        # Wait and try again
+        # Wait and try again - should work this time
         time.sleep(0.15)
         result2 = run_lispy_string("(throttled-error)", self.env)
         self.assertEqual(result2, "success")

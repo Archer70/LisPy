@@ -113,29 +113,38 @@ class TestDebounce(unittest.TestCase):
 
     def test_debounce_zero_delay(self):
         """Test debounce with zero delay executes immediately."""
-        result = run_lispy_string("""
-            (define counter 0)
-            (define increment (fn [] (define counter (+ counter 1))))
-            (define debounced-increment (debounce increment 0))
-            (debounced-increment)
-        """, self.env)
+        self.counter = 0
+        
+        def increment_counter(args, env):
+            self.counter += 1
+            return self.counter
+        
+        self.env.define("increment-counter", increment_counter)
+        run_lispy_string("(define debounced-increment (debounce increment-counter 0))", self.env)
+        result = run_lispy_string("(debounced-increment)", self.env)
         
         # With zero delay, should execute almost immediately
         time.sleep(0.01)  # Small delay to allow timer to fire
         
-        counter_value = run_lispy_string("counter", self.env)
-        self.assertEqual(counter_value, 1)
+        self.assertEqual(self.counter, 1)
 
     def test_multiple_debounced_functions(self):
         """Test multiple independent debounced functions."""
-        run_lispy_string("""
-            (define counter1 0)
-            (define counter2 0)
-            (define increment1 (fn [] (define counter1 (+ counter1 1))))
-            (define increment2 (fn [] (define counter2 (+ counter2 1))))
-            (define debounced1 (debounce increment1 50))
-            (define debounced2 (debounce increment2 50))
-        """, self.env)
+        self.counter1 = 0
+        self.counter2 = 0
+        
+        def increment_counter1(args, env):
+            self.counter1 += 1
+            return self.counter1
+            
+        def increment_counter2(args, env):
+            self.counter2 += 1
+            return self.counter2
+        
+        self.env.define("increment-counter1", increment_counter1)
+        self.env.define("increment-counter2", increment_counter2)
+        run_lispy_string("(define debounced1 (debounce increment-counter1 50))", self.env)
+        run_lispy_string("(define debounced2 (debounce increment-counter2 50))", self.env)
         
         # Call both debounced functions
         run_lispy_string("(debounced1)", self.env)
@@ -145,18 +154,14 @@ class TestDebounce(unittest.TestCase):
         time.sleep(0.1)
         
         # Both should have executed
-        counter1 = run_lispy_string("counter1", self.env)
-        counter2 = run_lispy_string("counter2", self.env)
-        self.assertEqual(counter1, 1)
-        self.assertEqual(counter2, 1)
+        self.assertEqual(self.counter1, 1)
+        self.assertEqual(self.counter2, 1)
 
     def test_debounce_returns_nil(self):
         """Test that debounced function returns nil immediately."""
-        result = run_lispy_string("""
-            (define test-fn (fn [] "result"))
-            (define debounced-fn (debounce test-fn 50))
-            (debounced-fn)
-        """, self.env)
+        run_lispy_string("(define test-fn (fn [] \"result\"))", self.env)
+        run_lispy_string("(define debounced-fn (debounce test-fn 50))", self.env)
+        result = run_lispy_string("(debounced-fn)", self.env)
         
         # Should return nil immediately, not the result of the original function
         self.assertIsNone(result)
@@ -192,37 +197,45 @@ class TestDebounce(unittest.TestCase):
     def test_debounce_with_different_arities(self):
         """Test debounce works with functions of different arities."""
         # No arguments
-        result = run_lispy_string("""
-            (define counter 0)
-            (define increment (fn [] (define counter (+ counter 1))))
-            (define debounced (debounce increment 50))
-            (debounced)
-        """, self.env)
+        self.counter = 0
+        
+        def increment_counter(args, env):
+            self.counter += 1
+            return self.counter
+        
+        self.env.define("increment-counter", increment_counter)
+        run_lispy_string("(define debounced (debounce increment-counter 50))", self.env)
+        result = run_lispy_string("(debounced)", self.env)
         time.sleep(0.1)
-        counter = run_lispy_string("counter", self.env)
-        self.assertEqual(counter, 1)
+        self.assertEqual(self.counter, 1)
         
         # One argument
-        result = run_lispy_string("""
-            (define value nil)
-            (define setter (fn [x] (define value x)))
-            (define debounced-setter (debounce setter 50))
-            (debounced-setter "test")
-        """, self.env)
+        self.value = None
+        
+        def set_value(args, env):
+            if args:
+                self.value = args[0]
+            return self.value
+        
+        self.env.define("set-value", set_value)
+        run_lispy_string("(define debounced-setter (debounce set-value 50))", self.env)
+        result = run_lispy_string("(debounced-setter \"test\")", self.env)
         time.sleep(0.1)
-        value = run_lispy_string("value", self.env)
-        self.assertEqual(value, "test")
+        self.assertEqual(self.value, "test")
 
     def test_timing_precision(self):
         """Test that debounce timing is reasonably accurate."""
         start_time = time.time()
         
-        run_lispy_string("""
-            (define executed-time nil)
-            (define mark-time (fn [] (define executed-time "done")))
-            (define debounced-mark (debounce mark-time 100))
-            (debounced-mark)
-        """, self.env)
+        self.executed_time = None
+        
+        def mark_time(args, env):
+            self.executed_time = "done"
+            return self.executed_time
+        
+        self.env.define("mark-time", mark_time)
+        run_lispy_string("(define debounced-mark (debounce mark-time 100))", self.env)
+        run_lispy_string("(debounced-mark)", self.env)
         
         # Wait for execution
         time.sleep(0.15)
@@ -235,16 +248,18 @@ class TestDebounce(unittest.TestCase):
         self.assertLess(elapsed, 200)     # Less than 200ms
         
         # Verify function was executed
-        executed = run_lispy_string("executed-time", self.env)
-        self.assertEqual(executed, "done")
+        self.assertEqual(self.executed_time, "done")
 
     def test_thread_safety_concurrent_calls(self):
         """Test thread safety with concurrent calls."""
-        run_lispy_string("""
-            (define call-count 0)
-            (define increment (fn [] (define call-count (+ call-count 1))))
-            (define debounced-increment (debounce increment 100))
-        """, self.env)
+        self.call_count = 0
+        
+        def increment_call_count(args, env):
+            self.call_count += 1
+            return self.call_count
+        
+        self.env.define("increment-call-count", increment_call_count)
+        run_lispy_string("(define debounced-increment (debounce increment-call-count 100))", self.env)
         
         # Make concurrent calls from multiple threads
         def call_debounced():
@@ -264,16 +279,18 @@ class TestDebounce(unittest.TestCase):
         time.sleep(0.15)
         
         # Should only execute once despite multiple concurrent calls
-        call_count = run_lispy_string("call-count", self.env)
-        self.assertEqual(call_count, 1)
+        self.assertEqual(self.call_count, 1)
 
     def test_sequential_calls_with_gaps(self):
         """Test sequential calls with time gaps larger than delay."""
-        run_lispy_string("""
-            (define call-count 0)
-            (define increment (fn [] (define call-count (+ call-count 1))))
-            (define debounced-increment (debounce increment 50))
-        """, self.env)
+        self.call_count = 0
+        
+        def increment_call_count(args, env):
+            self.call_count += 1
+            return self.call_count
+        
+        self.env.define("increment-call-count", increment_call_count)
+        run_lispy_string("(define debounced-increment (debounce increment-call-count 50))", self.env)
         
         # First call
         run_lispy_string("(debounced-increment)", self.env)
@@ -284,8 +301,7 @@ class TestDebounce(unittest.TestCase):
         time.sleep(0.1)  # Wait for second call to execute
         
         # Both calls should have executed
-        call_count = run_lispy_string("call-count", self.env)
-        self.assertEqual(call_count, 2)
+        self.assertEqual(self.call_count, 2)
 
 
 if __name__ == "__main__":
