@@ -34,14 +34,14 @@ def builtin_promise_race(args, env):
     # Validate collection is a list or vector
     if not isinstance(collection, (LispyList, Vector)):
         raise EvaluationError(
-            f"TypeError: 'promise-race' argument must be a list or vector, got {type(collection)}."
+            f"TypeError: 'promise-race' argument must be a list or vector, got {type(collection).__name__}."
         )
 
     # Validate all elements are promises
     for i, element in enumerate(collection):
         if not isinstance(element, LispyPromise):
             raise EvaluationError(
-                f"TypeError: All elements must be promises, got {type(element)} at position {i}."
+                f"TypeError: All elements must be promises, got {type(element).__name__} at position {i}."
             )
 
     # Handle empty collection - return a promise that never settles

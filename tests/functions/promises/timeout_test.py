@@ -6,7 +6,7 @@ from lispy.parser import parse
 from lispy.lexer import tokenize
 from lispy.types import LispyPromise
 from lispy.exceptions import EvaluationError
-from lispy.functions import global_env
+from lispy.functions import global_env, create_global_env
 
 
 def run_lispy_string(code_string, env=None):
@@ -22,7 +22,7 @@ def run_lispy_string(code_string, env=None):
 class TestTimeoutFunctions(unittest.TestCase):
     def setUp(self):
         """Set up test environment."""
-        self.env = Environment(outer=global_env)
+        self.env = create_global_env()
 
     def test_timeout_basic_functionality(self):
         """Test basic timeout functionality."""

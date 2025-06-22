@@ -108,7 +108,18 @@ class LispyPromise:
     def then(self, callback: Callable[[Any], Any]) -> "LispyPromise":
         """Chain a callback to be executed when promise resolves."""
         if self.state == "resolved":
-            return self._create_resolved_promise(callback(self.value))
+            try:
+                result = callback(self.value)
+                # If callback returns a promise, chain it
+                if isinstance(result, LispyPromise):
+                    new_promise = LispyPromise()
+                    result.then(lambda v: new_promise.resolve(v))
+                    result.catch(lambda e: new_promise.reject(e))
+                    return new_promise
+                else:
+                    return self._create_resolved_promise(result)
+            except Exception as e:
+                return self._create_rejected_promise(e)
         elif self.state == "rejected":
             return self._create_rejected_promise(self.error)
         else:
@@ -137,7 +148,11 @@ class LispyPromise:
     def catch(self, error_callback: Callable[[Any], Any]) -> "LispyPromise":
         """Handle promise rejection."""
         if self.state == "rejected":
-            return self._create_resolved_promise(error_callback(self.error))
+            try:
+                result = error_callback(self.error)
+                return self._create_resolved_promise(result)
+            except Exception as e:
+                return self._create_rejected_promise(e)
         elif self.state == "resolved":
             return self._create_resolved_promise(self.value)
         else:

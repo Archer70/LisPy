@@ -6,11 +6,13 @@ from lispy.types import LispyPromise
 from lispy.functions.promises.promise import builtin_promise
 from lispy.functions.promises.resolve import builtin_resolve
 from lispy.functions.promises.reject import builtin_reject
+from lispy.functions import create_global_env
 
 
 class TestPromiseFunctions(unittest.TestCase):
     def setUp(self):
-        self.env = Environment()
+        """Set up test environment."""
+        self.env = create_global_env()
 
     def test_promise_with_simple_function(self):
         """Test promise with a simple function."""

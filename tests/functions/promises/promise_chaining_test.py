@@ -1,7 +1,7 @@
 import unittest
 from lispy.evaluator import evaluate
 from lispy.parser import parse
-from lispy.functions import global_env
+from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 
@@ -9,7 +9,7 @@ from lispy.types import LispyPromise
 def run_lispy_string(code_string, env=None):
     """Helper function to parse and evaluate LisPy code."""
     if env is None:
-        env = global_env
+        env = create_global_env()
     from lispy.lexer import tokenize
 
     tokens = tokenize(code_string)
@@ -22,7 +22,7 @@ class TestPromiseChainingFunctions(unittest.TestCase):
 
     def setUp(self):
         """Set up test environment."""
-        self.env = global_env
+        self.env = create_global_env()
 
     def test_then_basic_transformation(self):
         """Test basic value transformation with promise-then."""
