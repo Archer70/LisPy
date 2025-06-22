@@ -226,10 +226,38 @@ class PromiseAnyTest(unittest.TestCase):
 
     def test_promise_any_integration_with_lispy(self):
         """Test promise-any integration with LisPy evaluation."""
-        # Skip this test - issue is not parser but that vector literals don't evaluate symbols
-        # In LisPy, [p1 p2 p3] creates a vector of symbols, not a vector of values
-        # You'd need (vector p1 p2 p3) or similar to evaluate the symbols  
-        self.skipTest("Vector literals don't evaluate symbols - semantic issue, not parser")
+        # Set up promises in the environment
+        run_lispy_string('(define p1 (reject "error 1"))', self.env)
+        run_lispy_string('(define p2 (resolve "success"))', self.env)
+        run_lispy_string('(define p3 (reject "error 2"))', self.env)
+        
+        # Test with resolved promises - first one should win
+        result = run_lispy_string('(promise-any (vector p1 p2 p3))', self.env)
+        
+        # Wait for result
+        time.sleep(0.1)
+        
+        self.assertEqual(result.state, "resolved")
+        self.assertEqual(result.value, "success")
+
+    def test_promise_any_integration_all_reject(self):
+        """Test promise-any integration when all promises reject."""
+        # Set up rejected promises in the environment
+        run_lispy_string('(define p1 (reject "error 1"))', self.env)
+        run_lispy_string('(define p2 (reject "error 2"))', self.env)
+        run_lispy_string('(define p3 (reject "error 3"))', self.env)
+        
+        # Test with all rejected promises
+        result = run_lispy_string('(promise-any (vector p1 p2 p3))', self.env)
+        
+        # Wait for result
+        time.sleep(0.1)
+        
+        self.assertEqual(result.state, "rejected")
+        self.assertIn("AggregateError", result.error)
+        self.assertIn("error 1", result.error)
+        self.assertIn("error 2", result.error)
+        self.assertIn("error 3", result.error)
 
     def test_promise_any_preserves_collection_type_in_error(self):
         """Test that aggregate error preserves collection type."""

@@ -322,10 +322,55 @@ class PromiseAllSettledTest(unittest.TestCase):
 
     def test_promise_all_settled_integration_with_lispy(self):
         """Test promise-all-settled integration with LisPy evaluation."""
-        # Skip this test - issue is not parser but that vector literals don't evaluate symbols
-        # In LisPy, [p1 p2 p3] creates a vector of symbols, not a vector of values
-        # You'd need (vector p1 p2 p3) or similar to evaluate the symbols
-        self.skipTest("Vector literals don't evaluate symbols - semantic issue, not parser")
+        # Set up mixed promises in the environment
+        run_lispy_string('(define p1 (resolve "success 1"))', self.env)
+        run_lispy_string('(define p2 (reject "error 1"))', self.env)
+        run_lispy_string('(define p3 (resolve "success 2"))', self.env)
+        
+        # Test with mixed promises - some resolve, some reject
+        result = run_lispy_string('(promise-all-settled (vector p1 p2 p3))', self.env)
+        
+        # Wait for result
+        time.sleep(0.1)
+        
+        self.assertEqual(result.state, "resolved")
+        results = result.value
+        
+        # Check that all results are included with proper status
+        self.assertEqual(len(results), 3)
+        
+        # First promise resolved
+        self.assertEqual(results[0][Symbol(":status")], "fulfilled")
+        self.assertEqual(results[0][Symbol(":value")], "success 1")
+        
+        # Second promise rejected
+        self.assertEqual(results[1][Symbol(":status")], "rejected")
+        self.assertEqual(results[1][Symbol(":reason")], "error 1")
+        
+        # Third promise resolved
+        self.assertEqual(results[2][Symbol(":status")], "fulfilled")
+        self.assertEqual(results[2][Symbol(":value")], "success 2")
+
+    def test_promise_all_settled_integration_all_types(self):
+        """Test promise-all-settled integration with different value types."""
+        # Set up promises with different value types
+        run_lispy_string('(define p1 (resolve 42))', self.env)
+        run_lispy_string('(define p2 (resolve "hello"))', self.env)
+        run_lispy_string('(define p3 (resolve true))', self.env)
+        
+        # Test with different types of resolved values
+        result = run_lispy_string('(promise-all-settled (vector p1 p2 p3))', self.env)
+        
+        # Wait for result
+        time.sleep(0.1)
+        
+        self.assertEqual(result.state, "resolved")
+        results = result.value
+        
+        # Check different value types are preserved
+        self.assertEqual(results[0][Symbol(":value")], 42)
+        self.assertEqual(results[1][Symbol(":value")], "hello")
+        self.assertEqual(results[2][Symbol(":value")], True)
 
     def test_promise_all_settled_complex_nested_data(self):
         """Test promise-all-settled with complex nested data structures."""
