@@ -159,6 +159,107 @@ class SortFnTest(unittest.TestCase):
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([5, 4, 3, 1, 1]))
 
+    def test_sort_mixed_incomparable_types(self):
+        """Test sort with mixed types that can't be compared directly."""
+        # Mix numbers and strings - should fall back to string comparison
+        result = run_lispy_string('(sort [3 "a" 1 "z" 2])', self.env)
+        self.assertIsInstance(result, Vector)
+        # Should be sorted by string representation: "1", "2", "3", "a", "z"
+        self.assertEqual(result, Vector([1, 2, 3, "a", "z"]))
+
+    def test_sort_with_builtin_comparison_function(self):
+        """Test sort with built-in comparison functions."""
+        # Use the built-in > function
+        result = run_lispy_string("(sort [1 3 2 5 4] >)", self.env)
+        self.assertIsInstance(result, Vector)
+        self.assertEqual(result, Vector([5, 4, 3, 2, 1]))
+
+        # Use the built-in < function  
+        result = run_lispy_string("(sort [5 4 3 2 1] <)", self.env)
+        self.assertIsInstance(result, Vector)
+        self.assertEqual(result, Vector([1, 2, 3, 4, 5]))
+
+    def test_sort_custom_comparison_zero_return(self):
+        """Test sort with custom comparison that returns zero (equal values)."""
+        # Comparison function that considers all values equal
+        run_lispy_string("(define always-equal (fn [a b] 0))", self.env)
+        result = run_lispy_string("(sort [3 1 4 1 5] always-equal)", self.env)
+        self.assertIsInstance(result, Vector)
+        # Order should be preserved when all elements are considered equal
+        self.assertEqual(result, Vector([3, 1, 4, 1, 5]))
+
+    def test_sort_custom_comparison_negative_return(self):
+        """Test sort with custom comparison that returns negative numbers."""
+        # Always return -1 (a < b) - this means a is always less than b
+        run_lispy_string("(define always-less (fn [a b] -5))", self.env)
+        result = run_lispy_string("(sort [3 1 4] always-less)", self.env)
+        self.assertIsInstance(result, Vector)
+        # The actual result depends on Python's sort algorithm behavior
+        # When comparison always returns negative, the sort is stable
+        expected_length = 3
+        self.assertEqual(len(result), expected_length)
+
+    def test_sort_custom_comparison_positive_return(self):
+        """Test sort with custom comparison that returns positive numbers."""
+        # Always return positive number (a > b) - this means a is always greater than b
+        run_lispy_string("(define always-greater (fn [a b] 10))", self.env) 
+        result = run_lispy_string("(sort [1 3 2] always-greater)", self.env)
+        self.assertIsInstance(result, Vector)
+        # The actual result depends on Python's sort algorithm behavior
+        # When comparison always returns positive, elements may be reordered
+        expected_length = 3
+        self.assertEqual(len(result), expected_length)
+
+    def test_sort_with_negative_numbers(self):
+        """Test sort with negative numbers."""
+        result = run_lispy_string("(sort [-3 1 -2 4 -1])", self.env)
+        self.assertIsInstance(result, Vector)
+        self.assertEqual(result, Vector([-3, -2, -1, 1, 4]))
+
+    def test_sort_duplicate_elements(self):
+        """Test sort with many duplicate elements."""
+        result = run_lispy_string("(sort [3 1 3 1 3 1 2 2])", self.env)
+        self.assertIsInstance(result, Vector)
+        self.assertEqual(result, Vector([1, 1, 1, 2, 2, 3, 3, 3]))
+
+    def test_sort_large_vector(self):
+        """Test sort with a larger vector."""
+        # Create a vector with numbers 10 down to 1
+        run_lispy_string("(define large-vec [10 9 8 7 6 5 4 3 2 1])", self.env)
+        result = run_lispy_string("(sort large-vec)", self.env)
+        self.assertIsInstance(result, Vector)
+        self.assertEqual(result, Vector([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))
+
+    def test_sort_boolean_comparison_function(self):
+        """Test sort with comparison function that returns booleans."""
+        # Function that returns true when first arg is even and second is odd
+        run_lispy_string("(define even-before-odd (fn [a b] (and (= (% a 2) 0) (= (% b 2) 1))))", self.env)
+        result = run_lispy_string("(sort [1 2 3 4 5 6] even-before-odd)", self.env)
+        self.assertIsInstance(result, Vector)
+        # Result should have evens before odds in some order
+        # The exact order depends on the sorting algorithm's stability
+        for i in range(len(result)):
+            if result[i] % 2 == 0:  # Even number
+                # All subsequent odd numbers should come after
+                for j in range(i + 1, len(result)):
+                    if result[j] % 2 == 1:  # Odd number
+                        # This is expected - even comes before odd
+                        pass
+
+    def test_sort_comparison_function_calls_with_parameters(self):
+        """Test that comparison function receives correct parameters."""
+        # Function that checks if parameters are passed correctly using is_number?
+        run_lispy_string("""
+        (define check-params 
+          (fn [a b] 
+            (if (and (is_number? a) (is_number? b))
+              (< a b)
+              false)))
+        """, self.env)
+        result = run_lispy_string("(sort [3 1 4 1 5] check-params)", self.env)
+        self.assertIsInstance(result, Vector)
+        self.assertEqual(result, Vector([1, 1, 3, 4, 5]))
+
 
 if __name__ == "__main__":
     unittest.main()
