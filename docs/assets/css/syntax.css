@@ -1,0 +1,105 @@
+/* LisPy Syntax Highlighting */
+
+/* Base code styling */
+.language-lisp {
+    color: #ecf0f1;
+}
+
+/* Lisp syntax tokens */
+.token.comment {
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.token.punctuation {
+    color: #bdc3c7;
+}
+
+.token.operator {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.token.keyword {
+    color: #9b59b6;
+    font-weight: bold;
+}
+
+.token.function {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.token.string {
+    color: #2ecc71;
+}
+
+.token.number {
+    color: #e67e22;
+}
+
+.token.boolean {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+.token.symbol {
+    color: #1abc9c;
+}
+
+.token.nil {
+    color: #95a5a6;
+    font-style: italic;
+}
+
+/* Special forms */
+.token.special-form {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* Variable names */
+.token.variable {
+    color: #ecf0f1;
+}
+
+/* Parentheses highlighting */
+.token.paren {
+    color: #bdc3c7;
+}
+
+.token.paren.level-1 {
+    color: #3498db;
+}
+
+.token.paren.level-2 {
+    color: #e74c3c;
+}
+
+.token.paren.level-3 {
+    color: #2ecc71;
+}
+
+.token.paren.level-4 {
+    color: #f39c12;
+}
+
+/* Inline code (not in pre blocks) */
+code:not(pre code) {
+    background: #f8f9fa;
+    color: #2c3e50;
+    border: 1px solid #e9ecef;
+}
+
+/* Result highlighting */
+.result .token.number {
+    color: #27ae60;
+}
+
+.result .token.string {
+    color: #27ae60;
+}
+
+.result .token.boolean {
+    color: #27ae60;
+} 
