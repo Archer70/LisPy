@@ -214,30 +214,8 @@ from .bdd_assertions import (
 from .doc import builtin_doc, documentation_doc, register_documentation
 from .print_doc import builtin_print_doc, documentation_print_doc
 
-# Import documentation functions for special forms
-from ..special_forms import (
-    documentation_and,
-    documentation_async,
-    documentation_await,
-    documentation_cond,
-    documentation_define,
-    documentation_defn_async,
-    documentation_doseq,
-    documentation_export,
-    documentation_fn,
-    documentation_if,
-    documentation_import,
-    documentation_let,
-    documentation_loop,
-    documentation_or,
-    documentation_quote,
-    documentation_recur,
-    documentation_thread_first,
-    documentation_thread_last,
-    documentation_throw,
-    documentation_try,
-    documentation_when
-)
+# Import special form setup function
+from ..special_forms import setup_special_form_documentation
 
 
 def create_global_env() -> Environment:
@@ -436,27 +414,7 @@ def setup_documentation_registry():
     register_documentation("to-bool", documentation_to_bool)
     
     # Register special form documentation
-    register_documentation("->", documentation_thread_first)
-    register_documentation("->>", documentation_thread_last)
-    register_documentation("and", documentation_and)
-    register_documentation("async", documentation_async)
-    register_documentation("await", documentation_await)
-    register_documentation("cond", documentation_cond)
-    register_documentation("define", documentation_define)
-    register_documentation("defn-async", documentation_defn_async)
-    register_documentation("doseq", documentation_doseq)
-    register_documentation("export", documentation_export)
-    register_documentation("fn", documentation_fn)
-    register_documentation("if", documentation_if)
-    register_documentation("import", documentation_import)
-    register_documentation("let", documentation_let)
-    register_documentation("loop", documentation_loop)
-    register_documentation("or", documentation_or)
-    register_documentation("quote", documentation_quote)
-    register_documentation("recur", documentation_recur)
-    register_documentation("throw", documentation_throw)
-    register_documentation("try", documentation_try)
-    register_documentation("when", documentation_when)
+    setup_special_form_documentation()
 
 
 # Create a single global environment instance when the module is loaded.

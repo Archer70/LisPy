@@ -63,8 +63,38 @@ special_form_handlers: Dict[str, Callable[[List[Any], Environment, Callable], An
     "when": handle_when_form,
 }
 
+def setup_special_form_documentation():
+    """Register all special form documentation functions with their corresponding names."""
+    # Import register_documentation here to avoid circular imports
+    from ..functions.doc import register_documentation
+    
+    # Register special form documentation
+    register_documentation("->", documentation_thread_first)
+    register_documentation("->>", documentation_thread_last)
+    register_documentation("and", documentation_and)
+    register_documentation("async", documentation_async)
+    register_documentation("await", documentation_await)
+    register_documentation("cond", documentation_cond)
+    register_documentation("define", documentation_define)
+    register_documentation("defn-async", documentation_defn_async)
+    register_documentation("doseq", documentation_doseq)
+    register_documentation("export", documentation_export)
+    register_documentation("fn", documentation_fn)
+    register_documentation("if", documentation_if)
+    register_documentation("import", documentation_import)
+    register_documentation("let", documentation_let)
+    register_documentation("loop", documentation_loop)
+    register_documentation("or", documentation_or)
+    register_documentation("quote", documentation_quote)
+    register_documentation("recur", documentation_recur)
+    register_documentation("throw", documentation_throw)
+    register_documentation("try", documentation_try)
+    register_documentation("when", documentation_when)
+
+
 __all__ = [
     "special_form_handlers",
+    "setup_special_form_documentation",
     "documentation_and",
     "documentation_async",
     "documentation_await",
