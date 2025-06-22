@@ -1,0 +1,139 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Project overview information
+alwaysApply: true
+---
+
+## LisPy Project Context Summary
+
+**LisPy** is a modern, feature-rich Lisp interpreter written in Python that emphasizes functional programming, immutability, and explicit tail-call optimization.
+
+### Core Architecture
+
+**LisPy is a Lisp interpreter with the following key components:**
+
+- **Language**: A modern Lisp dialect with clean syntax and rich data types
+- **Core Components**: 
+  - `lispy/lexer.py` - Tokenization
+  - `lispy/parser.py` - AST generation  
+  - `lispy/evaluator.py` - Expression evaluation with explicit tail call optimization via `recur`
+  - `lispy/environment.py` - Symbol/variable scoping
+  - `lispy/types.py` - Custom data types (Symbol, Vector, LispyList, LispyPromise)
+  - `lispy/exceptions.py` - Custom exception hierarchy
+
+### Key Features & Design Principles
+
+- **Immutable by Default**: All data operations return new structures, no mutations
+- **Explicit Tail Calls**: Uses `recur` for tail-call optimization with max recursion depth of 100 for regular calls
+- **Rich Type System**: Numbers, strings, booleans, nil, symbols, vectors `[]`, hash maps `{}`, functions, promises
+- **Module System**: File-based modules with `import`/`export`, qualified imports, circular dependency detection
+- **Async Support**: Built-in Promise system with `async`/`await`, timeout handling, and promise combinators
+- **BDD Testing**: Built-in behavior-driven development support with `describe`/`it`/`given`/`then` forms
+- **Self-Documenting**: All functions have built-in documentation via `doc` and `print-doc`
+
+### Directory Structure
+
+```
+lispy/
+├── functions/           # Built-in functions organized by category
+│   ├── math/           # +, -, *, /, %, =, <, >, etc.
+│   ├── logical/        # and, or, not, equal?
+│   ├── collection/     # map, filter, reduce, count, first, rest, etc.
+│   ├── list/           # car, cdr, cons, list, vector
+│   ├── map/            # assoc, dissoc, get, keys, vals, hash-map
+│   ├── type_check/     # is-number?, is-string?, is-nil?, etc.
+│   ├── io/             # print, println, slurp, spit, read-line
+│   ├── string/         # join, split
+│   ├── typing/         # to-str, to-int, to-float, to-bool
+│   ├── promises/       # promise, resolve, reject, then, etc.
+│   └── bdd_assertions/ # assert-equal?, assert-true?, etc.
+├── special_forms/      # Language constructs (if, let, fn, define, etc.)
+│   ├── bdd/           # describe, it, given, then, action
+│   └── [various].py    # if, let, fn, define, import, export, etc.
+tests/                  # Comprehensive test suite
+├── functions/          # Tests for built-in functions
+├── special_forms/      # Tests for special forms
+└── integration/        # Integration tests
+bin/                    # Command-line tools
+├── lispy_interpreter.py # Main interpreter
+├── lispy_repl.py       # Interactive REPL
+└── lispy_bdd_runner.py # BDD test runner
+examples/               # Sample LisPy programs
+```
+
+### Development Patterns
+
+**Function Architecture:**
+- Built-in functions in `lispy/functions/[category]/[name].py`
+- Each function exports: `builtin_[name]` (callable) and `documentation_[name]` (string)
+- Functions registered in `lispy/functions/__init__.py`
+- Functions receive `(args, env)` parameters
+- Functions receiving a collection argument should take the collection first, enabling "thread first" consistency
+
+**Special Forms:**
+- Language constructs in `lispy/special_forms/[name]_form.py` 
+- Each exports: `handle_[name]_form` and `documentation_[name]`
+- Registered in `lispy/special_forms/__init__.py`
+
+**Testing:**
+- TDD approach: write tests first, then implementation
+- Test files named `[function_name]_test.py`
+- Use `self.assertEqual()` for exact matches, avoid regex unless necessary
+- Run with: `python -m unittest discover -s tests -p '*_test.py'`
+- Test structure: `setUp()` creates `self.env = create_global_env()`
+- Use the `run_lispy_string()` helper function from `lispy/utils.py` to test LisPy code whenver possible, avoiding direct module imports
+
+**Error Handling:**
+- Custom exception hierarchy: `LisPyError` → `ParseError`, `EvaluationError`, `ArityError`, etc.
+- Specific error messages with function names and argument details
+- Avoid printing error text to the console as a means of error handling
+- Errors should be catchable with the `try` and `catch` special forms
+- `UserThrownError` for user-thrown exceptions via `(throw ...)`
+- `AssertionFailure` for BDD test failures
+
+### Language Syntax Examples
+
+```lisp
+; Variables and functions
+(define pi 3.14159)
+(define square (fn [x] (* x x)))
+
+; Immutable data structures
+(define nums [1 2 3])          ; Vector
+(define person {:name "Alice"}) ; Hash map
+(conj nums 4)                  ; Returns NEW vector [1 2 3 4]
+(assoc person :age 30)         ; Returns NEW map with :age added
+
+; Explicit tail recursion with recur
+(define factorial (fn [n acc]
+  (if (<= n 1) acc (recur (- n 1) (* n acc)))))
+
+; Module system
+(export factorial square)  ; In module file
+(import "math-utils")      ; Basic import
+(import "lib/utils" :as "u") ; Prefixed import
+```
+
+### Command Line Usage
+
+```bash
+# Run programs
+python bin/lispy_interpreter.py program.lpy
+bin/lispy.bat program.lpy  # Windows
+bin/lispy.sh program.lpy   # Unix
+
+# REPL mode
+python bin/lispy_interpreter.py --repl
+
+# Run tests
+python -m unittest discover -s tests -p '*_test.py'
+
+# BDD tests
+python bin/lispy_bdd_runner.py "tests/**/*.lpy"
+```
+
+This context should help you understand the architecture, patterns, and conventions used throughout the LisPy codebase for more efficient development assistance.
