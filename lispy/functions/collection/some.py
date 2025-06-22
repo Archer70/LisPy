@@ -89,12 +89,12 @@ Arguments: (some collection predicate)
 Description: Returns the first truthy value from applying predicate to collection elements, or nil.
 
 Examples:
-  (some [1 2 3] is_number?)             ; => true
-  (some ["a" 1 "b"] is_number?)         ; => true
-  (some ["a" "b"] is_number?)           ; => nil
+  (some [1 2 3] is-number?)             ; => true
+  (some ["a" 1 "b"] is-number?)         ; => true
+  (some ["a" "b"] is-number?)           ; => nil
   (some [nil false 42] (fn [x] x))      ; => 42 (first truthy value)
   (some [1 2 3] (fn [x] (> x 2)))       ; => true
-  (some [] is_number?)                  ; => nil
+  (some [] is-number?)                  ; => nil
   (some [-1 0 5] (fn [x] (> x 0)))      ; => true
 
 Notes:

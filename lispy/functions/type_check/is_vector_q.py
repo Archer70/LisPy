@@ -37,7 +37,7 @@ Notes:
   - Returns true only for LisPy vectors, not lists
   - Vectors and lists are distinct types in LisPy
   - Empty vector [] returns true
-  - Use is_list? to test for lists specifically
+  - Use is-list? to test for lists specifically
   - Vectors provide indexed access and are often more efficient
   - Essential for distinguishing collection types
   - Requires exactly one argument"""

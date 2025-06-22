@@ -11,13 +11,13 @@ class EveryQFnTest(unittest.TestCase):
         self.env = create_global_env()
 
     def test_every_q_with_builtin_predicate_all_match(self):
-        """Test (every? [1 2 3] is_number?) returns true."""
-        result = run_lispy_string("(every? [1 2 3] is_number?)", self.env)
+        """Test (every? [1 2 3] is-number?) returns true."""
+        result = run_lispy_string("(every? [1 2 3] is-number?)", self.env)
         self.assertTrue(result)
 
     def test_every_q_with_builtin_predicate_some_dont_match(self):
-        """Test (every? [1 "hello" 3] is_number?) returns false."""
-        result = run_lispy_string('(every? [1 "hello" 3] is_number?)', self.env)
+        """Test (every? [1 "hello" 3] is-number?) returns false."""
+        result = run_lispy_string('(every? [1 "hello" 3] is-number?)', self.env)
         self.assertFalse(result)
 
     def test_every_q_with_user_defined_predicate_all_match(self):
@@ -34,10 +34,10 @@ class EveryQFnTest(unittest.TestCase):
 
     def test_every_q_empty_collection_is_vacuously_true(self):
         """Test that every? returns true for empty collections (vacuous truth)."""
-        result = run_lispy_string("(every? [] is_number?)", self.env)
+        result = run_lispy_string("(every? [] is-number?)", self.env)
         self.assertTrue(result)
 
-        result = run_lispy_string("(every? '() is_number?)", self.env)
+        result = run_lispy_string("(every? '() is-number?)", self.env)
         self.assertTrue(result)
 
     def test_every_q_with_comparison_functions(self):
@@ -51,28 +51,28 @@ class EveryQFnTest(unittest.TestCase):
 
     def test_every_q_with_list(self):
         """Test every? works with lists."""
-        result = run_lispy_string("(every? '(1 2 3 4) is_number?)", self.env)
+        result = run_lispy_string("(every? '(1 2 3 4) is-number?)", self.env)
         self.assertTrue(result)
 
-        result = run_lispy_string('(every? \'(1 "hello" 3) is_number?)', self.env)
+        result = run_lispy_string('(every? \'(1 "hello" 3) is-number?)', self.env)
         self.assertFalse(result)
 
     def test_every_q_with_vector(self):
         """Test every? works with vectors."""
-        result = run_lispy_string("(every? [1 2 3 4] is_number?)", self.env)
+        result = run_lispy_string("(every? [1 2 3 4] is-number?)", self.env)
         self.assertTrue(result)
 
-        result = run_lispy_string('(every? [1 "hello" 3] is_number?)', self.env)
+        result = run_lispy_string('(every? [1 "hello" 3] is-number?)', self.env)
         self.assertFalse(result)
 
     def test_every_q_with_mixed_types(self):
         """Test every? with various mixed data types."""
         result = run_lispy_string(
-            '(every? ["hello" "world" "test"] is_string?)', self.env
+            '(every? ["hello" "world" "test"] is-string?)', self.env
         )
         self.assertTrue(result)
 
-        result = run_lispy_string('(every? ["hello" 42 "test"] is_string?)', self.env)
+        result = run_lispy_string('(every? ["hello" 42 "test"] is-string?)', self.env)
         self.assertFalse(result)
 
     def test_every_q_with_false_and_nil_values(self):
@@ -125,14 +125,14 @@ class EveryQFnTest(unittest.TestCase):
     def test_every_q_complementary_to_some(self):
         """Test that every? and some are complementary for certain cases."""
         # When every? is true, some should also be true (unless empty)
-        result_every = run_lispy_string("(every? [2 4 6 8] is_number?)", self.env)
-        result_some = run_lispy_string("(some [2 4 6 8] is_number?)", self.env)
+        result_every = run_lispy_string("(every? [2 4 6 8] is-number?)", self.env)
+        result_some = run_lispy_string("(some [2 4 6 8] is-number?)", self.env)
         self.assertTrue(result_every)
         self.assertTrue(result_some)
 
         # When every? is false, we can't predict some without knowing the specifics
-        result_every = run_lispy_string('(every? [2 "hello" 6 8] is_number?)', self.env)
-        result_some = run_lispy_string('(some [2 "hello" 6 8] is_number?)', self.env)
+        result_every = run_lispy_string('(every? [2 "hello" 6 8] is-number?)', self.env)
+        result_some = run_lispy_string('(some [2 "hello" 6 8] is-number?)', self.env)
         self.assertFalse(result_every)
         self.assertTrue(result_some)  # Some numbers exist
 
@@ -153,9 +153,9 @@ class EveryQFnTest(unittest.TestCase):
         )
 
     def test_every_q_too_many_args(self):
-        """Test (every? [1 2] is_number? [3 4]) raises an error."""
+        """Test (every? [1 2] is-number? [3 4]) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(every? [1 2] is_number? [3 4])", self.env)
+            run_lispy_string("(every? [1 2] is-number? [3 4])", self.env)
         self.assertEqual(
             str(cm.exception), "SyntaxError: 'every?' expects 2 arguments, got 3."
         )
@@ -172,7 +172,7 @@ class EveryQFnTest(unittest.TestCase):
     def test_every_q_non_collection(self):
         """Test every? with non-collection raises an error."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(every? 42 is_number?)", self.env)
+            run_lispy_string("(every? 42 is-number?)", self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: First argument to 'every?' must be a list or vector, got <class 'int'>.",
@@ -191,7 +191,7 @@ class EveryQFnTest(unittest.TestCase):
     def test_every_q_with_string_collection(self):
         """Test every? with string as collection raises an error (strings aren't supported)."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string('(every? "hello" is_string?)', self.env)
+            run_lispy_string('(every? "hello" is-string?)', self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: First argument to 'every?' must be a list or vector, got <class 'str'>.",
@@ -200,7 +200,7 @@ class EveryQFnTest(unittest.TestCase):
     def test_every_q_with_map_collection(self):
         """Test every? with map as collection raises an error (maps aren't supported as sequences)."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(every? {:a 1 :b 2} is_number?)", self.env)
+            run_lispy_string("(every? {:a 1 :b 2} is-number?)", self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: First argument to 'every?' must be a list or vector, got <class 'dict'>.",
@@ -227,7 +227,7 @@ class EveryQFnTest(unittest.TestCase):
         result = run_lispy_string(
             """
         (-> [-1 2 3 4 -5]
-            (filter is_number?)
+            (filter is-number?)
             (filter positive?)
             (every? positive?))
         """,

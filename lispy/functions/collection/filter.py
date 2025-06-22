@@ -95,10 +95,10 @@ Description: Returns a new collection containing only elements that satisfy the 
 
 Examples:
   (filter [1 2 3 4 5] (fn [x] (> x 3)))     ; => [4 5]
-  (filter '(1 2 3 4 5) is_number?)          ; => (1 2 3 4 5)
-  (filter ["a" 1 "b" 2] is_string?)         ; => ["a" "b"]
+  (filter '(1 2 3 4 5) is-number?)          ; => (1 2 3 4 5)
+  (filter ["a" 1 "b" 2] is-string?)         ; => ["a" "b"]
   (filter [1 2 3] (fn [x] (= (% x 2) 0)))   ; => [2] (even numbers)
-  (filter [] is_number?)                    ; => []
+  (filter [] is-number?)                    ; => []
   (filter '(-1 0 1 2) (fn [x] (> x 0)))     ; => (1 2)
 
 Notes:

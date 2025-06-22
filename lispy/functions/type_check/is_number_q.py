@@ -6,10 +6,10 @@ from ...environment import Environment
 
 
 def builtin_is_number_q(args: List[Any], env: Environment) -> bool:
-    """Returns true if the argument is a number, false otherwise. (is_number? value)"""
+    """Returns true if the argument is a number, false otherwise. (is-number? value)"""
     if len(args) != 1:
         raise EvaluationError(
-            f"SyntaxError: 'is_number?' expects 1 argument, got {len(args)}."
+            f"SyntaxError: 'is-number?' expects 1 argument, got {len(args)}."
         )
 
     arg = args[0]
@@ -18,21 +18,21 @@ def builtin_is_number_q(args: List[Any], env: Environment) -> bool:
 
 
 def documentation_is_number_q() -> str:
-    """Returns documentation for the is_number? function."""
-    return """Function: is_number?
-Arguments: (is_number? value)
+    """Returns documentation for the is-number? function."""
+    return """Function: is-number?
+Arguments: (is-number? value)
 Description: Tests whether a value is a number (integer or float).
 
 Examples:
-  (is_number? 42)       ; => true
-  (is_number? -17)      ; => true
-  (is_number? 0)        ; => true
-  (is_number? 3.14)     ; => true
-  (is_number? -2.5)     ; => true
-  (is_number? "123")    ; => false
-  (is_number? true)     ; => false
-  (is_number? nil)      ; => false
-  (is_number? [1 2 3])  ; => false
+  (is-number? 42)       ; => true
+  (is-number? -17)      ; => true
+  (is-number? 0)        ; => true
+  (is-number? 3.14)     ; => true
+  (is-number? -2.5)     ; => true
+  (is-number? "123")    ; => false
+  (is-number? true)     ; => false
+  (is-number? nil)      ; => false
+  (is-number? [1 2 3])  ; => false
 
 Notes:
   - Returns true for both integers and floating-point numbers

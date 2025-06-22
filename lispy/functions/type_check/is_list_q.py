@@ -6,10 +6,10 @@ from ...environment import Environment
 
 
 def builtin_is_list_q(args: List[Any], env: Environment) -> bool:
-    """Returns true if the argument is a list, false otherwise. (is_list? value)"""
+    """Returns true if the argument is a list, false otherwise. (is-list? value)"""
     if len(args) != 1:
         raise EvaluationError(
-            f"SyntaxError: 'is_list?' expects 1 argument, got {len(args)}."
+            f"SyntaxError: 'is-list?' expects 1 argument, got {len(args)}."
         )
 
     arg = args[0]
@@ -17,21 +17,21 @@ def builtin_is_list_q(args: List[Any], env: Environment) -> bool:
 
 
 def documentation_is_list_q() -> str:
-    """Returns documentation for the is_list? function."""
-    return """Function: is_list?
-Arguments: (is_list? value)
+    """Returns documentation for the is-list? function."""
+    return """Function: is-list?
+Arguments: (is-list? value)
 Description: Tests whether a value is a list (distinct from vectors).
 
 Examples:
-  (is_list? '())            ; => true
-  (is_list? '(1 2 3))       ; => true
-  (is_list? (list 1 2 3))   ; => true
-  (is_list? '(1 (2 3) 4))   ; => true
-  (is_list? [1 2 3])        ; => false (vector)
-  (is_list? (vector 1 2 3)) ; => false (vector)
-  (is_list? "hello")        ; => false
-  (is_list? 42)             ; => false
-  (is_list? nil)            ; => false
+  (is-list? '())            ; => true
+  (is-list? '(1 2 3))       ; => true
+  (is-list? (list 1 2 3))   ; => true
+  (is-list? '(1 (2 3) 4))   ; => true
+  (is-list? [1 2 3])        ; => false (vector)
+  (is-list? (vector 1 2 3)) ; => false (vector)
+  (is-list? "hello")        ; => false
+  (is-list? 42)             ; => false
+  (is-list? nil)            ; => false
 
 Notes:
   - Returns true only for LisPy lists, not vectors

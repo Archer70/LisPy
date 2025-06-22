@@ -11,13 +11,13 @@ class SomeFnTest(unittest.TestCase):
         self.env = create_global_env()
 
     def test_some_with_builtin_predicate_found(self):
-        """Test (some [1 "hello" 3] is_number?) returns true."""
-        result = run_lispy_string('(some [1 "hello" 3] is_number?)', self.env)
+        """Test (some [1 "hello" 3] is-number?) returns true."""
+        result = run_lispy_string('(some [1 "hello" 3] is-number?)', self.env)
         self.assertTrue(result)
 
     def test_some_with_builtin_predicate_not_found(self):
-        """Test (some ["hello" "world"] is_number?) returns nil."""
-        result = run_lispy_string('(some ["hello" "world"] is_number?)', self.env)
+        """Test (some ["hello" "world"] is-number?) returns nil."""
+        result = run_lispy_string('(some ["hello" "world"] is-number?)', self.env)
         self.assertIsNone(result)
 
     def test_some_with_user_defined_predicate_found(self):
@@ -49,40 +49,40 @@ class SomeFnTest(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_some_with_empty_list(self):
-        """Test (some '() is_number?) returns nil."""
-        result = run_lispy_string("(some '() is_number?)", self.env)
+        """Test (some '() is-number?) returns nil."""
+        result = run_lispy_string("(some '() is-number?)", self.env)
         self.assertIsNone(result)
 
     def test_some_with_empty_vector(self):
-        """Test (some [] is_number?) returns nil."""
-        result = run_lispy_string("(some [] is_number?)", self.env)
+        """Test (some [] is-number?) returns nil."""
+        result = run_lispy_string("(some [] is-number?)", self.env)
         self.assertIsNone(result)
 
     def test_some_with_list(self):
         """Test some works with lists."""
-        result = run_lispy_string('(some \'(1 2 "found" 4) is_string?)', self.env)
+        result = run_lispy_string('(some \'(1 2 "found" 4) is-string?)', self.env)
         self.assertTrue(result)
 
     def test_some_with_vector(self):
         """Test some works with vectors."""
-        result = run_lispy_string('(some [1 2 "found" 4] is_string?)', self.env)
+        result = run_lispy_string('(some [1 2 "found" 4] is-string?)', self.env)
         self.assertTrue(result)
 
     def test_some_with_mixed_types(self):
         """Test some with various mixed data types."""
         result = run_lispy_string(
-            '(some [1 "hello" true {:a 1}] is_boolean?)', self.env
+            '(some [1 "hello" true {:a 1}] is-boolean?)', self.env
         )
         self.assertTrue(result)
 
-        result = run_lispy_string('(some [1 "hello" true {:a 1}] is_map?)', self.env)
-        # is_map? returns True when it finds a map, not the map itself
+        result = run_lispy_string('(some [1 "hello" true {:a 1}] is-map?)', self.env)
+        # is-map? returns True when it finds a map, not the map itself
         self.assertTrue(result)
 
     def test_some_preserves_predicate_return_value(self):
         """Test that some preserves the actual return value of the predicate."""
         run_lispy_string(
-            "(define return-double (fn [x] (if (is_number? x) (* x 2) false)))",
+            "(define return-double (fn [x] (if (is-number? x) (* x 2) false)))",
             self.env,
         )
         result = run_lispy_string('(some ["hello" 5 "world"] return-double)', self.env)
@@ -113,7 +113,7 @@ class SomeFnTest(unittest.TestCase):
 
     def test_some_with_nested_collections(self):
         """Test some with nested data structures."""
-        run_lispy_string("(define has-nested-list? (fn [x] (is_list? x)))", self.env)
+        run_lispy_string("(define has-nested-list? (fn [x] (is-list? x)))", self.env)
         result = run_lispy_string(
             '(some [1 "hello" \'(1 2 3) {:a 1}] has-nested-list?)', self.env
         )
@@ -136,9 +136,9 @@ class SomeFnTest(unittest.TestCase):
         )
 
     def test_some_too_many_args(self):
-        """Test (some [1 2] is_number? [3 4]) raises an error."""
+        """Test (some [1 2] is-number? [3 4]) raises an error."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(some [1 2] is_number? [3 4])", self.env)
+            run_lispy_string("(some [1 2] is-number? [3 4])", self.env)
         self.assertEqual(
             str(cm.exception), "SyntaxError: 'some' expects 2 arguments, got 3."
         )
@@ -155,7 +155,7 @@ class SomeFnTest(unittest.TestCase):
     def test_some_non_collection(self):
         """Test some with non-collection raises an error."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(some 42 is_number?)", self.env)
+            run_lispy_string("(some 42 is-number?)", self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: First argument to 'some' must be a list or vector, got <class 'int'>.",
@@ -174,7 +174,7 @@ class SomeFnTest(unittest.TestCase):
     def test_some_with_string_collection(self):
         """Test some with string as collection raises an error (strings aren't supported)."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string('(some "hello" is_number?)', self.env)
+            run_lispy_string('(some "hello" is-number?)', self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: First argument to 'some' must be a list or vector, got <class 'str'>.",
@@ -183,7 +183,7 @@ class SomeFnTest(unittest.TestCase):
     def test_some_with_map_collection(self):
         """Test some with map as collection raises an error (maps aren't supported as sequences)."""
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(some {:a 1 :b 2} is_number?)", self.env)
+            run_lispy_string("(some {:a 1 :b 2} is-number?)", self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: First argument to 'some' must be a list or vector, got <class 'dict'>.",

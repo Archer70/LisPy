@@ -93,11 +93,11 @@ Arguments: (every? collection predicate)
 Description: Returns true if all elements in collection satisfy the predicate, false otherwise.
 
 Examples:
-  (every? [1 2 3] is_number?)           ; => true
-  (every? [1 "a" 3] is_number?)         ; => false
+  (every? [1 2 3] is-number?)           ; => true
+  (every? [1 "a" 3] is-number?)         ; => false
   (every? [2 4 6] (fn [x] (= (% x 2) 0))) ; => true (all even)
   (every? [1 3 5] (fn [x] (> x 0)))     ; => true (all positive)
-  (every? [] is_number?)                ; => true (vacuously true)
+  (every? [] is-number?)                ; => true (vacuously true)
   (every? [true true false] (fn [x] x)) ; => false
   (every? [-1 2 3] (fn [x] (> x 0)))    ; => false
 

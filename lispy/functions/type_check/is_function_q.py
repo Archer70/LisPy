@@ -5,7 +5,7 @@ from ...closure import Function
 
 
 def builtin_is_function_q(args: List[Any], env: Environment) -> bool:
-    """Implementation of the (is_function? value) LisPy function.
+    """Implementation of the (is-function? value) LisPy function.
 
     Returns true if the argument is a function (either user-defined or built-in), false otherwise.
 
@@ -21,7 +21,7 @@ def builtin_is_function_q(args: List[Any], env: Environment) -> bool:
     """
     if len(args) != 1:
         raise EvaluationError(
-            f"SyntaxError: 'is_function?' expects 1 argument, got {len(args)}."
+            f"SyntaxError: 'is-function?' expects 1 argument, got {len(args)}."
         )
 
     arg = args[0]
@@ -42,23 +42,23 @@ def builtin_is_function_q(args: List[Any], env: Environment) -> bool:
 
 
 def documentation_is_function_q() -> str:
-    """Returns documentation for the is_function? function."""
-    return """Function: is_function?
-Arguments: (is_function? value)
+    """Returns documentation for the is-function? function."""
+    return """Function: is-function?
+Arguments: (is-function? value)
 Description: Tests whether a value is a function (user-defined or built-in).
 
 Examples:
-  (is_function? +)              ; => true (built-in function)
-  (is_function? map)            ; => true (built-in function)
-  (is_function? (fn [x] x))     ; => true (lambda function)
+  (is-function? +)              ; => true (built-in function)
+  (is-function? map)            ; => true (built-in function)
+  (is-function? (fn [x] x))     ; => true (lambda function)
   (define my-fn (fn [x] (* x 2)))
-  (is_function? my-fn)          ; => true (user-defined function)
-  (is_function? 42)             ; => false (number)
-  (is_function? "hello")        ; => false (string)
-  (is_function? true)           ; => false (boolean)
-  (is_function? [1 2 3])        ; => false (vector)
-  (is_function? '(1 2 3))       ; => false (list)
-  (is_function? nil)            ; => false
+  (is-function? my-fn)          ; => true (user-defined function)
+  (is-function? 42)             ; => false (number)
+  (is-function? "hello")        ; => false (string)
+  (is-function? true)           ; => false (boolean)
+  (is-function? [1 2 3])        ; => false (vector)
+  (is-function? '(1 2 3))       ; => false (list)
+  (is-function? nil)            ; => false
 
 Notes:
   - Returns true for both built-in and user-defined functions

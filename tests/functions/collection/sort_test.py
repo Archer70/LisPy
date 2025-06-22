@@ -248,11 +248,11 @@ class SortFnTest(unittest.TestCase):
 
     def test_sort_comparison_function_calls_with_parameters(self):
         """Test that comparison function receives correct parameters."""
-        # Function that checks if parameters are passed correctly using is_number?
+        # Function that checks if parameters are passed correctly using is-number?
         run_lispy_string("""
         (define check-params 
           (fn [a b] 
-            (if (and (is_number? a) (is_number? b))
+            (if (and (is-number? a) (is-number? b))
               (< a b)
               false)))
         """, self.env)
