@@ -37,6 +37,6 @@ Notes:
   - Returns true only for LisPy lists, not vectors
   - Lists and vectors are distinct types in LisPy
   - Empty list '() returns true
-  - Use is_vector? to test for vectors specifically
+  - Use is-vector? to test for vectors specifically
   - Essential for distinguishing collection types
   - Requires exactly one argument"""

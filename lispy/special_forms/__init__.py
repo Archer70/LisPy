@@ -63,6 +63,29 @@ special_form_handlers: Dict[str, Callable[[List[Any], Environment, Callable], An
     "when": handle_when_form,
 }
 
+# Security configuration for web-safe environments
+WEB_UNSAFE_SPECIAL_FORMS = {
+    'import': 'Module loading with filesystem access - can load arbitrary modules',
+    'export': 'Module export functionality - not needed without import',
+    'throw': 'Exception throwing mechanism - could be misused for flow control attacks',
+    'describe': 'BDD testing framework - not needed in production',
+    'it': 'BDD test definition - not needed in production',
+    'given': 'BDD test setup - not needed in production',
+    'then': 'BDD test assertion - not needed in production',
+    'action': 'BDD test action - not needed in production',
+    'assert-raises?': 'BDD exception testing - not needed in production'
+}
+
+# Web-safe special form handlers registry (excludes dangerous forms)
+def _create_web_safe_special_form_handlers():
+    """Create web-safe handlers by copying all handlers and removing unsafe ones."""
+    safe_handlers = special_form_handlers.copy()
+    for unsafe_form in WEB_UNSAFE_SPECIAL_FORMS.keys():
+        safe_handlers.pop(unsafe_form, None)  # Remove if exists, ignore if not
+    return safe_handlers
+
+web_safe_special_form_handlers = _create_web_safe_special_form_handlers()
+
 def setup_special_form_documentation():
     """Register all special form documentation functions with their corresponding names."""
     # Import register_documentation here to avoid circular imports
@@ -92,9 +115,21 @@ def setup_special_form_documentation():
     register_documentation("when", documentation_when)
 
 
+def get_web_unsafe_special_forms():
+    """
+    Returns a set of special form names that are excluded from web-safe environments.
+    
+    Returns:
+        set: Set of special form names that are unsafe for web environments
+    """
+    return set(WEB_UNSAFE_SPECIAL_FORMS.keys())
+
+
 __all__ = [
     "special_form_handlers",
+    "web_safe_special_form_handlers",
     "setup_special_form_documentation",
+    "get_web_unsafe_special_forms",
     "documentation_and",
     "documentation_async",
     "documentation_await",

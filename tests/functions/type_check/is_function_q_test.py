@@ -149,7 +149,7 @@ class IsFunctionQFnTest(unittest.TestCase):
         self.assertFalse(run_lispy_string("(is-number? test-fn)", self.env))
         self.assertFalse(run_lispy_string("(is-string? test-fn)", self.env))
         self.assertFalse(run_lispy_string("(is-list? test-fn)", self.env))
-        self.assertFalse(run_lispy_string("(is_vector? test-fn)", self.env))
+        self.assertFalse(run_lispy_string("(is-vector? test-fn)", self.env))
         self.assertFalse(run_lispy_string("(is-map? test-fn)", self.env))
         self.assertFalse(run_lispy_string("(is-boolean? test-fn)", self.env))
         self.assertFalse(run_lispy_string("(is-nil? test-fn)", self.env))

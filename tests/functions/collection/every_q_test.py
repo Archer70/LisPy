@@ -107,7 +107,6 @@ class EveryQFnTest(unittest.TestCase):
 
     def test_every_q_with_nested_collections(self):
         """Test every? with nested data structures."""
-        run_lispy_string("(define is-vector? (fn [x] (is_vector? x)))", self.env)
         result = run_lispy_string("(every? [[1 2] [3 4] [5 6]] is-vector?)", self.env)
         self.assertTrue(result)
 

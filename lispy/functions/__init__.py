@@ -217,6 +217,28 @@ from .print_doc import builtin_print_doc, documentation_print_doc
 # Import special form setup function
 from ..special_forms import setup_special_form_documentation
 
+# Security configuration for web-safe environments
+WEB_UNSAFE_FUNCTIONS = {
+    'slurp': 'File read access - can read arbitrary files from filesystem',
+    'spit': 'File write access - can write arbitrary files to filesystem', 
+    'read-line': 'Interactive input access - can interfere with server processes'
+}
+
+WEB_UNSAFE_SPECIAL_FORMS = {
+    'import': 'Module loading with filesystem access - can load arbitrary modules',
+    'export': 'Module export functionality - not needed without import',
+    'throw': 'Exception throwing mechanism - could be misused for flow control attacks'
+}
+
+WEB_UNSAFE_BDD_FORMS = {
+    'describe': 'BDD testing framework - not needed in production',
+    'it': 'BDD test definition - not needed in production',
+    'given': 'BDD test setup - not needed in production',
+    'then': 'BDD test assertion - not needed in production',
+    'action': 'BDD test action - not needed in production',
+    'assert-raises?': 'BDD exception testing - not needed in production'
+}
+
 
 def create_global_env() -> Environment:
     """Creates and returns the global environment with built-in functions."""
@@ -305,7 +327,7 @@ def create_global_env() -> Environment:
     env.define("vals", builtin_vals)
     env.define("with-timeout", builtin_with_timeout)
     env.define("vector", builtin_vector)
-    env.define("is_vector?", builtin_is_vector_q)
+    env.define("is-vector?", builtin_is_vector_q)
     env.define("to-str", to_str_fn)
     env.define("to-int", to_int_fn)
     env.define("to-float", to_float_fn)
@@ -319,6 +341,72 @@ def create_global_env() -> Environment:
     setup_documentation_registry()
 
     return env
+
+
+def create_web_safe_env() -> Environment:
+    """
+    Creates a web-safe environment excluding potentially dangerous functions.
+    
+    This environment is suitable for server-side execution where security is
+    critical. It excludes functions that could:
+    - Read or write files from the filesystem
+    - Access interactive input/output
+    - Load arbitrary modules
+    - Potentially interfere with server operations
+    
+    Returns:
+        Environment: A new environment with only safe functions
+    """
+    # Start with a full global environment
+    env = create_global_env()
+
+    # Store web-safe special form handlers in the environment
+    # This allows the evaluator to use different handlers for different environments
+    from ..special_forms import web_safe_special_form_handlers
+    env._special_form_handlers = web_safe_special_form_handlers
+
+    # Remove unsafe functions from the environment
+    unsafe_functions = WEB_UNSAFE_FUNCTIONS.keys()
+    for func_name in unsafe_functions:
+        try:
+            # Directly remove from environment's internal store
+            if func_name in env.store:
+                del env.store[func_name]
+        except Exception:
+            # Function might not exist in environment, that's okay
+            pass
+
+    return env
+
+
+def get_web_unsafe_functions():
+    """
+    Returns a dictionary of functions excluded from web-safe environments.
+    
+    Returns:
+        dict: Mapping of function names to reason for exclusion
+    """
+    return WEB_UNSAFE_FUNCTIONS.copy()
+
+
+def get_web_unsafe_special_forms():
+    """
+    Returns a dictionary of special forms excluded from web-safe environments.
+    
+    Returns:
+        dict: Mapping of special form names to reason for exclusion
+    """
+    return WEB_UNSAFE_SPECIAL_FORMS.copy()
+
+
+def get_web_unsafe_bdd_forms():
+    """
+    Returns a dictionary of BDD forms that might be excluded from web-safe environments.
+    
+    Returns:
+        dict: Mapping of BDD form names to reason for exclusion
+    """
+    return WEB_UNSAFE_BDD_FORMS.copy()
 
 
 def setup_documentation_registry():
@@ -367,7 +455,7 @@ def setup_documentation_registry():
     register_documentation("is-nil?", documentation_is_nil_q)
     register_documentation("is-number?", documentation_is_number_q)
     register_documentation("is-string?", documentation_is_string_q)
-    register_documentation("is_vector?", documentation_is_vector_q)
+    register_documentation("is-vector?", documentation_is_vector_q)
     register_documentation("join", documentation_join)
     register_documentation("keys", documentation_keys)
     register_documentation("list", documentation_list)
@@ -394,9 +482,9 @@ def setup_documentation_registry():
     register_documentation("reject", documentation_reject)
     register_documentation("resolve", documentation_resolve)
     register_documentation("retry", documentation_retry)
-    register_documentation("throttle", documentation_throttle)
     register_documentation("slurp", documentation_slurp)
     register_documentation("spit", documentation_spit)
+    register_documentation("throttle", documentation_throttle)
     register_documentation("rest", documentation_rest)
     register_documentation("reverse", documentation_reverse)
     register_documentation("some", documentation_some)
@@ -471,7 +559,11 @@ __all__ = [
     "builtin_is_vector_q",
     "concat_fn",
     "create_global_env",
+    "create_web_safe_env",
     "get_fn",
+    "get_web_unsafe_functions",
+    "get_web_unsafe_special_forms", 
+    "get_web_unsafe_bdd_forms",
     "global_env",
     "join_fn",
     "merge_fn",

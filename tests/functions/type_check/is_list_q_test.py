@@ -87,14 +87,14 @@ class IsListQFnTest(unittest.TestCase):
         )
 
     def test_list_q_vs_is_vector_q_distinction(self):
-        """Test that is-list? and is_vector? correctly distinguish between lists and vectors."""
+        """Test that is-list? and is-vector? correctly distinguish between lists and vectors."""
         # Test that is-list? returns true for lists but false for vectors
         self.assertTrue(run_lispy_string("(is-list? (list 1 2 3))", self.env))
         self.assertFalse(run_lispy_string("(is-list? (vector 1 2 3))", self.env))
 
-        # Test that is_vector? returns true for vectors but false for lists
-        self.assertTrue(run_lispy_string("(is_vector? (vector 1 2 3))", self.env))
-        self.assertFalse(run_lispy_string("(is_vector? (list 1 2 3))", self.env))
+        # Test that is-vector? returns true for vectors but false for lists
+        self.assertTrue(run_lispy_string("(is-vector? (vector 1 2 3))", self.env))
+        self.assertFalse(run_lispy_string("(is-vector? (list 1 2 3))", self.env))
 
 
 if __name__ == "__main__":

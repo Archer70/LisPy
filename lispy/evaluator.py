@@ -163,7 +163,9 @@ def evaluate(expression: Any, env: Environment) -> Any:
 
         first_element = expression[0]
         if isinstance(first_element, Symbol):
-            handler = special_form_handlers.get(first_element.name)
+            # Check if environment has custom special form handlers (for web-safe mode)
+            handlers = getattr(env, '_special_form_handlers', special_form_handlers)
+            handler = handlers.get(first_element.name)
             if handler:
                 # Pass expression as is (could be list or LispyList)
                 return handler(expression, env, evaluate)
