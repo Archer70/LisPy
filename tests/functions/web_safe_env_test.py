@@ -107,7 +107,7 @@ class WebSafeEnvironmentTest(unittest.TestCase):
         """Test that the list of unsafe functions is correct."""
         unsafe_functions = get_web_unsafe_functions()
         
-        expected_unsafe = {'slurp', 'spit', 'read-line'}
+        expected_unsafe = {'slurp', 'spit', 'read-line', 'http-delete', 'http-get', 'http-post', 'http-put', 'http-request'}
         actual_unsafe = set(unsafe_functions.keys())
         
         self.assertEqual(actual_unsafe, expected_unsafe)

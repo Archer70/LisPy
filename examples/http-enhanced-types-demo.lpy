@@ -1,0 +1,131 @@
+;; HTTP Enhanced Data Types Demo
+;; This example demonstrates LisPy's enhanced HTTP library support for
+;; various data types including primitives, lists, and complex nested structures.
+
+(println "=== LisPy HTTP Enhanced Data Types Demo ===")
+(println)
+
+;; Note: These examples use httpbin.org which echoes back what you send
+;; In a real scenario, you'd send to actual API endpoints
+
+;; 1. Sending primitive data types as JSON
+(println "1. Primitive Data Types → JSON")
+
+;; Numbers → JSON numbers
+(define number-response (await (http-post "https://httpbin.org/post" 42)))
+(println "Number 42:")
+(println "  Content-Type:" (get (get number-response :headers) "Content-Type"))
+(println "  Body sent as:" (get (get number-response :json) "data"))
+(println)
+
+;; Booleans → JSON booleans  
+(define bool-response (await (http-post "https://httpbin.org/post" true)))
+(println "Boolean true:")
+(println "  Content-Type:" (get (get bool-response :headers) "Content-Type"))
+(println "  Body sent as:" (get (get bool-response :json) "data"))
+(println)
+
+;; nil → JSON null
+(define nil-response (await (http-post "https://httpbin.org/post" nil)))
+(println "nil (null):")
+(println "  Content-Type:" (get (get nil-response :headers) "Content-Type"))
+(println "  Body sent as:" (get (get nil-response :json) "data"))
+(println)
+
+;; 2. Lists and Vectors → JSON arrays
+(println "2. Collections → JSON Arrays")
+
+;; Vector → JSON array
+(define vector-response (await (http-post "https://httpbin.org/post" [1 2 3 "hello" true])))
+(println "Vector [1 2 3 \"hello\" true]:")
+(println "  Content-Type:" (get (get vector-response :headers) "Content-Type"))
+(println "  Body sent as:" (get (get vector-response :json) "data"))
+(println)
+
+;; List → JSON array
+(define list-response (await (http-post "https://httpbin.org/post" '(10 20 30))))
+(println "List '(10 20 30):")
+(println "  Content-Type:" (get (get list-response :headers) "Content-Type"))
+(println "  Body sent as:" (get (get list-response :json) "data"))
+(println)
+
+;; 3. Maps → JSON objects (with symbol key conversion)
+(println "3. Maps → JSON Objects")
+
+(define map-response (await (http-post "https://httpbin.org/post" 
+  {:name "Alice" :age 30 :active true :scores [95 87 92]})))
+(println "Map with various value types:")
+(println "  Content-Type:" (get (get map-response :headers) "Content-Type"))
+(println "  Body sent as:" (get (get map-response :json) "data"))
+(println)
+
+;; 4. Complex nested structures
+(println "4. Complex Nested Structures")
+
+(define complex-data {
+  :user {
+    :profile {:name "Bob" :email "bob@example.com"}
+    :preferences {:theme "dark" :notifications true}
+    :scores [100 95 87 92]
+  }
+  :metadata {
+    :created "2024-01-01"
+    :tags [:admin :premium :beta-tester]
+    :stats {:login-count 42 :last-active nil}
+  }
+})
+
+(define complex-response (await (http-put "https://httpbin.org/put" complex-data)))
+(println "Complex nested structure:")
+(println "  Content-Type:" (get (get complex-response :headers) "Content-Type"))
+(println "  Sent data structure maintained JSON compatibility")
+(println "  Keys converted from :symbols to \"strings\"")
+(println "  Arrays preserved: tags, scores")
+(println "  Nested objects preserved: profile, preferences, stats")
+(println)
+
+;; 5. Backward compatibility - strings and existing behavior
+(println "5. Backward Compatibility")
+
+;; Strings still go as text/plain
+(define string-response (await (http-post "https://httpbin.org/post" "Hello World")))
+(println "String data (backward compatible):")
+(println "  Content-Type:" (get (get string-response :headers) "Content-Type"))
+(println "  Body sent as text/plain")
+(println)
+
+;; Maps still work as before with Symbol key conversion
+(define legacy-map (await (http-post "https://httpbin.org/post" {:message "Works as before"})))
+(println "Maps work as before:")
+(println "  Content-Type:" (get (get legacy-map :headers) "Content-Type"))
+(println "  Symbol keys → string keys in JSON")
+(println)
+
+;; 6. Different HTTP methods support the same enhanced types
+(println "6. All HTTP Methods Support Enhanced Types")
+
+(println "POST with array:")
+(define post-array (await (http-post "https://httpbin.org/post" [1 2 3])))
+(println "  Status:" (get post-array :status))
+
+(println "PUT with number:")
+(define put-number (await (http-put "https://httpbin.org/put" 3.14159)))
+(println "  Status:" (get put-number :status))
+
+(println "DELETE with boolean:")
+(define delete-bool (await (http-delete "https://httpbin.org/delete" false)))
+(println "  Status:" (get delete-bool :status))
+
+(println "Generic request with nil:")
+(define generic-nil (await (http-request "POST" "https://httpbin.org/post" nil)))
+(println "  Status:" (get generic-nil :status))
+
+(println)
+(println "=== Demo Complete ===")
+(println "LisPy's HTTP library now supports:")
+(println "✓ Primitive types (numbers, booleans, nil) → JSON")
+(println "✓ Collections (vectors, lists) → JSON arrays") 
+(println "✓ Complex nested structures with type conversion")
+(println "✓ Full backward compatibility")
+(println "✓ All HTTP methods (GET, POST, PUT, DELETE, http-request)")
+(println "✓ Standards-compliant JSON encoding") 

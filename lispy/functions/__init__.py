@@ -162,6 +162,28 @@ from .typing import (
     documentation_to_bool,
 )
 
+# HTTP functions
+from .http import (
+    builtin_http_get,
+    documentation_http_get,
+    builtin_http_post,
+    documentation_http_post,
+    builtin_http_put,
+    documentation_http_put,
+    builtin_http_delete,
+    documentation_http_delete,
+    builtin_http_request,
+    documentation_http_request,
+)
+
+# JSON functions
+from .json import (
+    builtin_json_encode,
+    documentation_json_encode,
+    builtin_json_decode,
+    documentation_json_decode,
+)
+
 # Promise functions
 from .promises import (
     builtin_promise,
@@ -221,7 +243,12 @@ from ..special_forms import setup_special_form_documentation
 WEB_UNSAFE_FUNCTIONS = {
     'slurp': 'File read access - can read arbitrary files from filesystem',
     'spit': 'File write access - can write arbitrary files to filesystem', 
-    'read-line': 'Interactive input access - can interfere with server processes'
+    'read-line': 'Interactive input access - can interfere with server processes',
+    'http-delete': 'Network access - can make arbitrary HTTP DELETE requests to internal/external services',
+    'http-get': 'Network access - can make arbitrary HTTP requests to internal/external services',
+    'http-post': 'Network access - can make arbitrary HTTP POST requests to internal/external services',
+    'http-put': 'Network access - can make arbitrary HTTP PUT requests to internal/external services',
+    'http-request': 'Network access - can make arbitrary HTTP requests with any method to internal/external services'
 }
 
 WEB_UNSAFE_SPECIAL_FORMS = {
@@ -283,7 +310,14 @@ def create_global_env() -> Environment:
     env.define("get", get_fn)
     env.define("is-function?", builtin_is_function_q)
     env.define("hash-map", builtin_hash_map)
+    env.define("http-delete", builtin_http_delete)
+    env.define("http-get", builtin_http_get)
+    env.define("http-post", builtin_http_post)
+    env.define("http-put", builtin_http_put)
+    env.define("http-request", builtin_http_request)
     env.define("join", join_fn)
+    env.define("json-decode", builtin_json_decode)
+    env.define("json-encode", builtin_json_encode)
     env.define("keys", builtin_keys)
     env.define("list", builtin_list)
     env.define("is-list?", builtin_is_list_q)
@@ -448,6 +482,13 @@ def setup_documentation_registry():
     register_documentation("first", documentation_first)
     register_documentation("get", documentation_get)
     register_documentation("hash-map", documentation_hash_map)
+    register_documentation("http-delete", documentation_http_delete)
+    register_documentation("http-get", documentation_http_get)
+    register_documentation("http-post", documentation_http_post)
+    register_documentation("http-put", documentation_http_put)
+    register_documentation("http-request", documentation_http_request)
+    register_documentation("json-decode", documentation_json_decode)
+    register_documentation("json-encode", documentation_json_encode)
     register_documentation("is-boolean?", documentation_is_boolean_q)
     register_documentation("is-function?", documentation_is_function_q)
     register_documentation("is-list?", documentation_is_list_q)
@@ -532,6 +573,11 @@ __all__ = [
     "builtin_greater_than",
     "builtin_greater_than_or_equal",
     "builtin_hash_map",
+    "builtin_http_delete",
+    "builtin_http_get",
+    "builtin_http_post",
+    "builtin_http_put",
+    "builtin_http_request",
     "builtin_keys",
     "builtin_less_than",
     "builtin_less_than_or_equal",
