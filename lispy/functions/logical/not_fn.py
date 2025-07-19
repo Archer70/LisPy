@@ -1,41 +1,42 @@
-from lispy.exceptions import EvaluationError
-from lispy.environment import Environment
 from typing import List, Any
-# from numbers import Number # Not strictly needed as no type check on value itself
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_not(args_list: List[Any], env: Environment) -> bool:
-    if len(args_list) != 1:
+@lispy_function("not")
+def not_func(args: List[Any], env: Environment) -> bool:
+    if len(args) != 1:
         raise EvaluationError("TypeError: not requires exactly one argument")
-    val = args_list[0]
-    # Lisp truthiness: False and None (nil) are false, everything else is true.
-    # The not function returns True if the value is falsy, False otherwise.
-    is_falsy = val is False or val is None
-    return is_falsy  # This was the bug: it should be True if falsy.
+
+    arg = args[0]
+    
+    # Handle nil and false as falsy
+    if arg is None or arg is False:
+        return True
+    
+    # Everything else is truthy
+    return False
 
 
-def documentation_not() -> str:
-    """Returns documentation for the not function."""
+@lispy_documentation("not")
+def not_documentation() -> str:
     return """Function: not
 Arguments: (not value)
-Description: Returns the logical negation of a value using LisPy truthiness rules.
+Description: Returns the logical negation of a value.
 
 Examples:
-  (not true)                    ; => false
-  (not false)                   ; => true
-  (not nil)                     ; => true
-  (not 0)                       ; => false (0 is truthy in LisPy)
-  (not 1)                       ; => false
-  (not "")                      ; => false (empty string is truthy)
-  (not [])                      ; => false (empty vector is truthy)
-  (not '())                     ; => false (empty list is truthy)
+  (not true)        ; => false
+  (not false)       ; => true
+  (not nil)         ; => true
+  (not 0)           ; => false (0 is truthy)
+  (not "")          ; => false (empty string is truthy)
+  (not [])          ; => false (empty vector is truthy)
+  (not 42)          ; => false (numbers are truthy)
 
 Notes:
-  - Requires exactly one argument
-  - In LisPy: only false and nil are falsy, everything else is truthy
-  - Returns true if argument is false or nil
-  - Returns false for all other values (numbers, strings, collections, etc.)
-  - Different from many languages where 0, "", [] are falsy
-  - Essential for conditional logic and boolean operations
-  - Useful for inverting test conditions
-  - Follows Lisp/Clojure truthiness conventions"""
+  - Only nil and false are considered falsy
+  - All other values (including 0, empty strings, empty collections) are truthy
+  - This follows Lisp conventions rather than many other languages
+  - Useful for conditional logic and boolean operations
+  - Requires exactly one argument"""

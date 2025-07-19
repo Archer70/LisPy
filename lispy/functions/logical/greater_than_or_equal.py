@@ -1,10 +1,12 @@
-from lispy.exceptions import EvaluationError
-from numbers import Number
-from lispy.environment import Environment
 from typing import List, Any
+from ...exceptions import EvaluationError
+from numbers import Number
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_greater_than_or_equal(args: List[Any], env: Environment) -> bool:
+@lispy_function(">=")
+def greater_than_or_equal(args: List[Any], env: Environment) -> bool:
     if len(args) != 2:
         raise EvaluationError("TypeError: >= requires exactly two arguments")
 
@@ -22,8 +24,8 @@ def builtin_greater_than_or_equal(args: List[Any], env: Environment) -> bool:
     return arg1 >= arg2
 
 
-def documentation_greater_than_or_equal() -> str:
-    """Returns documentation for the >= function."""
+@lispy_documentation(">=")
+def greater_than_or_equal_documentation() -> str:
     return """Function: >=
 Arguments: (>= number1 number2)
 Description: Tests if the first number is greater than or equal to the second.

@@ -2,44 +2,41 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
 
-def builtin_max(args: List[Any], env: Environment) -> Numeric:
-    """Returns the maximum of the given numbers. (max num1 num2 ...)"""
+@lispy_function("max")
+def max_func(args: List[Any], env: Environment) -> Numeric:
     if len(args) == 0:
         raise EvaluationError("SyntaxError: 'max' expects at least 1 argument, got 0.")
 
-    # Validate all arguments are numbers and find maximum
-    maximum = None
     for i, arg in enumerate(args):
         if not isinstance(arg, Number) or isinstance(arg, bool):
             raise EvaluationError(
                 f"TypeError: Argument {i + 1} to 'max' must be a number, got {type(arg).__name__}: '{arg}'"
             )
 
-        if maximum is None or arg > maximum:
-            maximum = arg
-
-    return maximum
+    return max(args)
 
 
-def documentation_max() -> str:
-    """Returns documentation for the max function."""
+@lispy_documentation("max")
+def max_documentation() -> str:
     return """Function: max
 Arguments: (max number1 number2 ...)
-Description: Returns the largest of the given numbers.
+Description: Returns the largest number from the given arguments.
 
 Examples:
   (max 5)           ; => 5
-  (max 3 7)         ; => 7
-  (max 10 3 7 1 9)  ; => 10
-  (max -5 -2 -8)    ; => -2
-  (max 5 -3 2)      ; => 5
+  (max 1 5 3)       ; => 5
+  (max -1 -5 -3)    ; => -1
   (max 3.14 2.71)   ; => 3.14
+  (max 5 5.1)       ; => 5.1
 
 Notes:
   - Requires at least one argument
+  - All arguments must be numbers
+  - Returns the argument with the highest numerical value
   - Works with both integers and floating-point numbers
-  - All arguments must be numbers"""
+  - Useful for finding maximum values in calculations"""

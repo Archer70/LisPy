@@ -1,31 +1,27 @@
-"""LisPy Logical Functions"""
+"""LisPy Logical Functions - Now using decorator-based registration"""
 
-from .equal_q import builtin_equal_q, documentation_equal_q
-from .greater_than import builtin_greater_than, documentation_greater_than
-from .greater_than_or_equal import (
-    builtin_greater_than_or_equal,
-    documentation_greater_than_or_equal,
-)
-from .less_than import builtin_less_than, documentation_less_than
-from .less_than_or_equal import (
-    builtin_less_than_or_equal,
-    documentation_less_than_or_equal,
-)
-from .not_fn import builtin_not, documentation_not
+# The functions are now automatically registered via decorators
+# Import them to trigger the decorator registration
+from .equal_q import equal_q, equal_q_documentation
+from .greater_than import greater_than, greater_than_documentation
+from .greater_than_or_equal import greater_than_or_equal, greater_than_or_equal_documentation
+from .less_than import less_than, less_than_documentation
+from .less_than_or_equal import less_than_or_equal, less_than_or_equal_documentation
+from .not_fn import not_func, not_documentation
 
 __all__ = [
-    # Functions
-    "builtin_equal_q",
-    "builtin_greater_than",
-    "builtin_greater_than_or_equal",
-    "builtin_less_than",
-    "builtin_less_than_or_equal",
-    "builtin_not",
-    # Documentation
-    "documentation_equal_q",
-    "documentation_greater_than",
-    "documentation_greater_than_or_equal",
-    "documentation_less_than",
-    "documentation_less_than_or_equal",
-    "documentation_not",
+    # Functions (new names)
+    "equal_q",
+    "greater_than",
+    "greater_than_or_equal",
+    "less_than",
+    "less_than_or_equal",
+    "not_func",
+    # Documentation (new names)
+    "equal_q_documentation",
+    "greater_than_documentation",
+    "greater_than_or_equal_documentation", 
+    "less_than_documentation",
+    "less_than_or_equal_documentation",
+    "not_documentation",
 ]

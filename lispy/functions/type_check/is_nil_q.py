@@ -2,10 +2,11 @@
 from typing import List, Any
 from ...exceptions import EvaluationError
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_is_nil_q(args: List[Any], env: Environment) -> bool:
-    """Returns true if the argument is nil, false otherwise. (is-nil? value)"""
+@lispy_function("is-nil?")
+def is_nil(args: List[Any], env: Environment) -> bool:
     if len(args) != 1:
         raise EvaluationError(
             f"SyntaxError: 'is-nil?' expects 1 argument, got {len(args)}."
@@ -15,8 +16,8 @@ def builtin_is_nil_q(args: List[Any], env: Environment) -> bool:
     return arg is None
 
 
-def documentation_is_nil_q() -> str:
-    """Returns documentation for the is-nil? function."""
+@lispy_documentation("is-nil?")
+def is_nil_documentation() -> str:
     return """Function: is-nil?
 Arguments: (is-nil? value)
 Description: Tests whether a value is nil (represents absence of value).

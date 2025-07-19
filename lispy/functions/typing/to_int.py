@@ -1,39 +1,56 @@
-from lispy.exceptions import EvaluationError
+from typing import List, Any
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
-def to_int_fn(args, env):
-    """Convert a value to an integer, if possible.
 
-    Usage: (to-int value)
-    """
+@lispy_function("to-int")
+def to_int(args: List[Any], env: Environment) -> int:
     if len(args) != 1:
-        raise EvaluationError(f"SyntaxError: 'to-int' expects 1 argument, got {len(args)}.")
-    value = args[0]
-    if isinstance(value, int):
-        return value
-    if isinstance(value, bool):
-        return int(value)
-    if isinstance(value, float):
-        return int(value)
-    if isinstance(value, str):
-        try:
-            # Try int first, then float->int
-            return int(value) if value.strip().isdigit() else int(float(value))
-        except Exception:
-            raise EvaluationError(f"TypeError: Cannot convert string '{value}' to int.")
-    raise EvaluationError(f"TypeError: Cannot convert {type(value).__name__} to int.")
+        raise EvaluationError(
+            f"SyntaxError: 'to-int' expects 1 argument, got {len(args)}."
+        )
 
-def documentation_to_int():
-    return '''Function: to-int
+    arg = args[0]
+
+    try:
+        if isinstance(arg, bool):
+            return 1 if arg else 0
+        elif isinstance(arg, int):
+            return arg  # Already an int
+        elif isinstance(arg, float):
+            return int(arg)  # Truncate to integer
+        elif isinstance(arg, str):
+            # Try to parse as integer
+            return int(arg)
+        else:
+            raise EvaluationError(
+                f"TypeError: Cannot convert {type(arg).__name__} to integer: '{arg}'"
+            )
+    except ValueError:
+        raise EvaluationError(
+            f"ValueError: Cannot convert string '{arg}' to integer"
+        )
+
+
+@lispy_documentation("to-int")
+def to_int_documentation() -> str:
+    return """Function: to-int
 Arguments: (to-int value)
-Description: Converts a value to an integer, if possible. Raises an error if conversion is not possible.
+Description: Converts a value to an integer.
 
 Examples:
-  (to-int 42)        ; => 42
-  (to-int 3.14)      ; => 3
-  (to-int "42")      ; => 42
-  (to-int "3.14")    ; => 3
-  (to-int true)      ; => 1
-  (to-int false)     ; => 0
-  (to-int nil)       ; => error
-  (to-int [1 2 3])   ; => error
-''' 
+  (to-int 3.14)                 ; => 3 (truncated)
+  (to-int "42")                 ; => 42
+  (to-int "-17")                ; => -17
+  (to-int true)                 ; => 1
+  (to-int false)                ; => 0
+  (to-int 42)                   ; => 42 (already integer)
+
+Notes:
+  - Requires exactly one argument
+  - Floats are truncated (not rounded) to integers
+  - Strings must contain valid integer representation
+  - Booleans: true becomes 1, false becomes 0
+  - Raises error for invalid conversions
+  - Part of the type conversion function family (to-str, to-int, to-float, to-bool)""" 

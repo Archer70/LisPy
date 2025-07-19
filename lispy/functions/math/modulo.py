@@ -2,15 +2,13 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
 
-def builtin_modulo(args: List[Any], env: Environment) -> Numeric:
-    """Calculates the modulo (remainder) of division. (% dividend divisor)
-    Returns the remainder when dividend is divided by divisor.
-    For multiple arguments, applies modulo left-to-right: (% a b c) = (% (% a b) c)
-    """
+@lispy_function("%")
+def modulo(args: List[Any], env: Environment) -> Numeric:
     if len(args) < 2:
         raise EvaluationError("SyntaxError: '%' requires at least two arguments.")
 
@@ -34,19 +32,19 @@ def builtin_modulo(args: List[Any], env: Environment) -> Numeric:
     return result
 
 
-def documentation_modulo() -> str:
-    """Returns documentation for the % (modulo) function."""
+@lispy_documentation("%")
+def modulo_documentation() -> str:
     return """Function: %
 Arguments: (% dividend divisor ...)
 Description: Calculates the modulo (remainder) of division operations.
 
 Examples:
-  (% 10 3)                      ; => 1 (10 mod 3)
-  (% 15 4)                      ; => 3 (15 mod 4)
-  (% 20 5)                      ; => 0 (20 mod 5, no remainder)
-  (% 10 3 2)                    ; => 1 (equivalent to (% (% 10 3) 2))
-  (% 7.5 2.5)                   ; => 0.0 (works with floats)
-  (% -7 3)                      ; => 2 (Python-style modulo)
+  (% 10 3)      ; => 1   (10 mod 3)
+  (% 15 4)      ; => 3   (15 mod 4)
+  (% 8 2)       ; => 0   (8 mod 2, no remainder)
+  (% 10 3 2)    ; => 1   (equivalent to (% (% 10 3) 2))
+  (% 7.5 2.5)   ; => 0.0 (works with floats)
+  (% -7 3)      ; => 2   (Python-style modulo)
 
 Notes:
   - Requires at least 2 arguments
@@ -54,6 +52,4 @@ Notes:
   - Division by zero raises ZeroDivisionError
   - For multiple arguments, applies left-to-right: (% a b c) = (% (% a b) c)
   - Follows Python modulo semantics for negative numbers
-  - Result sign follows divisor sign in Python
-  - Essential for cyclic operations, remainders, and range wrapping
-  - Useful for determining even/odd, array indexing, etc."""
+  - Useful for checking divisibility and cyclic operations"""

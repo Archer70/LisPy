@@ -2,10 +2,11 @@
 from typing import List, Any
 from ...exceptions import EvaluationError
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_is_map_q(args: List[Any], env: Environment) -> bool:
-    """Returns true if the argument is a map, false otherwise. (is-map? value)"""
+@lispy_function("is-map?")
+def is_map(args: List[Any], env: Environment) -> bool:
     if len(args) != 1:
         raise EvaluationError(
             f"SyntaxError: 'is-map?' expects 1 argument, got {len(args)}."
@@ -15,27 +16,25 @@ def builtin_is_map_q(args: List[Any], env: Environment) -> bool:
     return isinstance(arg, dict)
 
 
-def documentation_is_map_q() -> str:
-    """Returns documentation for the is-map? function."""
+@lispy_documentation("is-map?")
+def is_map_documentation() -> str:
     return """Function: is-map?
 Arguments: (is-map? value)
-Description: Tests whether a value is a map (hash map/dictionary).
+Description: Tests whether a value is a map (hash map).
 
 Examples:
-  (is-map? {})              ; => true
   (is-map? {:a 1 :b 2})     ; => true
-  (is-map? (hash-map 'a 1)) ; => true
-  (is-map? {:x {:y 2}})     ; => true (nested map)
+  (is-map? {})              ; => true (empty map)
+  (is-map? (hash-map :a 1)) ; => true
   (is-map? [1 2 3])         ; => false (vector)
   (is-map? '(1 2 3))        ; => false (list)
-  (is-map? "hello")         ; => false
-  (is-map? 42)              ; => false
+  (is-map? 42)              ; => false (number)
+  (is-map? "hello")         ; => false (string)
   (is-map? nil)             ; => false
 
 Notes:
-  - Returns true for hash maps/dictionaries
-  - Empty map {} returns true
-  - Works with nested maps and mixed value types
-  - Essential for distinguishing maps from other collection types
-  - Maps provide key-value associations
+  - Returns true only for map values (key-value collections)
+  - Maps are created with curly braces {} or (hash-map ...)
+  - Useful for type validation before map operations
+  - Different from other collection types
   - Requires exactly one argument"""

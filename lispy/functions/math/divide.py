@@ -2,15 +2,13 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
 
-def builtin_divide(args: List[Any], env: Environment) -> float:
-    """Divides numbers. (/ num1 num2 ...)
-    If no arguments or one argument, raises error.
-    All results are floats.
-    """
+@lispy_function("/")
+def divide(args: List[Any], env: Environment) -> float:
     if len(args) < 2:
         raise EvaluationError("SyntaxError: '/' requires at least two arguments.")
 
@@ -33,8 +31,8 @@ def builtin_divide(args: List[Any], env: Environment) -> float:
     return result
 
 
-def documentation_divide() -> str:
-    """Returns documentation for the / function."""
+@lispy_documentation("/")
+def divide_documentation() -> str:
     return """Function: /
 Arguments: (/ number1 number2 ...)
 Description: Divides numbers sequentially, always returning a float.

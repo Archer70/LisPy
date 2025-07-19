@@ -1,13 +1,15 @@
-"""LisPy String Functions"""
+"""LisPy String Functions - Now using decorator-based registration"""
 
-from .join import join_fn, documentation_join
-from .split import split_fn, documentation_split
+# The functions are now automatically registered via decorators
+# Import them to trigger the decorator registration
+from .join import join_func, join_documentation
+from .split import split_func, split_documentation
 
 __all__ = [
-    # Functions
-    "join_fn",
-    "split_fn",
-    # Documentation
-    "documentation_join",
-    "documentation_split",
+    # Functions (new names)
+    "join_func",
+    "split_func",
+    # Documentation (new names)
+    "join_documentation",
+    "split_documentation",
 ]

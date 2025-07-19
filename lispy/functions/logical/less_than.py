@@ -1,10 +1,12 @@
-from lispy.exceptions import EvaluationError
-from numbers import Number
-from lispy.environment import Environment
 from typing import List, Any
+from ...exceptions import EvaluationError
+from numbers import Number
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_less_than(args: List[Any], env: Environment) -> bool:
+@lispy_function("<")
+def less_than(args: List[Any], env: Environment) -> bool:
     if len(args) != 2:
         raise EvaluationError("TypeError: < requires exactly two arguments")
 
@@ -22,8 +24,8 @@ def builtin_less_than(args: List[Any], env: Environment) -> bool:
     return arg1 < arg2
 
 
-def documentation_less_than() -> str:
-    """Returns documentation for the < function."""
+@lispy_documentation("<")
+def less_than_documentation() -> str:
     return """Function: <
 Arguments: (< number1 number2)
 Description: Tests if the first number is less than the second.

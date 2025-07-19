@@ -1,51 +1,44 @@
-from lispy.exceptions import EvaluationError
+from typing import List, Any
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
-def to_bool_fn(args, env):
-    """Convert a value to a boolean, if possible.
 
-    Usage: (to-bool value)
-    """
+@lispy_function("to-bool")
+def to_bool(args: List[Any], env: Environment) -> bool:
     if len(args) != 1:
-        raise EvaluationError(f"SyntaxError: 'to-bool' expects 1 argument, got {len(args)}.")
-    value = args[0]
-    if isinstance(value, bool):
-        return value
-    if isinstance(value, int):
-        return value != 0
-    if isinstance(value, float):
-        return value != 0.0
-    if value is None:
-        return False
-    if isinstance(value, str):
-        if value.lower() == "true":
-            return True
-        if value.lower() == "false":
-            return False
-        if value.strip() == "":
-            return False
-        raise EvaluationError(f"TypeError: Cannot convert string '{value}' to bool. Only 'true', 'false', or empty string allowed.")
-    if isinstance(value, (list, dict)):
-        return len(value) > 0
-    raise EvaluationError(f"TypeError: Cannot convert {type(value).__name__} to bool.")
+        raise EvaluationError(
+            f"SyntaxError: 'to-bool' expects 1 argument, got {len(args)}."
+        )
 
-def documentation_to_bool():
-    return '''Function: to-bool
+    arg = args[0]
+
+    # Follow LisPy truthiness rules: only nil and false are falsy
+    if arg is None or arg is False:
+        return False
+    else:
+        return True
+
+
+@lispy_documentation("to-bool")
+def to_bool_documentation() -> str:
+    return """Function: to-bool
 Arguments: (to-bool value)
-Description: Converts a value to a boolean, if possible. Raises an error if conversion is not possible.
+Description: Converts a value to a boolean using LisPy truthiness rules.
 
 Examples:
-  (to-bool true)        ; => true
-  (to-bool false)       ; => false
-  (to-bool 1)           ; => true
-  (to-bool 0)           ; => false
-  (to-bool 3.14)        ; => true
-  (to-bool 0.0)         ; => false
-  (to-bool "true")      ; => true
-  (to-bool "false")     ; => false
-  (to-bool "")          ; => false
-  (to-bool nil)         ; => false
-  (to-bool [1 2 3])     ; => true
-  (to-bool [])          ; => false
-  (to-bool {:a 1})      ; => true
-  (to-bool {})          ; => false
-''' 
+  (to-bool true)                ; => true
+  (to-bool false)               ; => false
+  (to-bool nil)                 ; => false
+  (to-bool 0)                   ; => true (0 is truthy in LisPy)
+  (to-bool "")                  ; => true (empty string is truthy)
+  (to-bool [])                  ; => true (empty vector is truthy)
+  (to-bool 42)                  ; => true
+  (to-bool "hello")             ; => true
+
+Notes:
+  - Requires exactly one argument
+  - Follows LisPy truthiness: only nil and false are falsy
+  - All other values (including 0, empty strings, empty collections) are truthy
+  - Different from many languages where 0 and empty values are falsy
+  - Part of the type conversion function family (to-str, to-int, to-float, to-bool)""" 

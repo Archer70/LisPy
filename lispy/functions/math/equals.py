@@ -1,35 +1,34 @@
 from typing import List, Any
 from ...exceptions import EvaluationError
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_equals(args: List[Any], env: Environment) -> bool:
-    """Checks if all arguments are equal. (= item1 item2 ...)
-    Requires at least two arguments.
-    Currently only supports number comparison.
-    """
+@lispy_function("=")
+def equals(args: List[Any], env: Environment) -> bool:
     if len(args) < 2:
         raise EvaluationError("SyntaxError: '=' requires at least two arguments.")
 
-    first_item = args[0]
-    if not isinstance(first_item, (int, float)):
+    # Check if all arguments are numbers and equal to the first one
+    first_arg = args[0]
+    if not isinstance(first_arg, (int, float)):
         raise EvaluationError(
-            f"TypeError: Argument 1 to '=' must be a number for comparison, got {type(first_item).__name__}: '{first_item}'"
+            f"TypeError: Argument 1 to '=' must be a number for comparison, got {type(first_arg).__name__}: '{first_arg}'"
         )
 
-    for i in range(1, len(args)):
-        current_item = args[i]
-        if not isinstance(current_item, (int, float)):
+    for i, arg in enumerate(args[1:], start=2):
+        if not isinstance(arg, (int, float)):
             raise EvaluationError(
-                f"TypeError: Argument {i + 1} to '=' must be a number for comparison, got {type(current_item).__name__}: '{current_item}'"
+                f"TypeError: Argument {i} to '=' must be a number for comparison, got {type(arg).__name__}: '{arg}'"
             )
-        if first_item != current_item:
+        if arg != first_arg:
             return False
+
     return True
 
 
-def documentation_equals() -> str:
-    """Returns documentation for the = function."""
+@lispy_documentation("=")
+def equals_documentation() -> str:
     return """Function: =
 Arguments: (= number1 number2 ...)
 Description: Tests if all numbers are equal.

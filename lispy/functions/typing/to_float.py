@@ -1,38 +1,54 @@
-from lispy.exceptions import EvaluationError
+from typing import List, Any
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
-def to_float_fn(args, env):
-    """Convert a value to a float, if possible.
 
-    Usage: (to-float value)
-    """
+@lispy_function("to-float")
+def to_float(args: List[Any], env: Environment) -> float:
     if len(args) != 1:
-        raise EvaluationError(f"SyntaxError: 'to-float' expects 1 argument, got {len(args)}.")
-    value = args[0]
-    if isinstance(value, float):
-        return value
-    if isinstance(value, int):
-        return float(value)
-    if isinstance(value, bool):
-        return float(value)
-    if isinstance(value, str):
-        try:
-            return float(value)
-        except Exception:
-            raise EvaluationError(f"TypeError: Cannot convert string '{value}' to float.")
-    raise EvaluationError(f"TypeError: Cannot convert {type(value).__name__} to float.")
+        raise EvaluationError(
+            f"SyntaxError: 'to-float' expects 1 argument, got {len(args)}."
+        )
 
-def documentation_to_float():
-    return '''Function: to-float
+    arg = args[0]
+
+    try:
+        if isinstance(arg, bool):
+            return 1.0 if arg else 0.0
+        elif isinstance(arg, (int, float)):
+            return float(arg)
+        elif isinstance(arg, str):
+            # Try to parse as float
+            return float(arg)
+        else:
+            raise EvaluationError(
+                f"TypeError: Cannot convert {type(arg).__name__} to float: '{arg}'"
+            )
+    except ValueError:
+        raise EvaluationError(
+            f"ValueError: Cannot convert string '{arg}' to float"
+        )
+
+
+@lispy_documentation("to-float")
+def to_float_documentation() -> str:
+    return """Function: to-float
 Arguments: (to-float value)
-Description: Converts a value to a float, if possible. Raises an error if conversion is not possible.
+Description: Converts a value to a floating-point number.
 
 Examples:
-  (to-float 42)        ; => 42.0
-  (to-float 3.14)      ; => 3.14
-  (to-float "42")      ; => 42.0
-  (to-float "3.14")    ; => 3.14
-  (to-float true)      ; => 1.0
-  (to-float false)     ; => 0.0
-  (to-float nil)       ; => error
-  (to-float [1 2 3])   ; => error
-''' 
+  (to-float 42)                 ; => 42.0
+  (to-float "3.14")             ; => 3.14
+  (to-float "-2.5")             ; => -2.5
+  (to-float true)               ; => 1.0
+  (to-float false)              ; => 0.0
+  (to-float 3.14)               ; => 3.14 (already float)
+
+Notes:
+  - Requires exactly one argument
+  - Integers are converted to equivalent floats
+  - Strings must contain valid number representation
+  - Booleans: true becomes 1.0, false becomes 0.0
+  - Raises error for invalid conversions
+  - Part of the type conversion function family (to-str, to-int, to-float, to-bool)""" 
