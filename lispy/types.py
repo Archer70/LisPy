@@ -42,6 +42,13 @@ class Vector(list):
     # For now, assume they are mutable sequences like Python lists.
 
 
+class LispyMapLiteral(dict):
+    """Represents a map literal from source code that needs evaluation.
+    This is distinct from runtime dictionaries returned by functions.
+    """
+    pass
+
+
 class LispyList(list):
     """Represents a Lisp list.
     Inherits from list for convenience and distinct identification.

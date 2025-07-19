@@ -34,9 +34,10 @@ def builtin_assoc(args: List[Any], env: Environment):
         key = kv_pairs[i]
         value = kv_pairs[i + 1]
 
-        if not isinstance(key, Symbol):
+        # Keys can be symbols, strings, numbers, booleans, or nil
+        if not isinstance(key, (Symbol, str, int, float, bool, type(None))):
             raise EvaluationError(
-                f"TypeError: Map keys in 'assoc' must be symbols, got {type(key)}."
+                f"TypeError: Map keys in 'assoc' must be symbols, strings, numbers, booleans, or nil, got {type(key)}."
             )
 
         new_map[key] = value

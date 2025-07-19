@@ -1,6 +1,6 @@
 # LisPy Evaluator
 
-from .types import Symbol, Vector, LispyList, LispyPromise
+from .types import Symbol, Vector, LispyList, LispyPromise, LispyMapLiteral
 from .exceptions import EvaluationError, AssertionFailure, UserThrownError
 from .environment import Environment
 from .closure import Function
@@ -139,22 +139,71 @@ def _evaluate_list_form_as_call(
 
 
 # --- Main Evaluation Logic ---
+def _is_self_evaluating(expression: Any) -> bool:
+    """Check if an expression evaluates to itself (self-evaluating)."""
+    return (
+        isinstance(expression, (int, float, str, bool, Function, Vector, LispyPromise))
+        or expression is None
+    )
+
+
+def _dict_needs_evaluation(dictionary: dict, env: Environment) -> bool:
+    """Check if a dictionary contains values that need evaluation."""
+    for value in dictionary.values():
+        if isinstance(value, LispyList):
+            # Function calls definitely need evaluation
+            return True
+        elif isinstance(value, Symbol):
+            # Symbols need evaluation (variables, function references, etc.)
+            return True
+        elif isinstance(value, dict):
+            # Recursively check nested dictionaries
+            if _dict_needs_evaluation(value, env):
+                return True
+        elif isinstance(value, Vector):
+            # Check if vector contains function calls or symbols that need evaluation
+            for item in value:
+                if isinstance(item, Symbol):
+                    return True
+                elif isinstance(item, (LispyList, list)):
+                    return True
+                elif isinstance(item, dict) and _dict_needs_evaluation(item, env):
+                    return True
+    return False
+
+
+def _evaluate_dict_values(dictionary: dict, env: Environment) -> dict:
+    """Evaluate all values in a dictionary."""
+    evaluated_dict = {}
+    for key, value in dictionary.items():
+        evaluated_dict[key] = evaluate(value, env)
+    return evaluated_dict
+
+
 def evaluate(expression: Any, env: Environment) -> Any:
     """Evaluates a LisPy expression (AST node) in a given environment."""
-    if (
-        isinstance(
-            expression, (int, float, str, bool, dict, Function, Vector, LispyPromise)
-        )
-        or expression is None
-    ):
-        # Self-evaluating types: numbers, strings, booleans, dicts (maps), Function objects, Vectors, Promises, None (nil)
+    # Handle map literals from source code (need value evaluation)
+    if isinstance(expression, LispyMapLiteral):
+        if _dict_needs_evaluation(expression, env):
+            return _evaluate_dict_values(expression, env)
+        else:
+            # Convert to regular dict and return
+            return dict(expression)
+    
+    # Handle runtime dictionaries (already evaluated, keep as-is)
+    elif isinstance(expression, dict):
         return expression
+    
+    # Handle self-evaluating types
+    elif _is_self_evaluating(expression):
+        return expression
+    
+    # Handle symbol lookup
     elif isinstance(expression, Symbol):
-        # Lookup symbol in the environment
         return env.lookup(expression.name)
-    elif isinstance(
-        expression, (list, LispyList)
-    ):  # Keep `list` for tests, LispyList for parsed
+    
+    # Handle list expressions (function calls and special forms)
+    elif isinstance(expression, (list, LispyList)):
         # If expression is an empty list (parsed from '()'), it should raise an error.
         if not expression:
             raise EvaluationError(
@@ -172,6 +221,7 @@ def evaluate(expression: Any, env: Environment) -> Any:
 
         # Pass expression as is (could be list or LispyList)
         return _evaluate_list_form_as_call(expression, env, evaluate)
+    
+    # Unhandled expression type
     else:
-        # Unhandled expression type
         raise EvaluationError(f"Cannot evaluate type: {type(expression).__name__}")

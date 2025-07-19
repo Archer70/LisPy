@@ -103,15 +103,35 @@ class AssocFnTest(unittest.TestCase):
             "TypeError: First argument to 'assoc' must be a map or nil, got <class 'lispy.types.LispyList'>.",
         )
 
-    def test_assoc_key_not_symbol(self):
-        """Test (assoc {} 1 2) raises TypeError (key must be a symbol)."""
+    def test_assoc_numeric_key(self):
+        """Test (assoc {} 1 2) works with numeric keys."""
         lispy_code = "(assoc {} 1 2)"
+        result = run_lispy_string(lispy_code, self.env)
+        expected = {1: 2}
+        self.assertEqual(result, expected)
+
+    def test_assoc_string_key(self):
+        """Test (assoc {} \"name\" \"Alice\") works with string keys."""
+        lispy_code = '(assoc {} "name" "Alice")'
+        result = run_lispy_string(lispy_code, self.env)
+        expected = {"name": "Alice"}
+        self.assertEqual(result, expected)
+
+    def test_assoc_mixed_key_types(self):
+        """Test assoc works with mixed key types."""
+        lispy_code = "(assoc {} ':name \"Alice\" \"age\" 30 42 true)"
+        result = run_lispy_string(lispy_code, self.env)
+        expected = {Symbol(":name"): "Alice", "age": 30, 42: True}
+        self.assertEqual(result, expected)
+
+    def test_assoc_invalid_key_type(self):
+        """Test assoc with unsupported key type raises error."""
+        # Test with a list as key (not supported)
+        lispy_code = '(assoc {} (list 1 2) "value")'
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(
-            str(cm.exception),
-            "TypeError: Map keys in 'assoc' must be symbols, got <class 'int'>.",
-        )
+        self.assertIn("TypeError", str(cm.exception))
+        self.assertIn("Map keys in 'assoc' must be", str(cm.exception))
 
 
 if __name__ == "__main__":

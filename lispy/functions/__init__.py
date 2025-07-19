@@ -176,6 +176,20 @@ from .http import (
     documentation_http_request,
 )
 
+# Web framework functions
+from .web import (
+    builtin_web_app,
+    documentation_web_app,
+    builtin_route,
+    documentation_route,
+    builtin_middleware,
+    documentation_middleware,
+    builtin_start_server,
+    documentation_start_server,
+    builtin_stop_server,
+    documentation_stop_server,
+)
+
 # JSON functions
 from .json import (
     builtin_json_encode,
@@ -248,7 +262,12 @@ WEB_UNSAFE_FUNCTIONS = {
     'http-get': 'Network access - can make arbitrary HTTP requests to internal/external services',
     'http-post': 'Network access - can make arbitrary HTTP POST requests to internal/external services',
     'http-put': 'Network access - can make arbitrary HTTP PUT requests to internal/external services',
-    'http-request': 'Network access - can make arbitrary HTTP requests with any method to internal/external services'
+    'http-request': 'Network access - can make arbitrary HTTP requests with any method to internal/external services',
+    'web-app': 'Web server functionality - can create web applications and accept network connections',
+    'route': 'Web server functionality - can define HTTP routes and handlers',
+    'middleware': 'Web server functionality - can define request/response middleware',
+    'start-server': 'Web server functionality - can start HTTP servers and bind to network ports',
+    'stop-server': 'Web server functionality - can stop running HTTP servers'
 }
 
 WEB_UNSAFE_SPECIAL_FORMS = {
@@ -315,6 +334,11 @@ def create_global_env() -> Environment:
     env.define("http-post", builtin_http_post)
     env.define("http-put", builtin_http_put)
     env.define("http-request", builtin_http_request)
+    env.define("middleware", builtin_middleware)
+    env.define("route", builtin_route)
+    env.define("start-server", builtin_start_server)
+    env.define("stop-server", builtin_stop_server)
+    env.define("web-app", builtin_web_app)
     env.define("join", join_fn)
     env.define("json-decode", builtin_json_decode)
     env.define("json-encode", builtin_json_encode)
@@ -487,6 +511,11 @@ def setup_documentation_registry():
     register_documentation("http-post", documentation_http_post)
     register_documentation("http-put", documentation_http_put)
     register_documentation("http-request", documentation_http_request)
+    register_documentation("middleware", documentation_middleware)
+    register_documentation("route", documentation_route)
+    register_documentation("start-server", documentation_start_server)
+    register_documentation("stop-server", documentation_stop_server)
+    register_documentation("web-app", documentation_web_app)
     register_documentation("json-decode", documentation_json_decode)
     register_documentation("json-encode", documentation_json_encode)
     register_documentation("is-boolean?", documentation_is_boolean_q)
@@ -578,6 +607,11 @@ __all__ = [
     "builtin_http_post",
     "builtin_http_put",
     "builtin_http_request",
+    "builtin_middleware",
+    "builtin_route",
+    "builtin_start_server",
+    "builtin_stop_server",
+    "builtin_web_app",
     "builtin_keys",
     "builtin_less_than",
     "builtin_less_than_or_equal",

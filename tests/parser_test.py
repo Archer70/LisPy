@@ -274,24 +274,48 @@ class ParserTest(unittest.TestCase):
         ):
             parse(tokens)
 
-    def test_parse_map_non_symbol_key(self):
+    def test_parse_map_number_key(self):
         tokens = [
             (TOKEN_LBRACE, "{"),
             (TOKEN_NUMBER, "123"),
             (TOKEN_STRING, "value"),
             (TOKEN_RBRACE, "}"),
         ]
-        with self.assertRaisesRegex(ParseError, "Map key must be a symbol, got NUMBER"):
-            parse(tokens)
+        ast = parse(tokens)
+        expected = {123: "value"}
+        self.assertEqual(ast, expected)
 
-    def test_parse_map_non_symbol_key_string(self):
+    def test_parse_map_string_key(self):
         tokens = [
             (TOKEN_LBRACE, "{"),
             (TOKEN_STRING, "key"),
             (TOKEN_STRING, "value"),
             (TOKEN_RBRACE, "}"),
         ]
-        with self.assertRaisesRegex(ParseError, "Map key must be a symbol, got STRING"):
+        ast = parse(tokens)
+        expected = {"key": "value"}
+        self.assertEqual(ast, expected)
+
+    def test_parse_map_boolean_key(self):
+        tokens = [
+            (TOKEN_LBRACE, "{"),
+            (TOKEN_BOOLEAN, True),
+            (TOKEN_STRING, "value"),
+            (TOKEN_RBRACE, "}"),
+        ]
+        ast = parse(tokens)
+        expected = {True: "value"}
+        self.assertEqual(ast, expected)
+
+    def test_parse_map_invalid_key_type(self):
+        # Test that unsupported key types (like LPAREN) still raise errors
+        tokens = [
+            (TOKEN_LBRACE, "{"),
+            (TOKEN_LPAREN, "("),
+            (TOKEN_STRING, "value"),
+            (TOKEN_RBRACE, "}"),
+        ]
+        with self.assertRaisesRegex(ParseError, "Map key must be a symbol, string, number, boolean, or nil, got LPAREN"):
             parse(tokens)
 
     # --- Tests for Mismatched Delimiters and Unexpected Tokens ---

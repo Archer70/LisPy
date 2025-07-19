@@ -18,9 +18,10 @@ def builtin_hash_map(args: List[Any], env: Environment):
     for i in range(0, len(args), 2):
         key = args[i]
         value = args[i + 1]
-        if not isinstance(key, Symbol):
+        # Keys can be symbols, strings, numbers, booleans, or nil
+        if not isinstance(key, (Symbol, str, int, float, bool, type(None))):
             raise EvaluationError(
-                f"TypeError: 'hash-map' keys must be symbols, got {type(key)}."
+                f"TypeError: 'hash-map' keys must be symbols, strings, numbers, booleans, or nil, got {type(key)}."
             )
         new_map[key] = value
     return new_map

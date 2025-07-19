@@ -87,15 +87,28 @@ class DissocFnTest(unittest.TestCase):
             "TypeError: First argument to 'dissoc' must be a map or nil, got <class 'lispy.types.LispyList'>.",
         )
 
-    def test_dissoc_key_not_symbol(self):
-        """Test (dissoc {:a 1} 1) raises TypeError (key must be a symbol)."""
-        lispy_code = "(dissoc {:a 1} 1)"
+    def test_dissoc_numeric_key(self):
+        """Test (dissoc {42 \"answer\" 1 \"one\"} 1) works with numeric keys."""
+        lispy_code = '(dissoc {42 "answer" 1 "one"} 1)'
+        result = run_lispy_string(lispy_code, self.env)
+        expected = {42: "answer"}
+        self.assertEqual(result, expected)
+        
+    def test_dissoc_string_key(self):
+        """Test dissoc works with string keys."""
+        lispy_code = '(dissoc {"name" "Alice" "age" 30} "age")'
+        result = run_lispy_string(lispy_code, self.env)
+        expected = {"name": "Alice"}
+        self.assertEqual(result, expected)
+
+    def test_dissoc_invalid_key_type(self):
+        """Test dissoc with unsupported key type raises error."""
+        # Test with a list as key (not supported)
+        lispy_code = '(dissoc {"name" "Alice"} (list 1 2))'
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(
-            str(cm.exception),
-            "TypeError: Keys to 'dissoc' must be symbols, got <class 'int'>.",
-        )
+        self.assertIn("TypeError", str(cm.exception))
+        self.assertIn("Keys to 'dissoc' must be", str(cm.exception))
 
 
 if __name__ == "__main__":

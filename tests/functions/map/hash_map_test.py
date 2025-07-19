@@ -58,27 +58,29 @@ class HashMapFnTest(unittest.TestCase):
             "SyntaxError: 'hash-map' requires an even number of arguments (key-value pairs), got 3.",
         )
 
-    def test_hash_map_fn_non_symbol_key(self):
-        """Test (hash-map \"key\" 1) raises an error for non-symbol key."""
+    def test_hash_map_fn_string_key(self):
+        """Test (hash-map \"key\" 1) works with string keys."""
         lispy_code = '(hash-map "key" 1)'
-        # Error caught by hash-map: evaluated args must have symbol keys.
-        with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string(lispy_code, self.env)
-        self.assertEqual(
-            str(cm.exception),
-            "TypeError: 'hash-map' keys must be symbols, got <class 'str'>.",
-        )
+        result = run_lispy_string(lispy_code, self.env)
+        expected = {"key": 1}
+        self.assertEqual(result, expected)
 
-    def test_hash_map_fn_non_symbol_evaluated_key(self):
-        """Test hash-map with an evaluated key that is not a symbol."""
+    def test_hash_map_fn_evaluated_numeric_key(self):
+        """Test hash-map with an evaluated key that is a number."""
         run_lispy_string("(define mykey 123)", self.env)
         lispy_code = '(hash-map mykey "value")'
+        result = run_lispy_string(lispy_code, self.env)
+        expected = {123: "value"}
+        self.assertEqual(result, expected)
+
+    def test_hash_map_fn_invalid_key_type(self):
+        """Test hash-map with unsupported key type raises error."""
+        # Test with a list as key (not supported)
+        lispy_code = '(hash-map (list 1 2) "value")'
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string(lispy_code, self.env)
-        self.assertEqual(
-            str(cm.exception),
-            "TypeError: 'hash-map' keys must be symbols, got <class 'int'>.",
-        )
+        self.assertIn("TypeError", str(cm.exception))
+        self.assertIn("'hash-map' keys must be", str(cm.exception))
 
 
 if __name__ == "__main__":
