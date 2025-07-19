@@ -1,6 +1,6 @@
 # LisPy Evaluator
 
-from .types import Symbol, Vector, LispyList, LispyPromise, LispyMapLiteral
+from .types import Symbol, Vector, LispyList, LispyPromise
 from .exceptions import EvaluationError, AssertionFailure, UserThrownError
 from .environment import Environment
 from .closure import Function
@@ -141,20 +141,41 @@ def _evaluate_list_form_as_call(
 # --- Main Evaluation Logic ---
 def evaluate(expression: Any, env: Environment) -> Any:
     """Evaluates a LisPy expression (AST node) in a given environment."""
-    if isinstance(expression, LispyMapLiteral):
-        # Evaluate map literal values (map literals from parser need their values evaluated)
-        # Must check this before dict since LispyMapLiteral inherits from dict
-        evaluated_dict = {}
-        for key, value in expression.items():
-            evaluated_dict[key] = evaluate(value, env)
-        return evaluated_dict
+    if isinstance(expression, dict):
+        # Check if this dict needs evaluation by looking for expressions or bound symbols
+        needs_evaluation = False
+        
+        for value in expression.values():
+            if isinstance(value, LispyList):
+                # Definitely needs evaluation (function call)
+                needs_evaluation = True
+                break
+            elif isinstance(value, Symbol):
+                # Check if this symbol is bound in the environment (variable lookup)
+                try:
+                    env.lookup(value.name)
+                    needs_evaluation = True
+                    break
+                except:
+                    # Symbol not bound - probably a final value, keep as-is
+                    pass
+        
+        if needs_evaluation:
+            # Evaluate values that need it
+            evaluated_dict = {}
+            for key, value in expression.items():
+                evaluated_dict[key] = evaluate(value, env)
+            return evaluated_dict
+        else:
+            # Runtime dict with only final values - keep as-is
+            return expression
     elif (
         isinstance(
-            expression, (int, float, str, bool, dict, Function, Vector, LispyPromise)
+            expression, (int, float, str, bool, Function, Vector, LispyPromise)
         )
         or expression is None
     ):
-        # Self-evaluating types: numbers, strings, booleans, dicts (maps), Function objects, Vectors, Promises, None (nil)
+        # Self-evaluating types: numbers, strings, booleans, Function objects, Vectors, Promises, None (nil)
         return expression
     elif isinstance(expression, Symbol):
         # Lookup symbol in the environment

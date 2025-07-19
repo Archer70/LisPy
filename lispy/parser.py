@@ -84,9 +84,8 @@ def parse(tokens: list[tuple]):
 
     def _parse_map():
         """Parses a map form '{}', consuming '{' and '}' and all key-value pairs."""
-        from .types import LispyMapLiteral  # Import here to avoid circular imports
         _tokens.pop(0)  # Consume '{'
-        map_data = LispyMapLiteral()
+        map_data = {}
 
         while _tokens:
             if _tokens[0][0] == TOKEN_RBRACE:
@@ -95,27 +94,17 @@ def parse(tokens: list[tuple]):
 
             # --- Parse Key ---
             if not _tokens:
-                # This state should ideally be caught by the main loop's RBRACE check
-                # or after parsing a key, when looking for a value. Kept for safety.
                 raise ParseError(
                     "Unexpected end of input: missing '}' while parsing map"
                 )
 
             key_token_type, key_token_value = _tokens[0]  # Peek at key token
-            # Note: token info could be stored for potential error messages if needed
 
             if key_token_type != TOKEN_SYMBOL:
-                # Consume the offending token before raising to show it in the error context if needed
-                # However, our current _parse_form raises *before* consuming on general errors.
-                # For this specific error, we know the key is the problem.
-                # Let's try to make the error specific before _parse_form is called.
-                # _tokens.pop(0)
                 raise ParseError(f"Map key must be a symbol, got {key_token_type}")
 
             # Parse the key (which must be a symbol)
             key = _parse_form()  # This will consume the symbol token
-            # key should be an instance of Symbol, as _parse_atom returns Symbol(value)
-            # and _parse_form calls _parse_atom for TOKEN_SYMBOL.
 
             # --- Parse Value ---
             if not _tokens:  # Missing value for the last key
