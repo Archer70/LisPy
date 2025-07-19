@@ -4,7 +4,7 @@ from ...environment import Environment
 from ..decorators import lispy_function, lispy_documentation
 
 
-@lispy_function("read-line", web_safe=False)
+@lispy_function("read-line", web_safe=False, reason="Reads user input")
 def read_line_func(args: List[Any], env: Environment) -> str:
     if len(args) > 1:
         raise EvaluationError(

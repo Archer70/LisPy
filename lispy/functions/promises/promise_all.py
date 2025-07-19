@@ -1,10 +1,12 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector
+from ..decorators import lispy_function, lispy_documentation
 import threading
 import time
 
 
-def builtin_promise_all(args, env):
+@lispy_function("promise-all")
+def promise_all(args, env):
     """Wait for all promises in a collection to resolve.
 
     Usage: (promise-all collection)
@@ -31,99 +33,102 @@ def builtin_promise_all(args, env):
 
     collection = args[0]
 
-    # Validate collection is a list or vector
-    if not isinstance(collection, (LispyList, Vector)):
+    # Validate that it's a collection
+    if not isinstance(collection, (list, Vector, LispyList)):
         raise EvaluationError(
-            f"TypeError: 'promise-all' argument must be a list or vector, got {type(collection).__name__}."
+            f"TypeError: 'promise-all' expects a collection (list/vector), got {type(collection).__name__}."
         )
 
-    # Validate all elements are promises
-    for i, element in enumerate(collection):
-        if not isinstance(element, LispyPromise):
+    # Extract promises from collection
+    promises = list(collection)
+
+    # Validate all items are promises
+    for i, item in enumerate(promises):
+        if not isinstance(item, LispyPromise):
             raise EvaluationError(
-                f"TypeError: All elements must be promises, got {type(element).__name__} at position {i}."
+                f"TypeError: All items in collection must be promises, got {type(item).__name__} at position {i}."
             )
 
-    # Handle empty collection - resolve immediately with empty collection of same type
-    if len(collection) == 0:
-        result_type = Vector if isinstance(collection, Vector) else LispyList
-        empty_promise = LispyPromise()
-        empty_promise.resolve(result_type([]))
-        return empty_promise
-
-    # Create the promise-all promise
-    all_promise = LispyPromise()
+    # Create result promise
+    result_promise = LispyPromise()
 
     def wait_for_all():
-        """Wait for all promises to complete in a background thread."""
+        """Wait for all promises to complete in background thread."""
         try:
-            results = []
+            # If empty collection, resolve immediately with empty result
+            if not promises:
+                if isinstance(collection, Vector):
+                    result_promise.resolve(Vector([]))
+                elif isinstance(collection, LispyList):
+                    result_promise.resolve(LispyList([]))
+                else:
+                    result_promise.resolve([])
+                return
 
-            # Wait for each promise to complete
-            for i, promise in enumerate(collection):
-                # Poll until the promise completes
+            # Wait for all promises to settle
+            results = []
+            for promise in promises:
+                # Poll until promise settles
                 while promise.state == "pending":
                     time.sleep(0.001)  # Small sleep to avoid busy waiting
 
-                # Check if any promise rejected
+                # If any promise rejected, reject the all promise
                 if promise.state == "rejected":
-                    all_promise.reject(promise.error)
+                    result_promise.reject(promise.error)
                     return
 
-                # Collect the resolved value
+                # Collect resolved value
                 results.append(promise.value)
 
-            # All promises resolved - return results in same collection type
-            result_type = Vector if isinstance(collection, Vector) else LispyList
-            all_promise.resolve(result_type(results))
+            # All promises resolved, return results in same collection type
+            if isinstance(collection, Vector):
+                result_promise.resolve(Vector(results))
+            elif isinstance(collection, LispyList):
+                result_promise.resolve(LispyList(results))
+            else:
+                result_promise.resolve(results)
 
         except Exception as e:
-            all_promise.reject(e)
+            result_promise.reject(f"promise-all error: {str(e)}")
 
-    # Start waiting in background thread
-    threading.Thread(target=wait_for_all, daemon=True).start()
+    # Start background thread
+    thread = threading.Thread(target=wait_for_all, daemon=True)
+    thread.start()
 
-    return all_promise
+    return result_promise
 
 
-def documentation_promise_all() -> str:
-    """Returns documentation for the promise-all function."""
+@lispy_documentation("promise-all")
+def promise_all_doc():
     return """Function: promise-all
 Arguments: (promise-all collection)
-Description: Waits for all promises in a collection to resolve and returns their results.
+Description: Waits for all promises in a collection to resolve.
 
 Examples:
-  ; Basic usage with resolved promises
+  ; Wait for multiple promises
   (promise-all [(resolve 1) (resolve 2) (resolve 3)])
   ; => Promise that resolves to [1 2 3]
   
-  ; Mixed with actual async operations  
-  (async
-    (let [results (await (promise-all [
-                           (promise (fn [] (+ 1 2)))
-                           (resolve 42)
-                           (promise (fn [] (* 3 4)))]))]
-      results)) ; => [3 42 12]
+  ; Mixed with promise creation
+  (promise-all [(promise (fn [] (+ 1 2)))
+                (resolve "hello")
+                (promise (fn [] (* 3 4)))])
+  ; => Promise that resolves to [3 "hello" 12]
   
-  ; Empty collection resolves immediately
-  (promise-all []) ; => Promise that resolves to []
-  (promise-all '()) ; => Promise that resolves to ()
-  
-  ; With async functions
+  ; With async/await
   (async
-    (let [promises [(fetch-data "user1") (fetch-data "user2")]
-          results (await (promise-all promises))]
-      results)) ; => ["data1" "data2"]
+    (let [results (await (promise-all [(resolve "a") (resolve "b")]))]
+      (println "All results:" results)))
+  
+  ; Error handling - if any promise rejects, all rejects
+  (promise-all [(resolve 1) (reject "error") (resolve 3)])
+  ; => Promise that rejects with "error"
 
 Notes:
   - Requires exactly 1 argument (a collection of promises)
-  - All elements in collection must be promises
-  - Returns a promise that resolves when ALL input promises resolve
-  - Result collection type matches input type (vector -> vector, list -> list)
-  - If ANY promise rejects, promise-all immediately rejects with that error
+  - Collection can be a list, vector, or LisPy list
+  - All items in collection must be promises
+  - Result preserves collection type (vector in, vector out)
+  - If any promise rejects, the entire promise-all rejects
   - Empty collection resolves immediately to empty collection
-  - Results are returned in the same order as input promises
-  - Useful for waiting on multiple concurrent operations
-  - Essential for coordinating parallel async work
-  - Similar to Promise.all() in JavaScript
-"""
+  - Useful for concurrent operations that all must succeed"""

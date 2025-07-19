@@ -4,7 +4,7 @@ from ...environment import Environment
 from ..decorators import lispy_function, lispy_documentation
 
 
-@lispy_function("spit", web_safe=False)
+@lispy_function("spit", web_safe=False, reason="Writes files to filesystem")
 def spit_func(args: List[Any], env: Environment) -> None:
     if len(args) != 2:
         raise EvaluationError(

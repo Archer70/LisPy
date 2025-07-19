@@ -3,8 +3,8 @@
 from .promise import promise, promise_doc
 from .resolve import resolve, resolve_doc
 from .reject import reject, reject_doc
-from .promise_all import builtin_promise_all, documentation_promise_all
-from .promise_race import builtin_promise_race, documentation_promise_race
+from .promise_all import promise_all, promise_all_doc
+from .promise_race import promise_race, promise_race_doc
 
 from .promise_any import builtin_promise_any, documentation_promise_any
 from .promise_all_settled import (
@@ -28,8 +28,8 @@ __all__ = [
     "promise",
     "resolve",
     "reject",
-    "builtin_promise_all",
-    "builtin_promise_race",
+    "promise_all",
+    "promise_race",
     "builtin_promise_any",
     "builtin_promise_all_settled",
     "builtin_promise_then",
@@ -47,8 +47,8 @@ __all__ = [
     "promise_doc",
     "resolve_doc",
     "reject_doc",
-    "documentation_promise_all",
-    "documentation_promise_race",
+    "promise_all_doc",
+    "promise_race_doc",
     "documentation_promise_any",
     "documentation_promise_all_settled",
     "documentation_promise_then",

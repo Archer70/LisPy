@@ -1,10 +1,12 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector
+from ..decorators import lispy_function, lispy_documentation
 import threading
 import time
 
 
-def builtin_promise_race(args, env):
+@lispy_function("promise-race")
+def promise_race(args, env):
     """Race multiple promises and return the first one to settle.
 
     Usage: (promise-race collection)
@@ -31,96 +33,88 @@ def builtin_promise_race(args, env):
 
     collection = args[0]
 
-    # Validate collection is a list or vector
-    if not isinstance(collection, (LispyList, Vector)):
+    # Validate that it's a collection
+    if not isinstance(collection, (list, Vector, LispyList)):
         raise EvaluationError(
-            f"TypeError: 'promise-race' argument must be a list or vector, got {type(collection).__name__}."
+            f"TypeError: 'promise-race' expects a collection (list/vector), got {type(collection).__name__}."
         )
 
-    # Validate all elements are promises
-    for i, element in enumerate(collection):
-        if not isinstance(element, LispyPromise):
+    # Extract promises from collection
+    promises = list(collection)
+
+    # Validate all items are promises
+    for i, item in enumerate(promises):
+        if not isinstance(item, LispyPromise):
             raise EvaluationError(
-                f"TypeError: All elements must be promises, got {type(element).__name__} at position {i}."
+                f"TypeError: All items in collection must be promises, got {type(item).__name__} at position {i}."
             )
 
-    # Handle empty collection - return a promise that never settles
-    if len(collection) == 0:
-        # According to Promise.race([]) behavior in JavaScript,
-        # this should return a promise that never settles
-        return LispyPromise()  # Returns pending promise
+    # Handle empty collection - reject immediately
+    if not promises:
+        empty_promise = LispyPromise()
+        empty_promise.reject("Empty collection provided to promise-race")
+        return empty_promise
 
-    # Create the race promise
-    race_promise = LispyPromise()
+    # Create result promise
+    result_promise = LispyPromise()
 
-    def race_monitor():
-        """Monitor all promises and settle with the first one to complete."""
+    def race_promises():
+        """Wait for first promise to settle in background thread."""
         try:
-            settled = False
-
-            while not settled:
-                # Check each promise to see if any have settled
-                for i, promise in enumerate(collection):
+            # Continuously poll all promises until one settles
+            while True:
+                for promise in promises:
                     if promise.state != "pending":
                         # First promise to settle wins
                         if promise.state == "resolved":
-                            race_promise.resolve(promise.value)
-                        elif promise.state == "rejected":
-                            race_promise.reject(promise.error)
-                        settled = True
+                            result_promise.resolve(promise.value)
+                        else:  # rejected
+                            result_promise.reject(promise.error)
                         return
 
                 # Small sleep to avoid busy waiting
                 time.sleep(0.001)
 
         except Exception as e:
-            if not settled:
-                race_promise.reject(e)
+            result_promise.reject(f"promise-race error: {str(e)}")
 
-    # Start monitoring in background thread
-    threading.Thread(target=race_monitor, daemon=True).start()
+    # Start background thread
+    thread = threading.Thread(target=race_promises, daemon=True)
+    thread.start()
 
-    return race_promise
+    return result_promise
 
 
-def documentation_promise_race() -> str:
-    """Returns documentation for the promise-race function."""
+@lispy_documentation("promise-race")
+def promise_race_doc():
     return """Function: promise-race
 Arguments: (promise-race collection)
-Description: Returns a promise that settles with the first promise to settle (resolve or reject).
+Description: Returns a promise that settles with the first promise to settle.
 
 Examples:
-  ; First to resolve wins
-  (promise-race [(timeout 200 "slow") (timeout 50 "fast")])
+  ; Race between fast and slow promises
+  (promise-race [(timeout 100 "slow") (timeout 50 "fast")])
   ; => Promise that resolves to "fast"
   
-  ; First to reject wins too
-  (promise-race [(timeout 200 "slow") (reject "error")])
-  ; => Promise that rejects with "error"
-  
-  ; With immediate values
-  (promise-race [(resolve "immediate") (timeout 1000 "delayed")])
+  ; Immediate resolution wins
+  (promise-race [(resolve "immediate") (timeout 1000 "slow")])
   ; => Promise that resolves to "immediate"
   
-  ; Timeout pattern
-  (async
-    (let [result (await (promise-race [
-                          (fetch-data "user")
-                          (timeout 5000 (reject "timeout"))]))]
-      result)) ; => Either user data or timeout error
+  ; First rejection wins
+  (promise-race [(reject "error") (timeout 1000 "slow")])
+  ; => Promise that rejects with "error"
   
-  ; Empty collection never settles
-  (promise-race []) ; => Promise that stays pending forever
+  ; With async/await
+  (async
+    (let [winner (await (promise-race [(promise (fn [] (+ 1 2)))
+                                       (resolve "quick")]))]
+      (println "Winner:" winner)))
 
 Notes:
   - Requires exactly 1 argument (a collection of promises)
-  - All elements in collection must be promises
-  - Returns promise that settles as soon as ANY input promise settles
-  - Settlement type (resolve/reject) matches the first settled promise
-  - Result value matches the first settled promise's value/error
-  - Empty collection returns a promise that never settles
-  - Other promises continue running but their results are ignored
-  - Useful for timeouts, racing multiple data sources, fail-fast patterns
-  - Common pattern: race actual operation vs timeout promise
-  - Similar to Promise.race() in JavaScript
-"""
+  - Collection can be a list, vector, or LisPy list
+  - All items in collection must be promises
+  - Returns the value/error of the first promise to settle
+  - Empty collection immediately rejects
+  - Useful for timeouts and racing multiple approaches
+  - First to settle (resolve OR reject) wins"""

@@ -1,9 +1,11 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError, AssertionFailure
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def bdd_assert_nil_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("assert-nil?")
+def assert_nil_q(args: List[Any], env: Environment) -> bool:
     """(assert-nil? expr)
     Asserts that the expression `expr` evaluates to nil (None).
     Raises AssertionFailure if it is not nil. Returns true if the assertion passes.
@@ -23,7 +25,8 @@ def bdd_assert_nil_q(args: List[Any], env: Environment) -> bool:
     return True  # Assertion passed
 
 
-def documentation_assert_nil_q() -> str:
+@lispy_documentation("assert-nil?")
+def assert_nil_q_doc() -> str:
     """Returns documentation for the assert-nil? function."""
     return """Function: assert-nil?
 Arguments: (assert-nil? expression)
