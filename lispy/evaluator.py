@@ -139,50 +139,59 @@ def _evaluate_list_form_as_call(
 
 
 # --- Main Evaluation Logic ---
+def _is_self_evaluating(expression: Any) -> bool:
+    """Check if an expression evaluates to itself (self-evaluating)."""
+    return (
+        isinstance(expression, (int, float, str, bool, Function, Vector, LispyPromise))
+        or expression is None
+    )
+
+
+def _dict_needs_evaluation(dictionary: dict, env: Environment) -> bool:
+    """Check if a dictionary contains values that need evaluation."""
+    for value in dictionary.values():
+        if isinstance(value, LispyList):
+            # Definitely needs evaluation (function call)
+            return True
+        elif isinstance(value, Symbol):
+            # Check if this symbol is bound in the environment (variable lookup)
+            try:
+                env.lookup(value.name)
+                return True
+            except EvaluationError:
+                # Symbol not bound - probably a final value, keep as-is
+                pass
+    return False
+
+
+def _evaluate_dict_values(dictionary: dict, env: Environment) -> dict:
+    """Evaluate all values in a dictionary."""
+    evaluated_dict = {}
+    for key, value in dictionary.items():
+        evaluated_dict[key] = evaluate(value, env)
+    return evaluated_dict
+
+
 def evaluate(expression: Any, env: Environment) -> Any:
     """Evaluates a LisPy expression (AST node) in a given environment."""
+    # Handle dictionaries (map literals may need value evaluation)
     if isinstance(expression, dict):
-        # Check if this dict needs evaluation by looking for expressions or bound symbols
-        needs_evaluation = False
-        
-        for value in expression.values():
-            if isinstance(value, LispyList):
-                # Definitely needs evaluation (function call)
-                needs_evaluation = True
-                break
-            elif isinstance(value, Symbol):
-                # Check if this symbol is bound in the environment (variable lookup)
-                try:
-                    env.lookup(value.name)
-                    needs_evaluation = True
-                    break
-                except:
-                    # Symbol not bound - probably a final value, keep as-is
-                    pass
-        
-        if needs_evaluation:
-            # Evaluate values that need it
-            evaluated_dict = {}
-            for key, value in expression.items():
-                evaluated_dict[key] = evaluate(value, env)
-            return evaluated_dict
+        if _dict_needs_evaluation(expression, env):
+            return _evaluate_dict_values(expression, env)
         else:
             # Runtime dict with only final values - keep as-is
             return expression
-    elif (
-        isinstance(
-            expression, (int, float, str, bool, Function, Vector, LispyPromise)
-        )
-        or expression is None
-    ):
-        # Self-evaluating types: numbers, strings, booleans, Function objects, Vectors, Promises, None (nil)
+    
+    # Handle self-evaluating types
+    elif _is_self_evaluating(expression):
         return expression
+    
+    # Handle symbol lookup
     elif isinstance(expression, Symbol):
-        # Lookup symbol in the environment
         return env.lookup(expression.name)
-    elif isinstance(
-        expression, (list, LispyList)
-    ):  # Keep `list` for tests, LispyList for parsed
+    
+    # Handle list expressions (function calls and special forms)
+    elif isinstance(expression, (list, LispyList)):
         # If expression is an empty list (parsed from '()'), it should raise an error.
         if not expression:
             raise EvaluationError(
@@ -200,6 +209,7 @@ def evaluate(expression: Any, env: Environment) -> Any:
 
         # Pass expression as is (could be list or LispyList)
         return _evaluate_list_form_as_call(expression, env, evaluate)
+    
+    # Unhandled expression type
     else:
-        # Unhandled expression type
         raise EvaluationError(f"Cannot evaluate type: {type(expression).__name__}")
