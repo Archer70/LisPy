@@ -1,6 +1,6 @@
 # LisPy Evaluator
 
-from .types import Symbol, Vector, LispyList, LispyPromise
+from .types import Symbol, Vector, LispyList, LispyPromise, LispyMapLiteral
 from .exceptions import EvaluationError, AssertionFailure, UserThrownError
 from .environment import Environment
 from .closure import Function
@@ -151,16 +151,24 @@ def _dict_needs_evaluation(dictionary: dict, env: Environment) -> bool:
     """Check if a dictionary contains values that need evaluation."""
     for value in dictionary.values():
         if isinstance(value, LispyList):
-            # Definitely needs evaluation (function call)
+            # Function calls definitely need evaluation
             return True
         elif isinstance(value, Symbol):
-            # Check if this symbol is bound in the environment (variable lookup)
-            try:
-                env.lookup(value.name)
+            # Symbols need evaluation (variables, function references, etc.)
+            return True
+        elif isinstance(value, dict):
+            # Recursively check nested dictionaries
+            if _dict_needs_evaluation(value, env):
                 return True
-            except EvaluationError:
-                # Symbol not bound - probably a final value, keep as-is
-                pass
+        elif isinstance(value, Vector):
+            # Check if vector contains function calls or symbols that need evaluation
+            for item in value:
+                if isinstance(item, Symbol):
+                    return True
+                elif isinstance(item, (LispyList, list)):
+                    return True
+                elif isinstance(item, dict) and _dict_needs_evaluation(item, env):
+                    return True
     return False
 
 
@@ -174,13 +182,17 @@ def _evaluate_dict_values(dictionary: dict, env: Environment) -> dict:
 
 def evaluate(expression: Any, env: Environment) -> Any:
     """Evaluates a LisPy expression (AST node) in a given environment."""
-    # Handle dictionaries (map literals may need value evaluation)
-    if isinstance(expression, dict):
+    # Handle map literals from source code (need value evaluation)
+    if isinstance(expression, LispyMapLiteral):
         if _dict_needs_evaluation(expression, env):
             return _evaluate_dict_values(expression, env)
         else:
-            # Runtime dict with only final values - keep as-is
-            return expression
+            # Convert to regular dict and return
+            return dict(expression)
+    
+    # Handle runtime dictionaries (already evaluated, keep as-is)
+    elif isinstance(expression, dict):
+        return expression
     
     # Handle self-evaluating types
     elif _is_self_evaluating(expression):

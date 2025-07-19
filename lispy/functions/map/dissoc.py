@@ -29,9 +29,10 @@ def builtin_dissoc(args: List[Any], env: Environment):
 
     new_map = target_map.copy()
     for key_to_remove in keys:
-        if not isinstance(key_to_remove, Symbol):
+        # Keys can be symbols, strings, numbers, booleans, or nil
+        if not isinstance(key_to_remove, (Symbol, str, int, float, bool, type(None))):
             raise EvaluationError(
-                f"TypeError: Keys to 'dissoc' must be symbols, got {type(key_to_remove)}."
+                f"TypeError: Keys to 'dissoc' must be symbols, strings, numbers, booleans, or nil, got {type(key_to_remove)}."
             )
         if key_to_remove in new_map:
             del new_map[key_to_remove]

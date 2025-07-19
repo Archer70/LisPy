@@ -37,9 +37,10 @@ def get_fn(args: List[Any], env: Environment):
                 f"IndexError: {key} out of bounds for vector of size {len(collection)}."
             )
     elif isinstance(collection, dict):  # Assuming maps are Python dicts
-        if not isinstance(key, Symbol):
+        # Keys can be symbols, strings, numbers, booleans, or nil
+        if not isinstance(key, (Symbol, str, int, float, bool, type(None))):
             raise EvaluationError(
-                f"TypeError: Map key must be a symbol, got {type(key)}."
+                f"TypeError: Map key must be a symbol, string, number, boolean, or nil, got {type(key)}."
             )
 
         if key in collection:

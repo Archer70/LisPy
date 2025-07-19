@@ -97,19 +97,31 @@ class GetFnTest(unittest.TestCase):
         result = run_lispy_string('(get {} \':missing "default")', self.env)
         self.assertEqual(result, "default")
 
-    def test_get_map_non_symbol_key(self):
-        """Test (get {:a 1} \"a\") raises TypeError."""
-        with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string('(get {:a 1} "a")', self.env)
-        self.assertIn("TypeError", str(cm.exception))
-        self.assertIn("Map key must be a symbol", str(cm.exception))
+    def test_get_map_string_key(self):
+        """Test (get {\"name\" \"Alice\"} \"name\") works with string keys."""
+        result = run_lispy_string('(get {"name" "Alice"} "name")', self.env)
+        self.assertEqual(result, "Alice")
 
     def test_get_map_integer_key(self):
-        """Test (get {:a 1} 0) raises TypeError."""
+        """Test (get {42 \"answer\"} 42) works with integer keys."""
+        result = run_lispy_string("(get {42 \"answer\"} 42)", self.env)
+        self.assertEqual(result, "answer")
+
+    def test_get_map_mixed_key_types(self):
+        """Test get works with mixed key types."""
+        result = run_lispy_string('(get {:name "Alice" "age" 30 42 true} "age")', self.env)
+        self.assertEqual(result, 30)
+        
+        result = run_lispy_string('(get {:name "Alice" "age" 30 42 true} 42)', self.env)
+        self.assertEqual(result, True)
+
+    def test_get_map_invalid_key_type(self):
+        """Test get with unsupported key type raises error."""
+        # Test with a list as key (not supported)
         with self.assertRaises(EvaluationError) as cm:
-            run_lispy_string("(get {:a 1} 0)", self.env)
+            run_lispy_string('(get {"name" "Alice"} (list 1 2))', self.env)
         self.assertIn("TypeError", str(cm.exception))
-        self.assertIn("Map key must be a symbol", str(cm.exception))
+        self.assertIn("Map key must be", str(cm.exception))
 
     # Mixed data type tests
     def test_get_vector_mixed_types(self):

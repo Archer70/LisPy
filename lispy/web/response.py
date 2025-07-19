@@ -111,8 +111,9 @@ def format_response(response_data: Dict[Symbol, Any], enhance_json: bool = False
     
     # Validate status code
     if not isinstance(status_code, int) or not (100 <= status_code <= 599):
+        original_invalid_status = status_code
         status_code = 500
-        body = f"Invalid status code: {status_code}"
+        body = f"Invalid status code: {original_invalid_status}"
         response_headers = {}
     
     # Normalize headers
