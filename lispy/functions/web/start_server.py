@@ -12,6 +12,7 @@ from lispy.types import LispyPromise, Symbol
 # Global registry of running servers for management
 _running_servers = {}
 _server_counter = 0
+_server_counter_lock = threading.Lock()
 
 
 def builtin_start_server(args, env):
@@ -104,10 +105,11 @@ def builtin_start_server(args, env):
             server = LispyHTTPServer(app, env, host, port)
             server_info = server.start()
             
-            # Register the server for management
-            _server_counter += 1
-            server_id = f"server_{_server_counter}"
-            _running_servers[server_id] = server
+            # Register the server for management (thread-safe)
+            with _server_counter_lock:
+                _server_counter += 1
+                server_id = f"server_{_server_counter}"
+                _running_servers[server_id] = server
             
             # Add server ID to info
             server_info['server_id'] = server_id
