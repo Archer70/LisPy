@@ -1,12 +1,14 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 from lispy.closure import Function
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_promise_then(args, env):
+@lispy_function("then")
+def then(args, env):
     """Chain a callback to be executed when promise resolves.
 
-    Usage: (promise-then promise callback)
+    Usage: (then promise callback)
 
     Args:
         promise: A promise to chain from
@@ -31,91 +33,60 @@ def builtin_promise_then(args, env):
     """
     if len(args) != 2:
         raise EvaluationError(
-            f"SyntaxError: 'promise-then' expects 2 arguments (promise callback), got {len(args)}."
+            f"SyntaxError: 'then' expects 2 arguments (promise callback), got {len(args)}."
         )
 
-    promise = args[0]
-    callback = args[1]
+    promise, callback = args
 
-    # Validate promise argument
+    # Validate first argument is a promise
     if not isinstance(promise, LispyPromise):
         raise EvaluationError(
-            f"TypeError: 'promise-then' first argument must be a promise, got {type(promise).__name__}."
+            f"TypeError: First argument to 'then' must be a promise, got {type(promise).__name__}."
         )
 
-    # Validate callback argument
-    if not (isinstance(callback, Function) or callable(callback)):
+    # Validate second argument is a function
+    if not (callable(callback) or isinstance(callback, Function)):
         raise EvaluationError(
-            f"TypeError: 'promise-then' second argument must be a function, got {type(callback).__name__}."
+            f"TypeError: Second argument to 'then' must be a function, got {type(callback).__name__}."
         )
 
-    # Validate callback parameter count immediately for user-defined functions
-    if isinstance(callback, Function):
-        if len(callback.params) != 1:
-            raise EvaluationError(
-                f"TypeError: 'promise-then' callback must take exactly 1 argument, got {len(callback.params)}."
-            )
-
-    # Create wrapper function that handles LisPy function calls
-    def lispy_callback(value):
-        if isinstance(callback, Function):
-            # User-defined LisPy function
-            from lispy.environment import Environment
-            from lispy.evaluator import evaluate
-
-            # Create environment for function call
-            call_env = Environment(outer=callback.defining_env)
-
-            # Bind the parameter (already validated to be exactly one parameter)
-
-            call_env.define(callback.params[0].name, value)
-
-            # Execute function body
-            result = None
-            for expr in callback.body:
-                result = evaluate(expr, call_env)
-            return result
-        else:
-            # Built-in function
-            return callback([value], env)
-
-    # Use the promise's then method with our wrapper
-    return promise.then(lispy_callback)
+    # Return a new promise that will chain from the original
+    return promise.then(callback, env)
 
 
-def documentation_promise_then() -> str:
-    """Returns documentation for the then function."""
-    return """Function: promise-then
-Arguments: (promise-then promise callback)
-Description: Chains a callback to be executed when a promise resolves.
+@lispy_documentation("then")
+def then_doc():
+    return """Function: then
+Arguments: (then promise callback)
+Description: Chains a callback to execute when a promise resolves.
 
 Examples:
-  (promise-then (resolve 42) (fn [x] (* x 2)))     ; => Promise that resolves to 84
+  ; Basic chaining
+  (then (resolve 42) (fn [x] (* x 2)))
+  ; => Promise that resolves to 84
   
-  ; Thread-first style chaining:
+  ; Multiple chains using threading
   (-> (resolve 10)
-      (promise-then (fn [x] (+ x 5)))              ; 15
-      (promise-then (fn [x] (* x 2))))             ; 30
+      (then (fn [x] (+ x 5)))
+      (then (fn [x] (* x 2))))
+  ; => Promise that resolves to 30
   
-  ; With async/await:
-  (async 
-    (let [result (await (promise-then (fetch-data) process-data))]
-      result))
-      
-  ; Error handling with on-reject:
-  (-> (fetch-user-data)
-      (promise-then extract-user-name)
-      (on-reject (fn [err] "Unknown User")))
+  ; Async computation chain
+  (then (promise (fn [] (+ 1 2)))
+        (fn [result] (* result 10)))
+  ; => Promise that resolves to 30
+  
+  ; With async/await
+  (async
+    (let [result (await (then (resolve "hello")
+                              (fn [s] (+ s " world"))))]
+      (println result))) ; => "hello world"
 
 Notes:
-  - Requires exactly two arguments (promise and callback)
-  - Callback must be a function that takes exactly one argument
-  - Returns a new promise with the transformed value
-  - If callback throws an error, returned promise is rejected
-  - Callback receives the resolved value of the input promise
-  - Supports both user-defined and built-in functions as callbacks
-  - Works seamlessly with thread-first (->) operator
-  - Can be chained multiple times for data transformation pipelines
-  - If callback returns a promise, it will be flattened (no nested promises)
-  - Essential building block for functional async programming
-"""
+  - Requires exactly 2 arguments (promise, callback function)
+  - Callback receives the resolved value as its argument
+  - Returns a new promise with the callback's return value
+  - If callback throws, the returned promise rejects
+  - If original promise rejects, callback is not called
+  - Essential for promise composition and chaining
+  - Can be chained with threading macro (->)"""

@@ -16,9 +16,9 @@ from .rest import rest_func, rest_documentation
 from .reverse import reverse_func, reverse_documentation
 
 # Import remaining functions that haven't been converted yet (legacy)
-from .every_q import builtin_every_q, documentation_every_q
-from .range import builtin_range, documentation_range
-from .some import builtin_some, documentation_some
+from .every_q import every_q, every_q_doc
+from .range import range_func, range_doc
+from .some import some, some_doc
 from .sort import sort_fn, documentation_sort
 
 __all__ = [
@@ -49,14 +49,14 @@ __all__ = [
     "rest_documentation",
     "reverse_documentation",
     
-    # Legacy functions (not yet converted)
-    "builtin_every_q",
-    "builtin_range",
-    "builtin_some", 
+    # Recently converted functions
+    "every_q",
+    "range_func",
+    "some", 
     "sort_fn",
-    # Legacy documentation (not yet converted)
-    "documentation_every_q",
-    "documentation_range",
-    "documentation_some",
+    # Recently converted documentation
+    "every_q_doc",
+    "range_doc",
+    "some_doc",
     "documentation_sort",
 ]

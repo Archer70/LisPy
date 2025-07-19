@@ -1,11 +1,13 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector, Symbol
-from lispy.functions.map import hash_map
+from ..map.hash_map import hash_map
+from ..decorators import lispy_function, lispy_documentation
 import threading
 import time
 
 
-def builtin_promise_all_settled(args, env):
+@lispy_function("promise-all-settled")
+def promise_all_settled(args, env):
     """Wait for all promises to settle and return their status objects.
 
     Usage: (promise-all-settled collection)
@@ -118,8 +120,8 @@ def builtin_promise_all_settled(args, env):
     return all_settled_promise
 
 
-def documentation_promise_all_settled() -> str:
-    """Returns documentation for the promise-all-settled function."""
+@lispy_documentation("promise-all-settled")
+def promise_all_settled_doc():
     return """Function: promise-all-settled
 Arguments: (promise-all-settled collection)
 Description: Waits for all promises to settle and returns status objects for each.

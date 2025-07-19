@@ -1,53 +1,25 @@
-from typing import List, Any, Callable
-from lispy.types import LispyList, Vector
-from lispy.closure import Function
-from lispy.exceptions import EvaluationError
-from lispy.evaluator import evaluate
-from lispy.environment import Environment
+from typing import List, Any
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ...types import Vector, LispyList
+from ...closure import Function
+from ..decorators import lispy_function, lispy_documentation
 
 
-def _call_predicate(
-    predicate: Any, item: Any, env: Environment, evaluate_fn: Callable
-) -> Any:
-    """Helper to call the predicate (user-defined or built-in) on an item."""
-    if isinstance(predicate, Function):
-        # User-defined function
-        if len(predicate.params) != 1:
-            raise EvaluationError(
-                f"TypeError: Predicate function expects 1 argument, got {len(predicate.params)}."
-            )
-
-        call_env = Environment(outer=predicate.defining_env)
-        call_env.define(predicate.params[0].name, item)
-
-        result = None
-        for expr_in_body in predicate.body:
-            result = evaluate_fn(expr_in_body, call_env)
-        return result
-    elif callable(predicate):
-        # Built-in Python function
-        return predicate([item], env)
-    else:
-        raise EvaluationError(
-            f"TypeError: Second argument to 'every?' must be a function, got {type(predicate)}."
-        )
+def is_truthful(value: Any) -> bool:
+    """
+    Determine if a value is truthful according to LisPy semantics.
+    In LisPy, only `None` (nil) and `False` are falsy.
+    Everything else is truthful.
+    """
+    return value is not None and value is not False
 
 
-def builtin_every_q(args: List[Any], env: Environment) -> bool:
-    """Implementation of the (every? collection predicate) LisPy function.
-
-    Returns true if all elements in the collection satisfy the predicate,
-    false if any element fails the predicate.
-
-    Args:
-        args: List containing exactly two arguments - collection and predicate function
-        env: The current environment
-
-    Returns:
-        bool: True if all elements satisfy predicate, False if any element fails
-
-    Raises:
-        EvaluationError: If incorrect number of arguments or invalid argument types
+@lispy_function("every?")
+def every_q(args: List[Any], env: Environment) -> bool:
+    """(every? collection predicate)
+    Returns true if the predicate returns a truthful value for every element in the collection.
+    Returns true for an empty collection.
     """
     if len(args) != 2:
         raise EvaluationError(
@@ -57,56 +29,55 @@ def builtin_every_q(args: List[Any], env: Environment) -> bool:
     collection = args[0]
     predicate = args[1]
 
-    if not isinstance(collection, (LispyList, Vector)):
+    # Validate collection is iterable
+    if not isinstance(collection, (list, tuple, Vector, LispyList)):
         raise EvaluationError(
-            f"TypeError: First argument to 'every?' must be a list or vector, got {type(collection)}."
+            f"TypeError: 'every?' second argument must be a collection, got {type(collection).__name__}."
         )
 
-    # Check if predicate is callable
-    is_user_defined_fn = isinstance(predicate, Function)
-    is_python_callable = callable(predicate) and not is_user_defined_fn
-
-    if not (is_user_defined_fn or is_python_callable):
-        raise EvaluationError(
-            f"TypeError: Second argument to 'every?' must be a function, got {type(predicate)}."
-        )
-
-    # Empty collection is vacuously true
-    if not collection:
+    # Handle empty collection
+    if len(collection) == 0:
         return True
 
-    # Apply predicate to each element, return False on first falsy result
-    for item in collection:
-        result = _call_predicate(predicate, item, env, evaluate)
-        # In LisPy, False and None are falsy, everything else is truthy
-        if result is False or result is None:
+    # Check each element
+    for element in collection:
+        # Apply predicate to element
+        if isinstance(predicate, Function):
+            # User-defined function
+            from ...evaluator import evaluate
+            call_expr = [predicate, element]
+            result = evaluate(call_expr, env)
+        else:
+            # Built-in function
+            result = predicate([element], env)
+        
+        # If any element fails the predicate, return False
+        if not is_truthful(result):
             return False
 
-    # All elements satisfied the predicate
     return True
 
 
-def documentation_every_q() -> str:
+@lispy_documentation("every?")
+def every_q_doc() -> str:
     """Returns documentation for the every? function."""
     return """Function: every?
 Arguments: (every? collection predicate)
-Description: Returns true if all elements in collection satisfy the predicate, false otherwise.
+Description: Returns true if predicate returns truthful value for every element.
 
 Examples:
-  (every? [1 2 3] is-number?)           ; => true
-  (every? [1 "a" 3] is-number?)         ; => false
-  (every? [2 4 6] (fn [x] (= (% x 2) 0))) ; => true (all even)
-  (every? [1 3 5] (fn [x] (> x 0)))     ; => true (all positive)
-  (every? [] is-number?)                ; => true (vacuously true)
-  (every? [true true false] (fn [x] x)) ; => false
-  (every? [-1 2 3] (fn [x] (> x 0)))    ; => false
+  (every? number? [1 2 3 4])     ; => true (all are numbers)
+  (every? even? [2 4 6 8])       ; => true (all are even)
+  (every? positive? [1 2 3])     ; => true (all are positive)
+  (every? string? [1 "a" 3])     ; => false (not all are strings)
+  (every? identity [true 1 "a"]) ; => true (all are truthful)
+  (every? identity [true nil])   ; => false (nil is falsy)
+  (every? even? [])              ; => true (empty collection)
 
 Notes:
-  - Collection must be a list or vector
-  - Predicate must be a function that takes 1 argument
-  - Returns true or false (boolean result)
-  - Short-circuits on first falsy result (doesn't evaluate rest)
-  - False and nil are considered falsy, everything else is truthy
-  - Empty collection returns true (vacuous truth)
-  - Complement of some: every? tests all, some tests any
-  - Useful for validating that all elements meet criteria"""
+  - Requires exactly 2 arguments (collection, predicate function)
+  - Predicate function should take 1 argument and return a value
+  - Uses LisPy truthiness (nil and false are falsy, everything else truthful)
+  - Short-circuits on first falsy result (doesn't check remaining elements)
+  - Returns true for empty collections (vacuous truth)
+  - Works with any iterable collection (lists, vectors, etc.)"""

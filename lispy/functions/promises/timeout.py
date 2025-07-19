@@ -1,10 +1,12 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
+from ..decorators import lispy_function, lispy_documentation
 import threading
 import time
 
 
-def builtin_timeout(args, env):
+@lispy_function("timeout")
+def timeout(args, env):
     """Create a promise that resolves after a specified timeout.
 
     Usage: (timeout ms)
@@ -23,7 +25,7 @@ def builtin_timeout(args, env):
 
         ; Thread-first usage:
         (-> (timeout 1000 "ready")
-            (promise-then (fn [msg] (println msg))))
+            (then (fn [msg] (println msg))))
     """
     if len(args) < 1 or len(args) > 2:
         raise EvaluationError(
@@ -33,65 +35,65 @@ def builtin_timeout(args, env):
     ms = args[0]
     value = args[1] if len(args) > 1 else None
 
-    # Validate timeout argument
+    # Validate milliseconds argument
     if not isinstance(ms, (int, float)):
         raise EvaluationError(
-            f"TypeError: 'timeout' first argument (ms) must be a number, got {type(ms).__name__}."
+            f"TypeError: 'timeout' milliseconds must be a number, got {type(ms).__name__}."
         )
 
     if ms < 0:
         raise EvaluationError(
-            f"ValueError: 'timeout' ms must be non-negative, got {ms}."
+            "ValueError: 'timeout' milliseconds cannot be negative."
         )
 
-    # Create promise that resolves after timeout
-    promise = LispyPromise()
+    # Create promise that will resolve after the timeout
+    timeout_promise = LispyPromise()
 
-    def timeout_handler():
-        """Handle timeout by resolving the promise."""
-        time.sleep(ms / 1000.0)  # Convert ms to seconds
-        promise.resolve(value)
+    def timeout_resolver():
+        """Resolve the promise after the specified delay."""
+        try:
+            # Sleep for the specified duration (convert ms to seconds)
+            time.sleep(ms / 1000.0)
+            timeout_promise.resolve(value)
+        except Exception as e:
+            timeout_promise.reject(f"timeout error: {str(e)}")
 
     # Start timeout in background thread
-    timeout_thread = threading.Thread(target=timeout_handler, daemon=True)
-    timeout_thread.start()
+    thread = threading.Thread(target=timeout_resolver, daemon=True)
+    thread.start()
 
-    return promise
+    return timeout_promise
 
 
-def documentation_timeout() -> str:
-    """Returns documentation for the timeout function."""
+@lispy_documentation("timeout")
+def timeout_doc():
     return """Function: timeout
-Arguments: (timeout ms [value])
-Description: Creates a promise that resolves after a specified timeout.
+Arguments: (timeout milliseconds [value])
+Description: Creates a promise that resolves after a specified delay.
 
 Examples:
-  (timeout 1000)                    ; => Promise resolving to nil after 1 second
-  (timeout 500 "done")              ; => Promise resolving to "done" after 500ms
-  (timeout 0 "immediate")           ; => Promise resolving immediately
+  ; Basic timeout
+  (timeout 1000)           ; => Promise resolves to nil after 1 second
+  (timeout 500 "done")     ; => Promise resolves to "done" after 500ms
   
-  ; Thread-first usage:
+  ; With chaining
   (-> (timeout 1000 "ready")
-      (promise-then (fn [msg] (println msg))))
+      (then (fn [msg] (println msg))))
   
-  ; Racing with timeout:
-  (promise-race (vector
-                  (slow-operation)
-                  (timeout 5000 "timeout")))
+  ; Async delay
+  (async
+    (println "Starting...")
+    (await (timeout 2000))
+    (println "2 seconds later"))
   
-  ; Delay in promise chains:
-  (-> (fetch-data)
-      (promise-then process-data)
-      (promise-then (fn [_] (timeout 1000)))  ; Wait 1 second
-      (promise-then (fn [_] (send-notification))))
+  ; Racing with other operations
+  (promise-race [(fetch-data)
+                 (timeout 5000 (reject "timeout"))])
 
 Notes:
-  - First argument must be a non-negative number (milliseconds)
-  - Second argument is optional (defaults to nil)
-  - Returns immediately with a pending promise
-  - Promise resolves after the specified delay
-  - Useful for delays, timeouts, and rate limiting
-  - Works seamlessly with thread-first (->) operator
-  - Similar to JavaScript's setTimeout but returns a promise
-  - Can be used with promise-race for timeout patterns
-"""
+  - Requires 1-2 arguments (milliseconds, optional value)
+  - Milliseconds must be a non-negative number
+  - Default resolve value is nil if not specified
+  - Useful for delays, timeouts, and testing
+  - Can be combined with promise-race for timeout patterns
+  - Non-blocking - runs in background thread"""

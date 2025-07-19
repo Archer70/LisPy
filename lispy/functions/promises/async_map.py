@@ -12,12 +12,14 @@ Usage: (async-map collection callback)
 """
 
 from lispy.closure import Function
-from lispy.types import LispyPromise, Vector, List
+from lispy.types import LispyPromise, Vector, LispyList
 from lispy.exceptions import EvaluationError
+from ..decorators import lispy_function, lispy_documentation
 import threading
 
 
-def builtin_async_map(args, env):
+@lispy_function("async-map")
+def async_map(args, env):
     """
     Async map function - concurrent mapping with Promise.all semantics.
 
@@ -32,149 +34,156 @@ def builtin_async_map(args, env):
 
     collection, callback = args
 
-    # Validate arguments
-    if not isinstance(collection, (Vector, List)):
+    # Validate collection is a collection type
+    if not isinstance(collection, (list, Vector, LispyList)):
         raise EvaluationError(
-            "TypeError: 'async-map' expects a vector or list as first argument."
+            f"TypeError: First argument to 'async-map' must be a collection, got {type(collection).__name__}."
         )
 
-    # Validate callback type (can be user-defined function or built-in)
-    is_user_defined_fn = isinstance(callback, Function)
-    is_builtin_fn = callable(callback) and not is_user_defined_fn
-
-    if not (is_user_defined_fn or is_builtin_fn):
+    # Validate callback is a function
+    if not (callable(callback) or isinstance(callback, Function)):
         raise EvaluationError(
-            "TypeError: 'async-map' expects a function as second argument."
+            f"TypeError: Second argument to 'async-map' must be a function, got {type(callback).__name__}."
         )
 
-    # Handle empty collection
-    if len(collection) == 0:
-        promise = LispyPromise()
-        promise.resolve(Vector([]))
-        return promise
+    # Convert to list for easier processing
+    items = list(collection)
 
-    # Create the result promise
+    # Empty collection - return resolved promise with empty result
+    if not items:
+        result_promise = LispyPromise()
+        if isinstance(collection, Vector):
+            result_promise.resolve(Vector([]))
+        elif isinstance(collection, LispyList):
+            result_promise.resolve(LispyList([]))
+        else:
+            result_promise.resolve([])
+        return result_promise
+
+    # Create result promise
     result_promise = LispyPromise()
 
-    try:
-        results = []
-        all_sync = True  # Track if all results are synchronous
+    def execute_async_map():
+        """Execute async mapping in background thread."""
+        try:
+            # Step 1: Apply callback to each item and collect promises
+            promises = []
+            
+            for i, item in enumerate(items):
+                # Execute callback for this item
+                if isinstance(callback, Function):
+                    # User-defined LisPy function
+                    from lispy.environment import Environment
+                    from lispy.evaluator import evaluate
 
-        for element in collection:
-            # Call the callback function
-            if is_user_defined_fn:
-                # User-defined function - need to handle environment and parameters
-                from lispy.environment import Environment
-                from lispy.evaluator import evaluate
+                    call_env = Environment(outer=callback.defining_env)
+                    if callback.params:
+                        call_env.define(callback.params[0].name, item)
+                        if len(callback.params) > 1:  # Index parameter
+                            call_env.define(callback.params[1].name, i)
 
-                if len(callback.params) != 1:
-                    raise EvaluationError(
-                        f"ArityError: Function passed to 'async-map' expects 1 argument, got {len(callback.params)}."
-                    )
-
-                param_symbol = callback.params[0]
-                call_env = Environment(outer=callback.defining_env)
-                call_env.define(param_symbol.name, element)
-
-                # Execute function body
-                result = None
-                for expr_in_body in callback.body:
-                    result = evaluate(expr_in_body, call_env)
-            else:
-                # Built-in function
-                result = callback([element], env)
-
-            # Check if result is a promise
-            if isinstance(result, LispyPromise):
-                all_sync = False
-
-            results.append(result)
-
-        # If all results are synchronous, resolve immediately
-        if all_sync:
-            result_promise.resolve(Vector(results))
-        else:
-            # Handle mixed sync/async results
-            # For now, let's implement a simple version that waits for all promises
-            final_results = [None] * len(results)
-            completed_count = [0]
-            error_occurred = [False]
-            lock = threading.Lock()
-
-            def handle_completion():
-                with lock:
-                    if error_occurred[0]:
-                        return
-                    completed_count[0] += 1
-                    if completed_count[0] == len(results):
-                        result_promise.resolve(Vector(final_results))
-
-            def handle_error(error):
-                with lock:
-                    if not error_occurred[0]:
-                        error_occurred[0] = True
-                        result_promise.reject(error)
-
-            # Process each result
-            for i, result in enumerate(results):
-                if isinstance(result, LispyPromise):
-                    # Async result - wait for it
-                    def make_handlers(idx):
-                        def success_handler(value):
-                            final_results[idx] = value
-                            handle_completion()
-
-                        def error_handler(error):
-                            handle_error(error)
-
-                        return success_handler, error_handler
-
-                    success_handler, error_handler = make_handlers(i)
-                    result.then(success_handler)
-                    result.catch(error_handler)
+                    # Execute function body
+                    result = None
+                    for expr in callback.body:
+                        result = evaluate(expr, call_env)
+                    
+                    # If result is a promise, use it; otherwise wrap in resolved promise
+                    if isinstance(result, LispyPromise):
+                        promises.append(result)
+                    else:
+                        resolved_promise = LispyPromise()
+                        resolved_promise.resolve(result)
+                        promises.append(resolved_promise)
                 else:
-                    # Sync result - store immediately
-                    final_results[i] = result
-                    handle_completion()
+                    # Built-in function
+                    result = callback([item, i], env)
+                    
+                    # If result is a promise, use it; otherwise wrap in resolved promise
+                    if isinstance(result, LispyPromise):
+                        promises.append(result)
+                    else:
+                        resolved_promise = LispyPromise()
+                        resolved_promise.resolve(result)
+                        promises.append(resolved_promise)
 
-    except Exception as e:
-        result_promise.reject(str(e))
+            # Step 2: Wait for all promises to complete (promise-all semantics)
+            results = [None] * len(promises)
+            completed_count = 0
+
+            def check_completion():
+                nonlocal completed_count
+                completed_count += 1
+                
+                if completed_count == len(promises):
+                    # All completed, check for any failures
+                    for i, promise in enumerate(promises):
+                        if promise.state == "rejected":
+                            result_promise.reject(promise.error)
+                            return
+                        results[i] = promise.value
+
+                    # All succeeded, resolve with results in original collection type
+                    if isinstance(collection, Vector):
+                        result_promise.resolve(Vector(results))
+                    elif isinstance(collection, LispyList):
+                        result_promise.resolve(LispyList(results))
+                    else:
+                        result_promise.resolve(results)
+
+            # Attach completion handlers to all promises
+            for promise in promises:
+                if promise.state == "pending":
+                    promise.callbacks.append(check_completion)
+                    promise.error_callbacks.append(check_completion)
+                else:
+                    # Already completed
+                    check_completion()
+
+        except Exception as e:
+            result_promise.reject(f"async-map error: {str(e)}")
+
+    # Start execution in background thread
+    thread = threading.Thread(target=execute_async_map, daemon=True)
+    thread.start()
 
     return result_promise
 
 
-def documentation_async_map() -> str:
-    """Returns documentation for the async-map function."""
+@lispy_documentation("async-map")
+def async_map_doc():
     return """Function: async-map
 Arguments: (async-map collection callback)
-Description: Maps each element through callback concurrently, returns promise of results.
+Description: Maps each element through an async callback concurrently.
 
 Examples:
-  ; Basic concurrent mapping
-  (await (async-map [1 2 3] (fn [x] (timeout 100 (* x 2)))))
-  ; => [2 4 6]
+  ; Map numbers to promises concurrently
+  (async-map [1 2 3] (fn [x] (promise (fn [] (* x x)))))
+  ; => Promise that resolves to [1 4 9]
   
-  ; Thread-first usage
-  (-> [1 2 3 4 5]
-      (async-map (fn [x] (* x x)))
-      (await))
-  ; => [1 4 9 16 25]
+  ; Concurrent HTTP requests
+  (async-map ["user1" "user2" "user3"] 
+             (fn [id] (http-get (str "/api/users/" id))))
+  ; => Promise with array of user data
   
-  ; Error handling (fail-fast)
-  (try
-    (await (async-map [1 2 3] (fn [x] 
-                                (if (= x 2) 
-                                  (reject "error")
-                                  x))))
-    (catch e (println "Error:" e)))
+  ; Mixed sync/async operations
+  (async-map [1 2 3 4] 
+             (fn [x] (if (even? x)
+                       (promise (fn [] (* x 2)))  ; Async for even
+                       (* x 3))))                ; Sync for odd
+  ; => Promise that resolves to [3 4 9 8]
+  
+  ; With async/await
+  (async
+    (let [results (await (async-map [1 2 3]
+                                    (fn [x] (timeout 100 (* x 10)))))]
+      (println "All done:" results))) ; => [10 20 30]
 
 Notes:
-  - First argument must be a vector or list
-  - Second argument must be a function taking 1 parameter
-  - Returns a promise that resolves to a vector of results
-  - All operations start immediately (concurrent execution)
-  - Results maintain original collection order
-  - Fail-fast: if any operation fails, whole operation fails
-  - Follows JavaScript Array.map() + Promise.all() semantics
-  - Thread-first (->) operator compatible
-"""
+  - Requires exactly 2 arguments (collection, callback function)
+  - Executes all callbacks concurrently, not sequentially
+  - Maintains original order regardless of completion order
+  - Fail-fast: if any callback rejects, entire operation rejects
+  - Callback receives item and index as parameters
+  - Result preserves collection type (vector in, vector out)
+  - Empty collection resolves immediately to empty collection
+  - Follows JavaScript Array.map() + Promise.all() semantics"""

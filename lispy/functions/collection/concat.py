@@ -1,15 +1,19 @@
 from typing import List, Any
 from ...exceptions import EvaluationError
 from ...environment import Environment
+from ...types import Vector
 from ..decorators import lispy_function, lispy_documentation
 
 
 @lispy_function("concat")
-def concat_func(args: List[Any], env: Environment) -> List[Any]:
-    if len(args) < 1:
-        raise EvaluationError(
-            f"SyntaxError: 'concat' expects at least 1 argument, got {len(args)}."
-        )
+def concat_func(args: List[Any], env: Environment) -> Vector:
+    """(concat collection1 collection2 ...)
+    Concatenates multiple collections into a single list.
+    With no arguments, returns empty list.
+    """
+    # Handle empty case
+    if len(args) == 0:
+        return Vector([])
 
     result = []
     
@@ -28,7 +32,7 @@ def concat_func(args: List[Any], env: Environment) -> List[Any]:
                 f"TypeError: Argument {i + 1} to 'concat' must be a list, vector, or string, got {type(collection).__name__}: '{collection}'"
             )
 
-    return result
+    return Vector(result)
 
 
 @lispy_documentation("concat")
@@ -47,7 +51,7 @@ Examples:
   (concat)                      ; => []
 
 Notes:
-  - Accepts any number of arguments (at least 1)
+  - Accepts any number of arguments (including 0)
   - Collections must be lists, vectors, or strings
   - Strings are converted to lists of characters
   - nil arguments are ignored

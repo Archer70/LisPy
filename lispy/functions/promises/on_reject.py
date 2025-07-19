@@ -1,9 +1,11 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 from lispy.closure import Function
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_on_reject(args, env):
+@lispy_function("on-reject")
+def on_reject(args, env):
     """Handle promise rejection with a callback.
 
     Usage: (on-reject promise error-callback)
@@ -28,104 +30,70 @@ def builtin_on_reject(args, env):
         (-> (fetch-user-data)
             (then extract-user-name)
             (on-reject (fn [err] "Unknown User"))
-            (then (fn [name] (str "Hello, " name))))
+            (then display-user-name))
     """
     if len(args) != 2:
         raise EvaluationError(
             f"SyntaxError: 'on-reject' expects 2 arguments (promise error-callback), got {len(args)}."
         )
 
-    promise = args[0]
-    error_callback = args[1]
+    promise, error_callback = args
 
-    # Validate promise argument
+    # Validate first argument is a promise
     if not isinstance(promise, LispyPromise):
         raise EvaluationError(
-            f"TypeError: 'on-reject' first argument must be a promise, got {type(promise).__name__}."
+            f"TypeError: First argument to 'on-reject' must be a promise, got {type(promise).__name__}."
         )
 
-    # Validate callback argument
-    if not (isinstance(error_callback, Function) or callable(error_callback)):
+    # Validate second argument is a function
+    if not (callable(error_callback) or isinstance(error_callback, Function)):
         raise EvaluationError(
-            f"TypeError: 'on-reject' second argument must be a function, got {type(error_callback).__name__}."
+            f"TypeError: Second argument to 'on-reject' must be a function, got {type(error_callback).__name__}."
         )
 
-    # Validate callback parameter count immediately for user-defined functions
-    if isinstance(error_callback, Function):
-        if len(error_callback.params) != 1:
-            raise EvaluationError(
-                f"TypeError: 'on-reject' callback must take exactly 1 argument, got {len(error_callback.params)}."
-            )
-
-    # Create wrapper function that handles LisPy function calls
-    def lispy_error_callback(error):
-        if isinstance(error_callback, Function):
-            # User-defined LisPy function
-            from lispy.environment import Environment
-            from lispy.evaluator import evaluate
-
-            # Create environment for function call
-            call_env = Environment(outer=error_callback.defining_env)
-
-            # Bind the parameter (already validated to be exactly one parameter)
-
-            call_env.define(error_callback.params[0].name, error)
-
-            # Execute function body
-            result = None
-            for expr in error_callback.body:
-                result = evaluate(expr, call_env)
-            return result
-        else:
-            # Built-in function
-            return error_callback([error], env)
-
-    # Use the promise's catch method with our wrapper
-    return promise.catch(lispy_error_callback)
+    # Use the promise's catch method to handle errors
+    return promise.catch(error_callback, env)
 
 
-def documentation_on_reject() -> str:
-    """Returns documentation for the on-reject function."""
+@lispy_documentation("on-reject")
+def on_reject_doc():
     return """Function: on-reject
 Arguments: (on-reject promise error-callback)
-Description: Handles promise rejection with a callback function.
+Description: Handles promise rejection with a callback, returning recovery value.
 
 Examples:
+  ; Basic error handling
   (on-reject (reject "error") (fn [err] (str "Handled: " err)))
   ; => Promise that resolves to "Handled: error"
   
+  ; Success passes through unchanged
   (on-reject (resolve 42) (fn [err] "not called"))
-  ; => Promise that resolves to 42 (error handler not called)
+  ; => Promise that resolves to 42
   
-  ; Thread-first style error handling:
+  ; Thread-first error handling chain
   (-> (fetch-user-data)
       (then extract-user-name)
       (on-reject (fn [err] "Unknown User"))
-      (then (fn [name] (str "Hello, " name))))
+      (then display-user-name))
   
-  ; Multiple error handling strategies:
+  ; Multiple error handlers
   (-> (risky-operation)
       (on-reject (fn [err] 
-        (cond 
-          (= err "network") "Offline mode"
-          (= err "auth") "Please login"
-          :else "Something went wrong"))))
-          
-  ; Error recovery with fallback data:
-  (-> (fetch-from-cache)
-      (on-reject (fn [_] (fetch-from-server)))
-      (on-reject (fn [_] default-data)))
+        (if (= err "network-error")
+          (retry-operation)
+          "fallback-value")))
+  
+  ; With async/await
+  (async
+    (let [result (await (on-reject (fetch-data)
+                                   (fn [err] "default-data")))]
+      (process result)))
 
 Notes:
-  - Requires exactly two arguments (promise and error-callback)
-  - Error-callback must be a function that takes exactly one argument
-  - Returns a new promise that resolves with callback's return value on error
-  - If original promise resolves, error-callback is not called
-  - Error-callback receives the rejection reason (any LisPy value)
-  - Supports both user-defined and built-in functions as callbacks
-  - Works seamlessly with thread-first (->) operator
+  - Requires exactly 2 arguments (promise, error-callback)
+  - Error callback receives the rejection reason as its argument
+  - If promise resolves, callback is not called and value passes through
+  - If promise rejects, callback is called and its return value becomes new resolution
   - Essential for error recovery and graceful degradation
-  - Can be chained multiple times for fallback strategies
-  - If error-callback throws, returned promise is rejected with new error
-  - Converts rejected promises to resolved promises (error recovery)
-"""
+  - Can be chained with other promise operations
+  - Similar to .catch() in JavaScript promises"""

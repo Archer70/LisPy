@@ -1,10 +1,12 @@
-from lispy.exceptions import EvaluationError, PromiseError
+from lispy.exceptions import EvaluationError
 from lispy.closure import Function
+from ..decorators import lispy_function, lispy_documentation
 import threading
 import time
 
 
-def builtin_debounce(args, env):
+@lispy_function("debounce")
+def debounce(args, env):
     """Create a debounced version of a function.
 
     Usage: (debounce fn delay)
@@ -112,8 +114,8 @@ def builtin_debounce(args, env):
     return debounced_function
 
 
-def documentation_debounce() -> str:
-    """Returns documentation for the debounce function."""
+@lispy_documentation("debounce")
+def debounce_doc():
     return """Function: debounce
 Arguments: (debounce fn delay)
 Description: Creates a debounced version of a function that delays execution.

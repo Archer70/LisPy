@@ -3,11 +3,13 @@ from lispy.types import LispyPromise
 from lispy.closure import Function
 from lispy.evaluator import evaluate
 from lispy.environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 import threading
 import time
 
 
-def builtin_retry(args, env):
+@lispy_function("retry")
+def retry(args, env):
     """Retry a function that may fail with exponential backoff.
 
     Usage: (retry operation max-attempts delay)
@@ -163,8 +165,8 @@ def builtin_retry(args, env):
     return retry_promise
 
 
-def documentation_retry() -> str:
-    """Returns documentation for the retry function."""
+@lispy_documentation("retry")
+def retry_doc():
     return """Function: retry
 Arguments: (retry operation max-attempts delay)
 Description: Retries a function that may fail with exponential backoff delays.
