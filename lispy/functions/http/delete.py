@@ -9,10 +9,12 @@ import json
 import threading
 from lispy.types import LispyPromise, Symbol
 from lispy.exceptions import ArityError, EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 from .utils import validate_url_with_message, normalize_headers, create_response_map, HTTPError
 
 
-def builtin_http_delete(args, env):
+@lispy_function("http-delete", web_safe=False, reason="Network access")
+def http_delete(args, env):
     """
     Make an HTTP DELETE request and return a promise.
     
@@ -208,7 +210,10 @@ def _convert_for_json(value):
 
 
 # Documentation
-documentation_http_delete = """
+@lispy_documentation("http-delete")
+def http_delete_documentation():
+    """Returns documentation for the http-delete function."""
+    return """
 http-delete: Make an HTTP DELETE request
 
 Usage:

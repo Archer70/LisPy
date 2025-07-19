@@ -4,9 +4,10 @@ Web app creation function for LisPy Web Framework.
 
 from lispy.exceptions import EvaluationError
 from lispy.web.app import WebApp
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_web_app(args, env):
+@lispy_function("web-app", web_safe=False, reason="Network access")
+def web_app(args, env):
     """
     Create a new web application instance.
     
@@ -35,7 +36,8 @@ def builtin_web_app(args, env):
     return WebApp()
 
 
-def documentation_web_app():
+@lispy_documentation("web-app")
+def web_app_documentation():
     """Returns documentation for the web-app function."""
     return """Function: web-app
 Arguments: (web-app)

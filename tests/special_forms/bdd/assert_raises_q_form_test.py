@@ -143,7 +143,7 @@ class TestAssertRaisesQForm(unittest.TestCase):
 
     def test_assert_raises_q_with_function_call_expected_message(self):
         """Test assert-raises? with function call as expected message."""
-        result = run_lispy_string('(assert-raises? (str "Division by zero") (/ 1 0))', self.env)
+        result = run_lispy_string('(assert-raises? (to-str "Division by zero") (/ 1 0))', self.env)
         self.assertTrue(result)
 
     def test_assert_raises_q_with_complex_form(self):

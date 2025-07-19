@@ -7,7 +7,7 @@ from lispy.exceptions import EvaluationError
 from lispy.web.app import WebApp
 from lispy.web.server import LispyHTTPServer
 from lispy.types import LispyPromise, Symbol
-
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 # Global registry of running servers for management
 _running_servers = {}
@@ -15,7 +15,8 @@ _server_counter = 0
 _server_counter_lock = threading.Lock()
 
 
-def builtin_start_server(args, env):
+@lispy_function("start-server", web_safe=False, reason="Network access")
+def start_server(args, env):
     """
     Start an HTTP server for a web application.
     
@@ -163,7 +164,8 @@ def get_running_servers():
     }
 
 
-def documentation_start_server():
+@lispy_documentation("start-server")
+def start_server_documentation():
     """Returns documentation for the start-server function."""
     return """Function: start-server
 Arguments: (start-server app [config])

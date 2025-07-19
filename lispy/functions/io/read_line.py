@@ -1,9 +1,10 @@
 from typing import List, Any
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_read_line(args: List[Any], env: Environment) -> str:
+@lispy_function("read-line", web_safe=False, reason="File system access")
+def read_line(args: List[Any], env: Environment) -> str:
     """Reads a line of input from the console. (read-line [prompt])"""
     if len(args) > 1:
         raise EvaluationError(
@@ -36,7 +37,8 @@ def builtin_read_line(args: List[Any], env: Environment) -> str:
         raise
 
 
-def documentation_read_line() -> str:
+@lispy_documentation("read-line")
+def read_line_documentation() -> str:
     """Returns documentation for the read-line function."""
     return """Function: read-line
 Arguments: (read-line [prompt])

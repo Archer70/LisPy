@@ -1,8 +1,9 @@
 from typing import List, Any
 from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_println(args: List[Any], env: Environment) -> None:
+@lispy_function("println")
+def println(args: List[Any], env: Environment) -> None:
     """Prints values to the console with a newline. (println value1 value2 ...)"""
     if not args:
         # Print just a newline if no arguments
@@ -31,7 +32,8 @@ def builtin_println(args: List[Any], env: Environment) -> None:
     return None
 
 
-def documentation_println() -> str:
+@lispy_documentation("println")
+def println_documentation() -> str:
     """Returns documentation for the println function."""
     return """Function: println
 Arguments: (println value1 value2 ...)

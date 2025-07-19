@@ -6,9 +6,10 @@ from lispy.exceptions import EvaluationError
 from lispy.web.app import WebApp
 from lispy.types import Symbol
 from .start_server import _running_servers
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_stop_server(args, env):
+@lispy_function("stop-server", web_safe=False, reason="Network access")
+def stop_server(args, env):
     """
     Stop a running HTTP server gracefully.
     
@@ -94,7 +95,8 @@ def _stop_server_by_info(server_info: dict) -> bool:
         return False
 
 
-def documentation_stop_server():
+@lispy_documentation("stop-server")
+def stop_server_documentation():
     """Returns documentation for the stop-server function."""
     return """Function: stop-server
 Arguments: (stop-server app-or-server-info)

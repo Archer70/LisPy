@@ -9,10 +9,12 @@ import json
 import threading
 from lispy.types import LispyPromise, Symbol
 from lispy.exceptions import ArityError, EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 from .utils import validate_url_with_message, normalize_headers, create_response_map, HTTPError
 
 
-def builtin_http_post(args, env):
+@lispy_function("http-post", web_safe=False, reason="Network access")
+def http_post(args, env):
     """
     Make an HTTP POST request and return a promise.
     
@@ -207,8 +209,9 @@ def _convert_for_json(value):
         return value
 
 
-# Documentation
-documentation_http_post = """
+@lispy_documentation("http-post")
+def http_post_documentation():
+    return """
 http-post: Make an HTTP POST request
 
 Usage:

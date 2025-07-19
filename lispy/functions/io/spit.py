@@ -2,9 +2,10 @@ from typing import List, Any
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
 import os
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_spit(args: List[Any], env: Environment) -> None:
+@lispy_function("spit", web_safe=False, reason="File system access")
+def spit(args: List[Any], env: Environment) -> None:
     """Writes content to a file. (spit filename content)"""
     if len(args) != 2:
         raise EvaluationError(
@@ -72,7 +73,8 @@ def builtin_spit(args: List[Any], env: Environment) -> None:
         )
 
 
-def documentation_spit() -> str:
+@lispy_documentation("spit")
+def spit_documentation() -> str:
     """Returns documentation for the spit function."""
     return """Function: spit
 Arguments: (spit filename content)

@@ -2,21 +2,21 @@
 HTTP functions for LisPy.
 """
 
-from .get import builtin_http_get, documentation_http_get
-from .post import builtin_http_post, documentation_http_post
-from .put import builtin_http_put, documentation_http_put
-from .delete import builtin_http_delete, documentation_http_delete
-from .request import builtin_http_request, documentation_http_request
+from .get import http_get, http_get_documentation
+from .post import http_post, http_post_documentation
+from .put import http_put, http_put_documentation
+from .delete import http_delete, http_delete_documentation
+from .request import http_request, http_request_documentation
 
 __all__ = [
-    'builtin_http_get',
-    'documentation_http_get',
-    'builtin_http_post', 
-    'documentation_http_post',
-    'builtin_http_put',
-    'documentation_http_put',
-    'builtin_http_delete',
-    'documentation_http_delete',
-    'builtin_http_request',
-    'documentation_http_request',
-] 
+    'http_get',
+    'http_get_documentation',
+    'http_post', 
+    'http_post_documentation',
+    'http_put',
+    'http_put_documentation',
+    'http_delete',
+    'http_delete_documentation',
+    'http_request',
+    'http_request_documentation',
+]

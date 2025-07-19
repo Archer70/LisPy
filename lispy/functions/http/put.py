@@ -9,10 +9,12 @@ import json
 import threading
 from lispy.types import LispyPromise, Symbol
 from lispy.exceptions import ArityError, EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 from .utils import validate_url_with_message, normalize_headers, create_response_map, HTTPError
 
 
-def builtin_http_put(args, env):
+@lispy_function("http-put", web_safe=False, reason="Network access")
+def http_put(args, env):
     """
     Make an HTTP PUT request and return a promise.
     
@@ -208,7 +210,9 @@ def _convert_for_json(value):
 
 
 # Documentation
-documentation_http_put = """
+@lispy_documentation("http-put")
+def http_put_documentation():
+    return """
 http-put: Make an HTTP PUT request
 
 Usage:

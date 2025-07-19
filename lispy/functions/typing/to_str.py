@@ -61,7 +61,7 @@ def to_str_fn(args, env):
         return str(value)
 
 
-def documentation_str() -> str:
+def documentation_to_str() -> str:
     """Returns documentation for the to-str function."""
     return """Function: to-str
 Arguments: (to-str value)
