@@ -1,10 +1,12 @@
 from lispy.types import Symbol
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 from typing import List, Any
 
 
-def builtin_dissoc(args: List[Any], env: Environment):
+@lispy_function("dissoc")
+def dissoc(args: List[Any], env: Environment):
     """Removes keys from a map.
     (dissoc map key & keys)
     Behaves like Clojure's dissoc.
@@ -39,7 +41,8 @@ def builtin_dissoc(args: List[Any], env: Environment):
     return new_map
 
 
-def documentation_dissoc() -> str:
+@lispy_documentation("dissoc")
+def dissoc_doc() -> str:
     """Returns documentation for the dissoc function."""
     return """Function: dissoc
 Arguments: (dissoc map key1 key2 ...)

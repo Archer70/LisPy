@@ -1,107 +1,69 @@
 from typing import List, Any
-from lispy.environment import Environment
-from lispy.exceptions import EvaluationError
-import os
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
-@lispy_function("spit", web_safe=False, reason="File system access")
-def spit(args: List[Any], env: Environment) -> None:
-    """Writes content to a file. (spit filename content)"""
+
+@lispy_function("spit", web_safe=False)
+def spit_func(args: List[Any], env: Environment) -> None:
     if len(args) != 2:
         raise EvaluationError(
-            "SyntaxError: 'spit' expects 2 arguments (filename, content), got {}.".format(
-                len(args)
-            )
+            f"SyntaxError: 'spit' expects 2 arguments, got {len(args)}."
         )
 
-    filename_arg, content_arg = args
+    filepath, content = args
 
-    # Validate filename is a string
-    if not isinstance(filename_arg, str):
+    # Validate filepath is a string
+    if not isinstance(filepath, str):
         raise EvaluationError(
-            "TypeError: 'spit' filename must be a string, got {}.".format(
-                type(filename_arg).__name__
-            )
+            f"TypeError: First argument to 'spit' must be a string filepath, got {type(filepath).__name__}: '{filepath}'"
         )
 
-    # Validate content is a string
-    if not isinstance(content_arg, str):
-        raise EvaluationError(
-            "TypeError: 'spit' content must be a string, got {}.".format(
-                type(content_arg).__name__
-            )
-        )
+    # Convert content to string
+    if content is None:
+        content_str = "nil"
+    elif isinstance(content, bool):
+        content_str = "true" if content else "false"
+    elif isinstance(content, str):
+        content_str = content
+    else:
+        content_str = str(content)
 
-    filename = filename_arg
-    content = content_arg
-
+    # Write to file
     try:
-        # Check if the directory exists and create it if it doesn't
-        directory = os.path.dirname(filename)
-        if directory and not os.path.exists(directory):
-            try:
-                os.makedirs(directory, exist_ok=True)
-            except OSError as e:
-                raise EvaluationError(
-                    "OSError: Cannot create directory '{}': {}.".format(
-                        directory, str(e)
-                    )
-                )
-
-        # Write the file contents
-        with open(filename, "w", encoding="utf-8") as file:
-            file.write(content)
-
-        # Return None (spit doesn't return anything meaningful)
+        with open(filepath, 'w', encoding='utf-8') as file:
+            file.write(content_str)
         return None
-
     except PermissionError:
-        raise EvaluationError(
-            "PermissionError: Permission denied writing to file '{}'.".format(filename)
-        )
+        raise EvaluationError(f"PermissionError: Permission denied writing to '{filepath}'")
     except IsADirectoryError:
-        raise EvaluationError(
-            "IsADirectoryError: '{}' is a directory, not a file.".format(filename)
-        )
-    except OSError as e:
-        raise EvaluationError(
-            "OSError: Error writing to file '{}': {}.".format(filename, str(e))
-        )
+        raise EvaluationError(f"IsADirectoryError: '{filepath}' is a directory, not a file")
     except Exception as e:
-        raise EvaluationError(
-            "Error: Unexpected error writing to file '{}': {}.".format(filename, str(e))
-        )
+        raise EvaluationError(f"IOError: Error writing to file '{filepath}': {str(e)}")
 
 
 @lispy_documentation("spit")
 def spit_documentation() -> str:
-    """Returns documentation for the spit function."""
     return """Function: spit
-Arguments: (spit filename content)
-Description: Writes string content to a file, creating or overwriting as needed.
+Arguments: (spit filepath content)
+Description: Writes content to a file, creating or overwriting it.
 
 Examples:
-  (spit "output.txt" "Hello, World!")      ; => nil (writes to file)
-  (spit "data/log.txt" "Error occurred")   ; => nil (creates directory if needed)
-  (spit "config.json" "{\\"key\\": \\"value\\"}") ; => nil (writes JSON)
-  
-  ; Using with other functions:
-  (spit "numbers.txt" (to-str 42))            ; => nil (convert number to string)
-  (spit "lines.txt" (join ["a" "b" "c"] "\\n")) ; => nil (join and write lines)
-  (spit "report.txt" (to-str "Count: " (count data))) ; => nil (build and write report)
+  (spit "output.txt" "Hello World")     ; writes "Hello World" to file
+  (spit "data.log" "Log entry\\n")      ; writes log entry
+  (spit "config.json" "{}")            ; writes empty JSON object
+  (spit "numbers.txt" 42)              ; writes "42" to file
+  (spit "values.txt" nil)              ; writes "nil" to file
 
 Notes:
-  - Requires exactly two arguments (filename and content strings)
-  - Creates directories in the path if they don't exist
-  - Overwrites existing files completely
-  - Uses UTF-8 encoding for text files
-  - Returns nil (no meaningful return value)
-  - Throws descriptive errors for common issues:
-    * Permission denied
-    * Invalid directory path
-    * Trying to write to a directory
-    * File system errors
-  - Essential for file output, logging, and data export
-  - Pairs perfectly with slurp for file round-trips
-  - Memory efficient (writes content directly to disk)
-  - Atomic operation (file is written completely or not at all)"""
+  - Requires exactly two arguments (filepath and content)
+  - Filepath must be a string
+  - Content is converted to string before writing
+  - nil becomes "nil", booleans become "true"/"false"
+  - Creates file if it doesn't exist
+  - Overwrites existing file completely
+  - Uses UTF-8 encoding
+  - **WEB UNSAFE**: Can write arbitrary files to filesystem
+  - Raises error if file can't be written (permissions, etc.)
+  - Returns nil (used for side effect)
+  - Complement of the 'slurp' function"""

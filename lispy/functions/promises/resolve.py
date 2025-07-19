@@ -2,9 +2,11 @@ from typing import List, Any
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_resolve(args: List[Any], env: Environment) -> LispyPromise:
+@lispy_function("resolve")
+def resolve(args: List[Any], env: Environment) -> LispyPromise:
     """Creates a resolved promise with the given value. (resolve value)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -21,7 +23,8 @@ def builtin_resolve(args: List[Any], env: Environment) -> LispyPromise:
     return promise
 
 
-def documentation_resolve() -> str:
+@lispy_documentation("resolve")
+def resolve_doc() -> str:
     """Returns documentation for the resolve function."""
     return """Function: resolve
 Arguments: (resolve value)

@@ -1,9 +1,11 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError, AssertionFailure
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def bdd_assert_equal_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("assert-equal?")
+def assert_equal_q(args: List[Any], env: Environment) -> bool:
     """(assert-equal? expected actual)
     Asserts that `actual` is equal to `expected`.
     Raises AssertionFailure if they are not equal. Returns true if equal.
@@ -27,7 +29,8 @@ def bdd_assert_equal_q(args: List[Any], env: Environment) -> bool:
     return True  # Assertion passed
 
 
-def documentation_assert_equal_q() -> str:
+@lispy_documentation("assert-equal?")
+def assert_equal_q_doc() -> str:
     """Returns documentation for the assert-equal? function."""
     return """Function: assert-equal?
 Arguments: (assert-equal? expected actual)
@@ -48,8 +51,7 @@ Notes:
   - Requires exactly 2 arguments (expected, actual)
   - Uses Python's equality semantics (==)
   - Returns true if assertion passes
-  - Raises AssertionFailure with detailed message if values differ
-  - Error message includes both values and their types
-  - Essential for BDD testing workflows
-  - Used within 'then' steps for test verification
-  - Supports all LisPy data types (numbers, strings, lists, vectors, maps, etc.)"""
+  - Raises AssertionFailure on mismatch
+  - Essential for BDD-style testing
+  - Use in 'then' blocks to verify behavior
+  - Can compare any LisPy values (numbers, strings, collections, etc.)"""

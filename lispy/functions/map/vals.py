@@ -1,10 +1,12 @@
 from lispy.types import LispyList
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 from typing import List, Any
 
 
-def builtin_vals(args: List[Any], env: Environment):
+@lispy_function("vals")
+def vals(args: List[Any], env: Environment):
     """Implementation of the (vals map) LisPy function.
     Returns a list of the values in a map.
     Usage: (vals map)
@@ -27,7 +29,8 @@ def builtin_vals(args: List[Any], env: Environment):
     return LispyList(list(target_map.values()))
 
 
-def documentation_vals() -> str:
+@lispy_documentation("vals")
+def vals_doc() -> str:
     """Returns documentation for the vals function."""
     return """Function: vals
 Arguments: (vals map)

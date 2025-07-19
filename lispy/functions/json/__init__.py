@@ -2,12 +2,12 @@
 JSON encoding and decoding functions for LisPy.
 """
 
-from .encode import builtin_json_encode, documentation_json_encode
-from .decode import builtin_json_decode, documentation_json_decode
+from .encode import json_encode, json_encode_doc
+from .decode import json_decode, json_decode_doc
 
 __all__ = [
-    'builtin_json_encode',
-    'documentation_json_encode',
-    'builtin_json_decode', 
-    'documentation_json_decode',
+    'json_encode',
+    'json_encode_doc',
+    'json_decode', 
+    'json_decode_doc',
 ] 

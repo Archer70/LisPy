@@ -1,8 +1,8 @@
 """LisPy Promise Functions"""
 
-from .promise import builtin_promise, documentation_promise
-from .resolve import builtin_resolve, documentation_resolve
-from .reject import builtin_reject, documentation_reject
+from .promise import promise, promise_doc
+from .resolve import resolve, resolve_doc
+from .reject import reject, reject_doc
 from .promise_all import builtin_promise_all, documentation_promise_all
 from .promise_race import builtin_promise_race, documentation_promise_race
 
@@ -25,9 +25,9 @@ from .throttle import builtin_throttle, documentation_throttle
 
 __all__ = [
     # Functions
-    "builtin_promise",
-    "builtin_resolve",
-    "builtin_reject",
+    "promise",
+    "resolve",
+    "reject",
     "builtin_promise_all",
     "builtin_promise_race",
     "builtin_promise_any",
@@ -44,9 +44,9 @@ __all__ = [
     "builtin_retry",
     "builtin_throttle",
     # Documentation
-    "documentation_promise",
-    "documentation_resolve",
-    "documentation_reject",
+    "promise_doc",
+    "resolve_doc",
+    "reject_doc",
     "documentation_promise_all",
     "documentation_promise_race",
     "documentation_promise_any",

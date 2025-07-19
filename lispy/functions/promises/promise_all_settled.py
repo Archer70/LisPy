@@ -1,6 +1,6 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector, Symbol
-from lispy.functions.map import builtin_hash_map
+from lispy.functions.map import hash_map
 import threading
 import time
 
@@ -70,7 +70,7 @@ def builtin_promise_all_settled(args, env):
                 # Create status object based on settlement
                 if promise.state == "resolved":
                     # Create fulfilled status object using hash-map with Symbol keys
-                    status_obj = builtin_hash_map(
+                    status_obj = hash_map(
                         [
                             Symbol(":status"),
                             "fulfilled",
@@ -81,7 +81,7 @@ def builtin_promise_all_settled(args, env):
                     )
                 elif promise.state == "rejected":
                     # Create rejected status object using hash-map with Symbol keys
-                    status_obj = builtin_hash_map(
+                    status_obj = hash_map(
                         [
                             Symbol(":status"),
                             "rejected",
@@ -92,7 +92,7 @@ def builtin_promise_all_settled(args, env):
                     )
                 else:
                     # This should never happen, but handle gracefully
-                    status_obj = builtin_hash_map(
+                    status_obj = hash_map(
                         [
                             Symbol(":status"),
                             "unknown",

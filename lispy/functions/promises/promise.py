@@ -4,9 +4,11 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 from lispy.closure import Function
 from lispy.evaluator import evaluate
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_promise(args: List[Any], env: Environment) -> LispyPromise:
+@lispy_function("promise")
+def promise(args: List[Any], env: Environment) -> LispyPromise:
     """Creates a promise from a function. (promise function)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -49,40 +51,37 @@ def builtin_promise(args: List[Any], env: Environment) -> LispyPromise:
                 result = evaluate(expr_in_body, call_env)
             return result
         else:
-            # Call built-in function
+            # Call built-in function with no arguments
             return thunk([], env)
 
     return LispyPromise(executor)
 
 
-def documentation_promise() -> str:
+@lispy_documentation("promise")
+def promise_doc() -> str:
     """Returns documentation for the promise function."""
     return """Function: promise
 Arguments: (promise function)
-Description: Creates a promise that executes the given function asynchronously.
+Description: Creates a promise that will execute the given function asynchronously.
 
 Examples:
-  (promise #(+ 1 2))                    ; => Promise(pending) -> Promise(resolved: 3)
-  (promise #(slurp "file.txt"))         ; => Promise that reads file asynchronously
-  (promise #(* 10 10))                  ; => Promise(pending) -> Promise(resolved: 100)
+  ; Create a promise from a function
+  (define my-promise (promise (fn [] (+ 1 2))))
   
-  ; Using with await:
-  (async
-    (let [result (await (promise #(+ 5 5)))]
-      (println "Result:" result)))       ; => prints "Result: 10"
-      
-  ; Wrapping blocking operations:
-  (defn-async fetch-data []
-    (await (promise #(http-get "api.com"))))
+  ; Create promise from an expensive computation
+  (define slow-promise 
+    (promise (fn [] 
+               (print "Computing...") 
+               (* 42 42))))
+  
+  ; Chain promises with then
+  (-> (promise (fn [] 10))
+      (then (fn [x] (* x 2)))
+      (then (fn [x] (println "Result:" x))))
 
 Notes:
-  - Requires exactly one argument (a function/lambda)
-  - The function is executed in a background thread
-  - Returns a Promise object immediately
-  - Use with 'await' to wait for the result
-  - Perfect for wrapping blocking operations
-  - Essential building block for async programming
-  - The function should be a zero-argument lambda (#(...))
-  - Use with existing synchronous functions to make them async
-  - Promises can be chained with then/catch methods
-  - Execution starts immediately when promise is created"""
+  - Requires exactly 1 argument (a function)
+  - The function must take 0 arguments
+  - The function is executed asynchronously when the promise is resolved
+  - Use 'then' to chain operations on promise results
+  - Use 'resolve' and 'reject' for manual promise control"""

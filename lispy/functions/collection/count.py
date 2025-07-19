@@ -1,53 +1,48 @@
 # lispy_project/lispy/functions/count.py
 from typing import List, Any
-from lispy.types import Vector  # For type checking
-from lispy.exceptions import EvaluationError
-from lispy.environment import Environment  # Added Environment import
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_count(args: List[Any], env: Environment) -> int:  # Added env parameter
-    """Returns the number of items in a collection (list, vector, map, string) or 0 for nil. (count collection)"""
+@lispy_function("count")
+def count_func(args: List[Any], env: Environment) -> int:
     if len(args) != 1:
         raise EvaluationError(
             f"SyntaxError: 'count' expects 1 argument, got {len(args)}."
         )
 
-    arg = args[0]
+    collection = args[0]
 
-    if arg is None:  # nil
+    # Handle different collection types
+    if collection is None:
         return 0
-    elif isinstance(arg, (list, Vector, str, dict)):
-        return len(arg)
+    elif isinstance(collection, (list, str, dict)):
+        return len(collection)
     else:
-        type_name = type(arg).__name__
-        # Special handling for Function type name for clarity in error
-        if hasattr(arg, "__class__") and arg.__class__.__name__ == "Function":
-            type_name = "Function"  # Though count shouldn't be called on functions
         raise EvaluationError(
-            f"TypeError: 'count' expects a list, vector, map, string, or nil. Got {type_name}"
+            f"TypeError: 'count' expects a collection (list, vector, map, or string), got {type(collection).__name__}: '{collection}'"
         )
 
 
-def documentation_count() -> str:
-    """Returns documentation for the count function."""
+@lispy_documentation("count")
+def count_documentation() -> str:
     return """Function: count
 Arguments: (count collection)
-Description: Returns the number of items in a collection.
+Description: Returns the number of elements in a collection.
 
 Examples:
-  (count (list 1 2 3))      ; => 3
-  (count [1 2 3])           ; => 3
-  (count {:a 1 :b 2})       ; => 2
-  (count "hello")           ; => 5
-  (count "")                ; => 0
-  (count (list))            ; => 0
-  (count [])                ; => 0
-  (count nil)               ; => 0
+  (count [1 2 3 4])             ; => 4
+  (count '(a b c))              ; => 3
+  (count {:a 1 :b 2})           ; => 2
+  (count "hello")               ; => 5
+  (count [])                    ; => 0
+  (count nil)                   ; => 0
 
 Notes:
   - Requires exactly one argument
-  - Works with lists, vectors, maps, strings, and nil
-  - For maps, counts key-value pairs
-  - For strings, counts characters
-  - nil always returns 0
-  - Empty collections return 0"""
+  - Works with vectors, lists, maps, and strings
+  - nil counts as 0 (empty collection)
+  - For maps, counts the number of key-value pairs
+  - For strings, counts the number of characters
+  - Essential for iteration and bounds checking"""

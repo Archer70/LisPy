@@ -1,59 +1,51 @@
 from typing import List, Any
-from lispy.environment import Environment
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
+
 
 @lispy_function("println")
-def println(args: List[Any], env: Environment) -> None:
-    """Prints values to the console with a newline. (println value1 value2 ...)"""
-    if not args:
-        # Print just a newline if no arguments
+def println_func(args: List[Any], env: Environment) -> None:
+    if len(args) == 0:
         print()
         return None
 
-    # Convert each argument to string and print
+    # Convert all arguments to strings and print them
     output_parts = []
     for arg in args:
-        if isinstance(arg, str):
-            # Print strings without quotes
-            output_parts.append(arg)
-        elif arg is None:
+        if arg is None:
             output_parts.append("nil")
         elif isinstance(arg, bool):
-            # Print booleans as lowercase
             output_parts.append("true" if arg else "false")
+        elif isinstance(arg, str):
+            output_parts.append(arg)
         else:
-            # Use string representation for other types
             output_parts.append(str(arg))
-
-    # Join with spaces and print with newline
-    output = " ".join(output_parts)
-    print(output)
-
+    
+    # Print with trailing newline
+    print(" ".join(output_parts))
     return None
 
 
 @lispy_documentation("println")
 def println_documentation() -> str:
-    """Returns documentation for the println function."""
     return """Function: println
 Arguments: (println value1 value2 ...)
-Description: Prints values to console separated by spaces, with a trailing newline.
+Description: Prints values to standard output with a trailing newline.
 
 Examples:
-  (println "Hello")                     ; prints: Hello\\n
-  (println "Hello" "World")             ; prints: Hello World\\n
-  (println "Number:" 42)                ; prints: Number: 42\\n
-  (println true false nil)              ; prints: true false nil\\n
-  (println [1 2 3])                     ; prints: [1 2 3]\\n
-  (println {:a 1})                      ; prints: {:a 1}\\n
-  (println)                             ; prints: \\n
+  (println "Hello")             ; prints "Hello" then newline
+  (println "Hello" "World")     ; prints "Hello World" then newline
+  (println 42)                  ; prints "42" then newline
+  (println true false nil)      ; prints "true false nil" then newline
+  (println)                     ; prints just a newline
 
 Notes:
   - Accepts zero or more arguments
-  - Arguments are separated by single spaces
-  - Always adds a newline at the end
-  - Strings are printed without quotes
-  - Booleans printed as "true"/"false", nil as "nil"
-  - Always returns nil
-  - Empty call prints just a newline
-  - Most common print function for line-by-line output"""
+  - Values are separated by spaces when printed
+  - Always adds a trailing newline (use print to avoid newline)
+  - nil becomes "nil", booleans become "true"/"false"
+  - All other values converted to strings
+  - Returns nil (used for side effect)
+  - Essential for output and debugging
+  - Safe for web environments (output only)"""

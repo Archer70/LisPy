@@ -1,23 +1,11 @@
-from lispy.exceptions import EvaluationError
-from lispy.types import LispyList, Vector
+from typing import List, Any
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def reverse_fn(args, env):
-    """Reverse the order of elements in a collection.
-
-    Usage: (reverse collection)
-
-    Args:
-        collection: A vector or list to reverse
-
-    Returns:
-        A new collection of the same type with elements in reverse order
-
-    Examples:
-        (reverse [1 2 3 4]) => [4 3 2 1]
-        (reverse '(a b c)) => (c b a)
-        (reverse []) => []
-    """
+@lispy_function("reverse")
+def reverse_func(args: List[Any], env: Environment) -> List[Any]:
     if len(args) != 1:
         raise EvaluationError(
             f"SyntaxError: 'reverse' expects 1 argument, got {len(args)}."
@@ -25,40 +13,40 @@ def reverse_fn(args, env):
 
     collection = args[0]
 
-    # Validate collection type
-    if not isinstance(collection, (LispyList, Vector)):
+    # Handle nil case
+    if collection is None:
+        return []
+
+    # Validate and reverse collection
+    if isinstance(collection, list):
+        return list(reversed(collection))
+    elif isinstance(collection, str):
+        return list(reversed(collection))
+    else:
         raise EvaluationError(
-            f"TypeError: Argument to 'reverse' must be a list or vector, got {type(collection)}."
+            f"TypeError: 'reverse' expects a list, vector, or string, got {type(collection).__name__}: '{collection}'"
         )
 
-    # Create reversed copy
-    if isinstance(collection, Vector):
-        return Vector(collection[::-1])
-    else:  # LispyList
-        return LispyList(collection[::-1])
 
-
-def documentation_reverse() -> str:
-    """Returns documentation for the reverse function."""
+@lispy_documentation("reverse")
+def reverse_documentation() -> str:
     return """Function: reverse
 Arguments: (reverse collection)
-Description: Returns a new collection with elements in reverse order.
+Description: Returns a new list with elements in reverse order.
 
 Examples:
   (reverse [1 2 3 4])           ; => [4 3 2 1]
-  (reverse '(a b c d))          ; => (d c b a)
+  (reverse '(a b c))            ; => [c b a]
+  (reverse "hello")             ; => ["o" "l" "l" "e" "h"]
   (reverse [])                  ; => []
-  (reverse '())                 ; => ()
-  (reverse [42])                ; => [42] (single element)
-  (reverse ["apple" "banana"])  ; => ["banana" "apple"]
-  (reverse [1 "hi" true])       ; => [true "hi" 1] (mixed types)
+  (reverse nil)                 ; => []
 
 Notes:
   - Requires exactly one argument
-  - Argument must be a vector or list
-  - Returns same collection type as input (vector -> vector, list -> list)
-  - Original collection is not modified (immutable operation)
-  - Empty collections return empty collections
-  - Works with any element types including mixed types
-  - Useful for processing collections in reverse order
-  - Can be chained with other collection functions"""
+  - Works with lists, vectors, and strings
+  - For strings, returns list of characters in reverse order
+  - nil returns empty list
+  - Always returns a list (not original collection type)
+  - Does not modify the original collection
+  - Useful for processing in reverse order
+  - Essential for many algorithms and data transformations"""

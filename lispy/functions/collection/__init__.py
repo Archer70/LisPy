@@ -1,55 +1,62 @@
-"""LisPy Collection Functions"""
+"""LisPy Collection Functions - Partially using decorator-based registration"""
 
-from .append import append_fn, documentation_append
-from .concat import concat_fn, documentation_concat
-from .conj import builtin_conj, documentation_conj
-from .count import builtin_count, documentation_count
-from .empty import builtin_empty_q, documentation_empty_q
+# The functions are now automatically registered via decorators
+# Import converted functions to trigger the decorator registration
+from .append import append_func, append_documentation
+from .concat import concat_func, concat_documentation
+from .conj import conj_func, conj_documentation
+from .count import count_func, count_documentation
+from .empty import empty_q, empty_q_documentation
+from .first import first_func, first_documentation
+from .filter import filter_func, filter_documentation
+from .map import map_func, map_documentation
+from .nth import nth_func, nth_documentation
+from .reduce import reduce_func, reduce_documentation
+from .rest import rest_func, rest_documentation
+from .reverse import reverse_func, reverse_documentation
+
+# Import remaining functions that haven't been converted yet (legacy)
 from .every_q import builtin_every_q, documentation_every_q
-from .filter import builtin_filter, documentation_filter
-from .first import builtin_first, documentation_first
-from .map import builtin_map, documentation_map
-from .nth import nth_fn, documentation_nth
 from .range import builtin_range, documentation_range
-from .reduce import builtin_reduce, documentation_reduce
-from .rest import builtin_rest, documentation_rest
-from .reverse import reverse_fn, documentation_reverse
 from .some import builtin_some, documentation_some
 from .sort import sort_fn, documentation_sort
 
 __all__ = [
-    # Functions
-    "append_fn",
-    "builtin_conj",
-    "builtin_count",
-    "builtin_empty_q",
+    # Converted functions (new names)
+    "append_func",
+    "concat_func", 
+    "conj_func",
+    "count_func",
+    "empty_q",
+    "first_func",
+    "filter_func",
+    "map_func",
+    "nth_func",
+    "reduce_func",
+    "rest_func",
+    "reverse_func",
+    # Converted documentation (new names)
+    "append_documentation",
+    "concat_documentation",
+    "conj_documentation", 
+    "count_documentation",
+    "empty_q_documentation",
+    "first_documentation",
+    "filter_documentation",
+    "map_documentation",
+    "nth_documentation",
+    "reduce_documentation",
+    "rest_documentation",
+    "reverse_documentation",
+    
+    # Legacy functions (not yet converted)
     "builtin_every_q",
-    "builtin_filter",
-    "builtin_first",
-    "builtin_map",
     "builtin_range",
-    "builtin_reduce",
-    "builtin_rest",
-    "builtin_some",
-    "concat_fn",
-    "nth_fn",
-    "reverse_fn",
+    "builtin_some", 
     "sort_fn",
-    # Documentation
-    "documentation_append",
-    "documentation_concat",
-    "documentation_conj",
-    "documentation_count",
-    "documentation_empty_q",
+    # Legacy documentation (not yet converted)
     "documentation_every_q",
-    "documentation_filter",
-    "documentation_first",
-    "documentation_map",
-    "documentation_nth",
     "documentation_range",
-    "documentation_reduce",
-    "documentation_rest",
-    "documentation_reverse",
     "documentation_some",
     "documentation_sort",
 ]

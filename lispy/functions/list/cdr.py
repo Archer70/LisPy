@@ -1,10 +1,12 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_cdr(args: List[Any], env: Environment) -> List[Any]:
-    """Returns all elements of a list except the first. (cdr list)"""
+@lispy_function("cdr")
+def cdr(args: List[Any], env: Environment) -> List[Any]:
+    """Returns all but the first element of a list. (cdr list)"""
     if len(args) != 1:
         raise EvaluationError(
             f"SyntaxError: 'cdr' expects 1 argument (a list), got {len(args)}."
@@ -23,23 +25,23 @@ def builtin_cdr(args: List[Any], env: Environment) -> List[Any]:
     return list_arg[1:]
 
 
-def documentation_cdr() -> str:
+@lispy_documentation("cdr")
+def cdr_doc() -> str:
     """Returns documentation for the cdr function."""
     return """Function: cdr
 Arguments: (cdr list)
-Description: Returns all elements of a list except the first (the tail).
+Description: Returns all but the first element of a list (the "rest" of the list).
 
 Examples:
   (cdr (list 1 2 3))    ; => (2 3)
   (cdr '(a b c))        ; => (b c)
   (cdr (list "x" "y"))  ; => ("y")
-  (cdr (list 10))       ; => ()
-  (cdr '(1 2 3 4))      ; => (2 3 4)
+  (cdr (list 1))        ; => ()
 
 Notes:
-  - Returns the tail of the list (everything except the first element)
+  - Returns the tail of the list (all elements except the first)
   - Cannot operate on empty lists - raises an error
   - Classic Lisp function name (Contents of Decrement Register)
-  - For a single-element list, returns an empty list
+  - Expects exactly one argument which must be a non-empty list
   - Use with 'car' to process lists recursively
-  - Expects exactly one argument which must be a non-empty list"""
+  - Result is always a list (may be empty if input had only one element)"""

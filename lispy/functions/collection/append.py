@@ -1,56 +1,55 @@
-from lispy.exceptions import EvaluationError
+from typing import List, Any
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ...types import Vector
+from ..decorators import lispy_function, lispy_documentation
 
 
-def append_fn(args, env):
-    """Append multiple strings into a single string.
+@lispy_function("append")
+def append_func(args: List[Any], env: Environment) -> List[Any]:
+    if len(args) < 2:
+        raise EvaluationError(
+            f"SyntaxError: 'append' expects at least 2 arguments, got {len(args)}."
+        )
 
-    Usage: (append string1 string2 ...)
-
-    Args:
-        string1, string2, ...: Strings to concatenate
-
-    Returns:
-        A new string containing all input strings concatenated in order
-
-    Examples:
-        (append "Hello" " " "World") => "Hello World"
-        (append "a" "b" "c") => "abc"
-        (append) => ""  ; Empty append returns empty string
-        (append "only") => "only"  ; Single string returns itself
-    """
-    if len(args) == 0:
-        # Empty append returns empty string
-        return ""
-
-    # Validate all arguments are strings
+    result = []
+    
     for i, arg in enumerate(args):
-        if not isinstance(arg, str):
-            raise EvaluationError(
-                f"TypeError: 'append' arguments must be strings, got {type(arg)} at position {i}."
-            )
+        if isinstance(arg, list):
+            result.extend(arg)
+        elif isinstance(arg, str):
+            # Treat strings as sequences of characters
+            result.extend(list(arg))
+        elif arg is None:
+            # nil contributes nothing
+            continue
+        else:
+            # Individual elements are appended as-is
+            result.append(arg)
 
-    # Concatenate all strings
-    return "".join(args)
+    return result
 
 
-def documentation_append() -> str:
-    """Returns documentation for the append function."""
+@lispy_documentation("append")
+def append_documentation() -> str:
     return """Function: append
-Arguments: (append string1 string2 ...)
-Description: Concatenates zero or more strings into a single string.
+Arguments: (append collection1 collection2 ...)
+Description: Concatenates multiple collections into a single list.
 
 Examples:
-  (append)                  ; => ""
-  (append "Hello")          ; => "Hello"
-  (append "Hello" " " "World")  ; => "Hello World"
-  (append "a" "b" "c")      ; => "abc"
-  (append "start" "" "end") ; => "startend"
-  (append "123" "456")      ; => "123456"
+  (append [1 2] [3 4])          ; => [1 2 3 4]
+  (append '(a b) '(c d))        ; => [a b c d]
+  (append [1] [2] [3])          ; => [1 2 3]
+  (append [1 2] 3 [4 5])        ; => [1 2 3 4 5]
+  (append "hello" " " "world")  ; => ["h" "e" "l" "l" "o" " " "w" "o" "r" "l" "d"]
+  (append [] [1 2])             ; => [1 2]
+  (append [1 2] nil [3])        ; => [1 2 3]
 
 Notes:
-  - Accepts zero or more string arguments
-  - All arguments must be strings
-  - Returns empty string if no arguments provided
-  - Creates a new string without modifying originals
-  - Useful for building strings dynamically
-  - Works well with thread-first macro"""
+  - Requires at least two arguments
+  - Collections are flattened into the result
+  - Individual elements are added as single items
+  - Strings are treated as sequences of characters
+  - nil arguments are ignored
+  - Always returns a list
+  - Useful for building larger collections from smaller ones"""

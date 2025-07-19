@@ -1,16 +1,11 @@
-from lispy.types import LispyList, Vector
-from lispy.exceptions import EvaluationError
-from lispy.environment import Environment
-from typing import List, Any
-
-EXPECTED_TYPES_MSG = "a list, vector, string, or nil"
+from typing import List, Any, Optional
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_first(args: List[Any], env: Environment):
-    """Implementation of the (first collection) LisPy function.
-    Returns the first item of a list, vector, or string. Returns nil for nil or empty collections.
-    Usage: (first collection)
-    """
+@lispy_function("first")
+def first_func(args: List[Any], env: Environment) -> Any:
     if len(args) != 1:
         raise EvaluationError(
             f"SyntaxError: 'first' expects 1 argument, got {len(args)}."
@@ -18,38 +13,38 @@ def builtin_first(args: List[Any], env: Environment):
 
     collection = args[0]
 
+    # Handle nil case
     if collection is None:
         return None
-    if isinstance(collection, (LispyList, Vector, str)):
-        if not collection:  # Empty list, vector, or string
-            return None
-        return collection[0]
+
+    # Handle different collection types
+    if isinstance(collection, list):
+        return collection[0] if collection else None
+    elif isinstance(collection, str):
+        return collection[0] if collection else None
     else:
         raise EvaluationError(
-            f"TypeError: 'first' expects {EXPECTED_TYPES_MSG}, got {type(collection)}."
+            f"TypeError: 'first' expects a list, vector, or string, got {type(collection).__name__}: '{collection}'"
         )
 
 
-def documentation_first() -> str:
-    """Returns documentation for the first function."""
+@lispy_documentation("first")
+def first_documentation() -> str:
     return """Function: first
 Arguments: (first collection)
-Description: Returns the first element of a collection, or nil if empty.
+Description: Returns the first element of a collection.
 
 Examples:
-  (first (list 1 2 3))      ; => 1
-  (first [1 2 3])           ; => 1
-  (first "hello")           ; => "h"
-  (first (list))            ; => nil
-  (first [])                ; => nil
-  (first "")                ; => nil
-  (first nil)               ; => nil
-  (first '((1 2) 3))        ; => (1 2)
+  (first [1 2 3])               ; => 1
+  (first '(a b c))              ; => a
+  (first "hello")               ; => "h"
+  (first [])                    ; => nil
+  (first nil)                   ; => nil
 
 Notes:
   - Requires exactly one argument
-  - Works with lists, vectors, strings, and nil
+  - Works with lists, vectors, and strings
   - Returns nil for empty collections or nil input
-  - Alternative to car function for lists
-  - For strings, returns first character as string
-  - Safe alternative to indexing (no errors on empty)"""
+  - For strings, returns the first character as a string
+  - Essential for list processing and iteration
+  - Complement of the 'rest' function"""

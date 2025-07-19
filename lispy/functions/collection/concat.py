@@ -1,78 +1,57 @@
-from lispy.exceptions import EvaluationError
-from lispy.types import LispyList, Vector
+from typing import List, Any
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def concat_fn(args, env):
-    """Concatenate multiple collections into a single collection.
-
-    Usage: (concat collection1 collection2 ...)
-
-    Args:
-        collection1, collection2, ...: Vectors or lists to concatenate
-
-    Returns:
-        A new collection of the same type as the first argument containing
-        all elements from the input collections in order
-
-    Examples:
-        (concat [1 2] [3 4] [5]) => [1 2 3 4 5]
-        (concat '(1 2) '(3 4) '(5)) => (1 2 3 4 5)
-        (concat [1 2] '(3 4)) => [1 2 3 4]  ; Result type matches first arg
-        (concat) => []  ; Empty concat returns empty vector
-    """
-    if len(args) == 0:
-        # Empty concat returns empty vector by convention
-        return Vector([])
-
-    # Determine result type from first argument
-    first_collection = args[0]
-
-    # Validate that first argument is a collection
-    if not isinstance(first_collection, (LispyList, Vector)):
+@lispy_function("concat")
+def concat_func(args: List[Any], env: Environment) -> List[Any]:
+    if len(args) < 1:
         raise EvaluationError(
-            f"TypeError: 'concat' arguments must be lists or vectors, got {type(first_collection)} as first argument."
+            f"SyntaxError: 'concat' expects at least 1 argument, got {len(args)}."
         )
 
-    # Determine result type
-    result_type = Vector if isinstance(first_collection, Vector) else LispyList
-
-    # Collect all elements from all collections
-    all_elements = []
-
+    result = []
+    
     for i, collection in enumerate(args):
-        # Validate each argument
-        if not isinstance(collection, (LispyList, Vector)):
+        # Handle nil case - nil contributes nothing
+        if collection is None:
+            continue
+            
+        # Validate collection types
+        if isinstance(collection, list):
+            result.extend(collection)
+        elif isinstance(collection, str):
+            result.extend(list(collection))  # Convert string to list of characters
+        else:
             raise EvaluationError(
-                f"TypeError: 'concat' arguments must be lists or vectors, got {type(collection)} at position {i}."
+                f"TypeError: Argument {i + 1} to 'concat' must be a list, vector, or string, got {type(collection).__name__}: '{collection}'"
             )
 
-        # Add all elements from this collection
-        all_elements.extend(collection)
-
-    return result_type(all_elements)
+    return result
 
 
-def documentation_concat() -> str:
-    """Returns documentation for the concat function."""
+@lispy_documentation("concat")
+def concat_documentation() -> str:
     return """Function: concat
 Arguments: (concat collection1 collection2 ...)
-Description: Concatenates multiple collections into a single collection.
+Description: Concatenates multiple collections into a single list.
 
 Examples:
-  (concat)                      ; => [] (empty returns empty vector)
   (concat [1 2] [3 4])          ; => [1 2 3 4]
-  (concat '(1 2) '(3 4))        ; => (1 2 3 4)
-  (concat [1] [2 3] [4 5 6])    ; => [1 2 3 4 5 6]
-  (concat [1 2] '(3 4) [5])     ; => [1 2 3 4 5] (mixed types)
-  (concat [] [1 2] [])          ; => [1 2] (empty collections ignored)
-  (concat ["a" "b"] ["c"])      ; => ["a" "b" "c"]
+  (concat [1 2] [3 4] [5])      ; => [1 2 3 4 5]
+  (concat '(a b) '(c d))        ; => [a b c d]
+  (concat "hello" "world")      ; => ["h" "e" "l" "l" "o" "w" "o" "r" "l" "d"]
+  (concat [] [1 2] [])          ; => [1 2]
+  (concat [1] nil [2])          ; => [1 2]
+  (concat)                      ; => []
 
 Notes:
-  - Accepts zero or more collection arguments
-  - All arguments must be vectors or lists
-  - Result type matches the type of first argument (vector or list)
-  - Empty concat returns empty vector []
-  - Original collections are not modified (immutable operation)
-  - Mixed collection types allowed, result follows first argument type
-  - Empty collections in arguments are simply ignored
-  - Essential for building larger collections from smaller parts"""
+  - Accepts any number of arguments (at least 1)
+  - Collections must be lists, vectors, or strings
+  - Strings are converted to lists of characters
+  - nil arguments are ignored
+  - Always returns a list
+  - Empty collections contribute nothing to result
+  - Order of elements preserved across all collections
+  - Essential for combining multiple data sources"""

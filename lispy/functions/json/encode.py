@@ -5,8 +5,11 @@ Converts LisPy data structures to JSON strings.
 """
 
 import json
-from lispy.exceptions import LisPyError
+from typing import List, Any
+from lispy.exceptions import LisPyError, EvaluationError
 from lispy.types import Symbol, Vector, LispyList
+from lispy.environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
 class JSONEncodeError(LisPyError):
@@ -14,7 +17,8 @@ class JSONEncodeError(LisPyError):
     pass
 
 
-def builtin_json_encode(args, env):
+@lispy_function("json-encode")
+def json_encode(args: List[Any], env: Environment) -> str:
     """
     Encode LisPy data as a JSON string.
     
@@ -26,10 +30,10 @@ def builtin_json_encode(args, env):
         str: JSON string representation of the data
         
     Raises:
-        JSONEncodeError: If data cannot be encoded as JSON
+        EvaluationError: If data cannot be encoded as JSON
     """
     if len(args) != 1:
-        raise JSONEncodeError(f"json-encode expects exactly 1 argument, got {len(args)}")
+        raise EvaluationError(f"ArgumentError: 'json-encode' expects exactly 1 argument, got {len(args)}")
     
     data = args[0]
     
@@ -41,7 +45,7 @@ def builtin_json_encode(args, env):
         return json.dumps(json_compatible)
         
     except (TypeError, ValueError) as e:
-        raise JSONEncodeError(f"Cannot encode as JSON: {str(e)}")
+        raise EvaluationError(f"EncodingError: Cannot encode as JSON: {str(e)}")
 
 
 def _convert_for_json(value):
@@ -92,8 +96,9 @@ def _convert_for_json(value):
         return str(value)
 
 
-# Documentation
-documentation_json_encode = """
+@lispy_documentation("json-encode")
+def json_encode_doc():
+    return """
 json-encode: Convert LisPy data to JSON string
 
 Usage:

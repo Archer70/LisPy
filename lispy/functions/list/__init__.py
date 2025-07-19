@@ -1,22 +1,22 @@
 """LisPy List/Sequence Functions"""
 
-from .car import builtin_car, documentation_car
-from .cdr import builtin_cdr, documentation_cdr
-from .cons import builtin_cons, documentation_cons
-from .list import builtin_list, documentation_list
-from .vector import builtin_vector, documentation_vector
+from .car import car, car_doc
+from .cdr import cdr, cdr_doc
+from .cons import cons, cons_doc
+from .list import list_func, list_doc
+from .vector import vector, vector_doc
 
 __all__ = [
     # Functions
-    "builtin_car",
-    "builtin_cdr",
-    "builtin_cons",
-    "builtin_list",
-    "builtin_vector",
+    "car",
+    "cdr",
+    "cons",
+    "list_func",
+    "vector",
     # Documentation
-    "documentation_car",
-    "documentation_cdr",
-    "documentation_cons",
-    "documentation_list",
-    "documentation_vector",
+    "car_doc",
+    "cdr_doc",
+    "cons_doc",
+    "list_doc",
+    "vector_doc",
 ]

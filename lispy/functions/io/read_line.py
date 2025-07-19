@@ -1,64 +1,64 @@
 from typing import List, Any
-from lispy.environment import Environment
-from lispy.exceptions import EvaluationError
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
-@lispy_function("read-line", web_safe=False, reason="File system access")
-def read_line(args: List[Any], env: Environment) -> str:
-    """Reads a line of input from the console. (read-line [prompt])"""
+
+@lispy_function("read-line", web_safe=False)
+def read_line_func(args: List[Any], env: Environment) -> str:
     if len(args) > 1:
         raise EvaluationError(
-            "SyntaxError: 'read-line' expects 0 or 1 arguments (optional prompt), got {}.".format(
-                len(args)
-            )
+            f"SyntaxError: 'read-line' expects 0 or 1 arguments, got {len(args)}."
         )
 
-    prompt = ""
+    # Optional prompt
     if len(args) == 1:
-        prompt_arg = args[0]
-        if not isinstance(prompt_arg, str):
+        prompt = args[0]
+        if not isinstance(prompt, str):
             raise EvaluationError(
-                "TypeError: 'read-line' prompt must be a string, got {}.".format(
-                    type(prompt_arg).__name__
-                )
+                f"TypeError: 'read-line' prompt must be a string, got {type(prompt).__name__}: '{prompt}'"
             )
-        prompt = prompt_arg
-
+        
+        # Print prompt without newline
+        print(prompt, end="")
+    
+    # Read line from stdin
     try:
-        if prompt:
-            return input(prompt)
-        else:
-            return input()
+        line = input()
+        return line
     except EOFError:
-        # Return empty string on EOF (Ctrl+D on Unix, Ctrl+Z on Windows)
+        # Return empty string on EOF (Ctrl+D / end of input)
         return ""
     except KeyboardInterrupt:
-        # Re-raise KeyboardInterrupt to allow graceful shutdown
-        raise
+        # Handle Ctrl+C gracefully
+        raise EvaluationError("KeyboardInterrupt: User interrupted input")
+    except Exception as e:
+        raise EvaluationError(f"IOError: Error reading input: {str(e)}")
 
 
 @lispy_documentation("read-line")
 def read_line_documentation() -> str:
-    """Returns documentation for the read-line function."""
     return """Function: read-line
-Arguments: (read-line [prompt])
-Description: Reads a line of input from the console, optionally displaying a prompt.
+Arguments: (read-line) or (read-line prompt)
+Description: Reads a line of text from standard input.
 
 Examples:
-  (read-line)                           ; reads input with no prompt
-  (read-line "Enter your name: ")       ; reads input with prompt
-  (read-line "Age: ")                   ; reads input with custom prompt
+  (read-line)                   ; waits for user input, returns line
+  (read-line "Enter name: ")    ; shows prompt, returns input
+  (read-line "Password: ")      ; prompts for password input
   
-  ; Interactive examples:
-  (println "Hello" (read-line "Name: ")) ; => Hello [user input]
-  (let [input (read-line "Command: ")] input) ; => [user input]
+  ; Example interactive program:
+  (let [name (read-line "What's your name? ")]
+    (println "Hello," name))
 
 Notes:
-  - Accepts 0 or 1 arguments
-  - Optional first argument is a string prompt to display
-  - Returns the input string (without trailing newline)
-  - Returns empty string on EOF (Ctrl+D/Ctrl+Z)
-  - Allows KeyboardInterrupt (Ctrl+C) to propagate
+  - Accepts 0 or 1 arguments (optional prompt)
+  - Prompt must be a string if provided
+  - Waits for user to press Enter
+  - Returns the input line as a string (without newline)
+  - Returns empty string on EOF (end of input)
+  - **WEB UNSAFE**: Reads from standard input
   - Essential for interactive programs and user input
-  - Pairs well with print functions for user interaction
-  - Input is returned as-is (no automatic type conversion)"""
+  - Blocks execution until input is received
+  - Can be interrupted with Ctrl+C (raises error)
+  - Useful for command-line interfaces and prompts"""

@@ -1,7 +1,11 @@
 from lispy.exceptions import EvaluationError
+from lispy.environment import Environment
+from ..decorators import lispy_function, lispy_documentation
+from typing import List, Any
 
 
-def merge_fn(args, env):
+@lispy_function("merge")
+def merge(args: List[Any], env: Environment):
     """Merge multiple hash maps into a single hash map.
 
     Usage: (merge map1 map2 ...)
@@ -37,7 +41,8 @@ def merge_fn(args, env):
     return result_map
 
 
-def documentation_merge() -> str:
+@lispy_documentation("merge")
+def merge_doc() -> str:
     """Returns documentation for the merge function."""
     return """Function: merge
 Arguments: (merge map1 map2 ...)

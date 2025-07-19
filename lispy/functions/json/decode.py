@@ -5,8 +5,11 @@ Converts JSON strings to LisPy data structures.
 """
 
 import json
-from lispy.exceptions import LisPyError
+from typing import List, Any
+from lispy.exceptions import LisPyError, EvaluationError
 from lispy.types import Symbol, Vector
+from lispy.environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
 class JSONDecodeError(LisPyError):
@@ -14,7 +17,8 @@ class JSONDecodeError(LisPyError):
     pass
 
 
-def builtin_json_decode(args, env):
+@lispy_function("json-decode")
+def json_decode(args: List[Any], env: Environment) -> Any:
     """
     Decode a JSON string to LisPy data.
     
@@ -26,15 +30,15 @@ def builtin_json_decode(args, env):
         Decoded LisPy data structure
         
     Raises:
-        JSONDecodeError: If JSON string is invalid or cannot be decoded
+        EvaluationError: If JSON string is invalid or cannot be decoded
     """
     if len(args) != 1:
-        raise JSONDecodeError(f"json-decode expects exactly 1 argument, got {len(args)}")
+        raise EvaluationError(f"ArgumentError: 'json-decode' expects exactly 1 argument, got {len(args)}")
     
     json_string = args[0]
     
     if not isinstance(json_string, str):
-        raise JSONDecodeError(f"json-decode expects a string, got {type(json_string).__name__}")
+        raise EvaluationError(f"TypeError: 'json-decode' expects a string, got {type(json_string).__name__}")
     
     try:
         # Parse JSON string
@@ -44,9 +48,9 @@ def builtin_json_decode(args, env):
         return _convert_from_json(parsed_data)
         
     except json.JSONDecodeError as e:
-        raise JSONDecodeError(f"Invalid JSON: {str(e)}")
+        raise EvaluationError(f"ParseError: Invalid JSON: {str(e)}")
     except Exception as e:
-        raise JSONDecodeError(f"JSON decode error: {str(e)}")
+        raise EvaluationError(f"DecodeError: JSON decode error: {str(e)}")
 
 
 def _convert_from_json(value):
@@ -82,8 +86,9 @@ def _convert_from_json(value):
         return value
 
 
-# Documentation
-documentation_json_decode = """
+@lispy_documentation("json-decode")
+def json_decode_doc():
+    return """
 json-decode: Convert JSON string to LisPy data
 
 Usage:
@@ -126,13 +131,13 @@ Notes:
   - Object keys become keyword symbols (prefixed with :)
   - Arrays become vectors (not lists)
   - Nested structures are recursively converted
-  - Invalid JSON raises JSONDecodeError
+  - Invalid JSON raises ParseError
   - Whitespace in JSON is ignored (standard JSON parsing)
 
 Error Handling:
   (try
     (json-decode "invalid json")
-    (catch JSONDecodeError e
+    (catch ParseError e
       (println "Parse error:" e)))
 
 See also: json-encode for the reverse operation

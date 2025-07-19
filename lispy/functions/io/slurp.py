@@ -1,94 +1,57 @@
 from typing import List, Any
-from lispy.environment import Environment
-from lispy.exceptions import EvaluationError
-import os
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-@lispy_function("slurp", web_safe=False, reason="File system access")
-def slurp(args: List[Any], env: Environment) -> str:
-    """Reads the entire contents of a file as a string. (slurp filename)"""
+@lispy_function("slurp", web_safe=False)
+def slurp_func(args: List[Any], env: Environment) -> str:
     if len(args) != 1:
         raise EvaluationError(
-            "SyntaxError: 'slurp' expects 1 argument (filename), got {}.".format(
-                len(args)
-            )
+            f"SyntaxError: 'slurp' expects 1 argument, got {len(args)}."
         )
 
-    filename_arg = args[0]
-    if not isinstance(filename_arg, str):
+    filepath = args[0]
+
+    # Validate filepath is a string
+    if not isinstance(filepath, str):
         raise EvaluationError(
-            "TypeError: 'slurp' filename must be a string, got {}.".format(
-                type(filename_arg).__name__
-            )
+            f"TypeError: 'slurp' expects a string filepath, got {type(filepath).__name__}: '{filepath}'"
         )
 
-    filename = filename_arg
-
+    # Read the file
     try:
-        # Check if file exists
-        if not os.path.exists(filename):
-            raise EvaluationError(
-                "FileNotFoundError: File '{}' does not exist.".format(filename)
-            )
-
-        # Check if it's actually a file (not a directory)
-        if not os.path.isfile(filename):
-            raise EvaluationError(
-                "FileError: '{}' is not a regular file.".format(filename)
-            )
-
-        # Read the file contents
-        with open(filename, "r", encoding="utf-8") as file:
-            return file.read()
-
+        with open(filepath, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        raise EvaluationError(f"FileNotFoundError: File '{filepath}' not found")
     except PermissionError:
-        raise EvaluationError(
-            "PermissionError: Permission denied reading file '{}'.".format(filename)
-        )
-    except UnicodeDecodeError as e:
-        raise EvaluationError(
-            "UnicodeError: Cannot decode file '{}' as UTF-8: {}.".format(
-                filename, str(e)
-            )
-        )
-    except OSError as e:
-        raise EvaluationError(
-            "OSError: Error reading file '{}': {}.".format(filename, str(e))
-        )
+        raise EvaluationError(f"PermissionError: Permission denied accessing '{filepath}'")
+    except UnicodeDecodeError:
+        raise EvaluationError(f"UnicodeDecodeError: Could not decode '{filepath}' as UTF-8")
     except Exception as e:
-        raise EvaluationError(
-            "Error: Unexpected error reading file '{}': {}.".format(filename, str(e))
-        )
+        raise EvaluationError(f"IOError: Error reading file '{filepath}': {str(e)}")
+
 
 @lispy_documentation("slurp")
 def slurp_documentation() -> str:
-    """Returns documentation for the slurp function."""
     return """Function: slurp
-Arguments: (slurp filename)
+Arguments: (slurp filepath)
 Description: Reads the entire contents of a file as a string.
 
 Examples:
-  (slurp "config.txt")                  ; => "file contents as string"
-  (slurp "data/input.csv")              ; => "csv,data,here\\nrow2,data2,here"
-  (slurp "README.md")                   ; => "# Project Title\\n\\nDescription..."
-  
-  ; Using with other functions:
-  (count (slurp "data.txt"))            ; => character count of file
-  (split (slurp "lines.txt") "\\n")     ; => vector of lines
-  (println (slurp "message.txt"))       ; => print file contents
+  (slurp "config.txt")          ; => "contents of config.txt"
+  (slurp "/path/to/file.log")   ; => contents as string
+  (slurp "data.json")           ; => JSON file contents
+  (slurp "nonexistent.txt")     ; => Error (file not found)
 
 Notes:
-  - Requires exactly one argument (the filename as a string)
-  - Returns the entire file contents as a single string
-  - Preserves all whitespace, newlines, and formatting
+  - Requires exactly one argument (filepath as string)
+  - Reads entire file into memory as a single string
   - Uses UTF-8 encoding by default
-  - Throws descriptive errors for common issues:
-    * File not found
-    * Permission denied
-    * Not a regular file (e.g., directory)
-    * Unicode decode errors
-  - Relative paths are resolved from current working directory
-  - Essential for file processing and configuration reading
-  - Pairs well with split function for line-by-line processing
-  - Memory usage scales with file size (entire file loaded at once)"""
+  - Raises error if file doesn't exist or can't be read
+  - File path can be relative or absolute
+  - **WEB UNSAFE**: Can access arbitrary files on filesystem
+  - Useful for configuration files and data loading
+  - Complement of the 'spit' function"""

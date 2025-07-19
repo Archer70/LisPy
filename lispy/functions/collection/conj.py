@@ -1,71 +1,65 @@
-from lispy.types import LispyList, Vector
-from lispy.exceptions import EvaluationError
-from lispy.environment import Environment
 from typing import List, Any
+from ...exceptions import EvaluationError
+from ...environment import Environment
+from ...types import Vector
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_conj(args: List[Any], env: Environment):
-    """Implementation of the (conj coll item ...) LisPy function.
-    Adds item(s) to a collection (list or vector).
-    - For lists, items are prepended (like cons), effectively reversing the order of added items.
-    - For vectors, items are appended.
-    - If the first argument is nil, it's treated as an empty list.
-    Returns a new collection of the same type.
-    Usage: (conj collection item1 [item2 ...])
-    """
+@lispy_function("conj")
+def conj_func(args: List[Any], env: Environment) -> List[Any]:
     if len(args) < 2:
         raise EvaluationError(
-            f"SyntaxError: 'conj' expects at least 2 arguments (collection and item(s)), got {len(args)}."
+            f"SyntaxError: 'conj' expects at least 2 arguments, got {len(args)}."
         )
 
     collection = args[0]
-    items_to_add = args[1:]
+    elements = args[1:]
 
-    if collection is None:  # Treat nil as an empty list
-        # For (conj nil item1 item2), result is (item2 item1)
-        return LispyList(list(reversed(items_to_add)))
-    elif isinstance(collection, LispyList):
-        # Prepend items to a new list. items_to_add are prepended in order,
-        # so reverse them to get the desired (item_n ... item1 orig_item1 ...)
-        new_list_content = list(reversed(items_to_add)) + list(collection)
-        return LispyList(new_list_content)
-    elif isinstance(collection, Vector):
-        # Append items to a new vector
-        new_vector_content = list(collection) + list(items_to_add)
-        return Vector(new_vector_content)
-    else:
+    # Handle nil case - treat as empty list
+    if collection is None:
+        return list(elements)
+
+    # Validate collection type
+    if not isinstance(collection, list):
         raise EvaluationError(
-            f"TypeError: 'conj' expects a list, vector, or nil as the first argument, got {type(collection)}."
+            f"TypeError: First argument to 'conj' must be a list or vector, got {type(collection).__name__}: '{collection}'"
         )
 
+    # Create new collection with elements added
+    # For lists, add to the front (like Clojure)
+    # For vectors, add to the end (like Clojure)
+    result = collection.copy()
+    
+    if isinstance(collection, Vector):
+        # Vector - add to end
+        result.extend(elements)
+    else:
+        # List - add to front (in reverse order to maintain proper order)
+        for element in reversed(elements):
+            result.insert(0, element)
 
-def documentation_conj() -> str:
-    """Returns documentation for the conj function."""
+    return result
+
+
+@lispy_documentation("conj")
+def conj_documentation() -> str:
     return """Function: conj
-Arguments: (conj collection item1 item2 ...)
-Description: Adds items to a collection, returning a new collection of the same type.
+Arguments: (conj collection element1 element2 ...)
+Description: Returns a new collection with elements added in the most efficient way.
 
 Examples:
-  ; Lists - items are prepended (like cons):
-  (conj '(1 2) 3)               ; => (3 1 2)
-  (conj '(1) 2 3)               ; => (3 2 1) (items added in reverse order)
-  (conj '() 1 2 3)              ; => (3 2 1)
-  
-  ; Vectors - items are appended:
-  (conj [1 2] 3)                ; => [1 2 3]
-  (conj [1] 2 3)                ; => [1 2 3] (items added in order)
-  (conj [] 1 2 3)               ; => [1 2 3]
-  
-  ; Nil treated as empty list:
-  (conj nil 1)                  ; => (1)
-  (conj nil 1 2 3)              ; => (3 2 1)
+  (conj [1 2 3] 4)              ; => [1 2 3 4] (vector: add to end)
+  (conj '(1 2 3) 0)             ; => [0 1 2 3] (list: add to front)
+  (conj [1] 2 3 4)              ; => [1 2 3 4] (multiple elements)
+  (conj nil 1 2)                ; => [1 2] (nil becomes list)
+  (conj [] 1)                   ; => [1]
 
 Notes:
-  - Requires at least 2 arguments (collection and one item)
-  - First argument must be a list, vector, or nil
-  - For lists: items are prepended, reversing order of multiple items
-  - For vectors: items are appended in order
-  - Nil is treated as an empty list
-  - Returns new collection, original is not modified
-  - Essential for building collections incrementally
-  - Behavior mirrors Clojure's conj function"""
+  - Requires at least 2 arguments (collection and one element)
+  - For vectors: elements are added to the end
+  - For lists: elements are added to the front
+  - nil is treated as an empty list
+  - Returns a new collection, does not modify original
+  - Multiple elements can be added in one call
+  - Efficient operation following collection semantics
+  - Essential for building collections incrementally"""
