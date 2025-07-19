@@ -102,8 +102,8 @@ class WebApp:
             if env:
                 response = self.middleware_chain.execute_after_middleware(request, response, env)
             
-            # Format response for HTTP
-            return format_response(response)
+            # Format response for HTTP (with JSON enhancement)
+            return format_response(response, enhance_json=True)
             
         except Exception as e:
             # Catch-all error handler
@@ -132,7 +132,14 @@ class WebApp:
             if len(handler.params) != 1:
                 raise EvaluationError(f"Route handler function must take 1 argument (request), got {len(handler.params)}")
             
-            call_env = Environment(outer=handler.defining_env)
+            # Create execution environment with access to global functions through env parameter
+            if env and hasattr(env, 'store'):
+                # Use the provided environment (which has global functions) as the outer scope
+                call_env = Environment(outer=env)
+            else:
+                # Fallback to the original defining environment
+                call_env = Environment(outer=handler.defining_env)
+            
             call_env.define(handler.params[0].name, request)
             
             # Execute function body

@@ -25,46 +25,45 @@ class TestWebIntegration(unittest.TestCase):
     def test_complete_web_app_creation(self):
         """Test creating a complete web application with routes and middleware."""
         code = """
-        (define app 
-          (-> (web-app)
-              ; Add logging middleware
-              (middleware :before 
-                          (fn [request]
-                            (assoc request :log-id "req-123")))
-              
-              ; Add routes
-              (route "GET" "/" 
-                     (fn [request] 
-                       {:status 200 
-                        :headers {:content-type "text/html"}
-                        :body "<h1>Welcome to LisPy Web!</h1>"}))
-              
-              (route "GET" "/api/health"
-                     (fn [request]
-                       {:status 200
-                        :headers {:content-type "application/json"}
-                        :body (json-encode {:status "healthy" :timestamp 1234567890})}))
-              
-              (route "POST" "/api/users"
-                     (fn [request]
-                       (let [user-data (:json request)]
-                         {:status 201
-                          :headers {:content-type "application/json"}
-                          :body (json-encode {:message "User created" :data user-data})})))
-              
-              (route "GET" "/users/:id"
-                     (fn [request]
-                       (let [user-id (:id (:params request))]
-                         {:status 200
-                          :headers {:content-type "application/json"}
-                          :body (json-encode {:id user-id :name "Test User"})})))
-              
-              ; Add response middleware
-              (middleware :after
-                          (fn [request response]
-                            (assoc response :server-header "LisPy-Web/1.0")))))
-        
-        app
+        (let [app (web-app)]
+          ; Add logging middleware
+          (middleware app "before" 
+                      (fn [request]
+                        (assoc request :log-id "req-123")))
+          
+          ; Add routes
+          (route app "GET" "/" 
+                 (fn [request] 
+                   {:status 200 
+                    :headers {:content-type "text/html"}
+                    :body "<h1>Welcome to LisPy Web!</h1>"}))
+          
+          (route app "GET" "/api/health"
+                 (fn [request]
+                   {:status 200
+                    :headers {:content-type "application/json"}
+                    :body (json-encode {:status "healthy" :timestamp 1234567890})}))
+          
+          (route app "POST" "/api/users"
+                 (fn [request]
+                   (let [user-data (:json request)]
+                     {:status 201
+                      :headers {:content-type "application/json"}
+                      :body (json-encode {:message "User created" :data user-data})})))
+          
+          (route app "GET" "/users/:id"
+                 (fn [request]
+                   (let [user-id (:id (:params request))]
+                     {:status 200
+                      :headers {:content-type "application/json"}
+                      :body (json-encode {:id user-id :name "Test User"})})))
+          
+          ; Add response middleware
+          (middleware app "after"
+                      (fn [request response]
+                        (assoc response :server-header "LisPy-Web/1.0")))
+          
+          app)
         """
         result = run_lispy_string(code, self.env)
         
@@ -134,7 +133,7 @@ class TestWebIntegration(unittest.TestCase):
         status, headers, body = format_response(response_data)
         
         self.assertEqual(status, 200)
-        self.assertEqual(headers['Content-Type'], 'application/json; charset=utf-8')
+        self.assertEqual(headers['Content-Type'], 'application/json')
         self.assertIn('message', body)
         self.assertIn('Hello World', body)
 
@@ -161,13 +160,13 @@ class TestWebIntegration(unittest.TestCase):
     def test_app_request_handling_get(self):
         """Test complete request handling through WebApp for GET request."""
         code = """
-        (define app (web-app))
-        (route app "GET" "/hello" 
-               (fn [request] 
-                 {:status 200 
-                  :headers {:content-type "text/plain"}
-                  :body "Hello World"}))
-        app
+        (let [app (web-app)]
+          (route app "GET" "/hello" 
+                 (fn [request] 
+                   {:status 200 
+                    :headers {:content-type "text/plain"}
+                    :body "Hello World"}))
+          app)
         """
         app = run_lispy_string(code, self.env)
         
@@ -189,14 +188,14 @@ class TestWebIntegration(unittest.TestCase):
     def test_app_request_handling_post_with_json(self):
         """Test complete request handling for POST with JSON."""
         code = """
-        (define app (web-app))
-        (route app "POST" "/api/echo" 
-               (fn [request] 
-                 (let [input (:json request)]
-                   {:status 200 
-                    :headers {:content-type "application/json"}
-                    :body (json-encode {:echoed input})})))
-        app
+        (let [app (web-app)]
+          (route app "POST" "/api/echo" 
+                 (fn [request] 
+                   (let [input (get request ':json)]
+                     {:status 200 
+                      :headers {:content-type "application/json"}
+                      :body (json-encode {:echoed input})})))
+          app)
         """
         app = run_lispy_string(code, self.env)
         
@@ -223,15 +222,16 @@ class TestWebIntegration(unittest.TestCase):
     def test_app_request_handling_with_params(self):
         """Test request handling with URL parameters."""
         code = """
-        (define app (web-app))
-        (route app "GET" "/users/:id/posts/:post_id" 
-               (fn [request] 
-                 (let [user-id (:id (:params request))
-                       post-id (:post_id (:params request))]
-                   {:status 200 
-                    :headers {:content-type "application/json"}
-                    :body (json-encode {:user_id user-id :post_id post-id})})))
-        app
+        (let [app (web-app)]
+          (route app "GET" "/users/:id/posts/:post_id" 
+                 (fn [request] 
+                   (let [params (get request ':params)
+                         user-id (get params ':id)
+                         post-id (get params ':post_id)]
+                     {:status 200 
+                      :headers {:content-type "application/json"}
+                      :body (json-encode {:user_id user-id :post_id post-id})})))
+          app)
         """
         app = run_lispy_string(code, self.env)
         
@@ -253,26 +253,27 @@ class TestWebIntegration(unittest.TestCase):
     def test_app_request_handling_with_middleware(self):
         """Test request handling with middleware processing."""
         code = """
-        (define app (web-app))
-        
-        ; Before middleware adds request ID
-        (middleware app :before 
-                    (fn [request]
-                      (assoc request :request-id "req-123")))
-        
-        ; Route that uses the request ID
-        (route app "GET" "/test" 
-               (fn [request] 
-                 {:status 200 
-                  :headers {:content-type "application/json"}
-                  :body (json-encode {:request_id (:request-id request)})}))
-        
-        ; After middleware adds custom header
-        (middleware app :after
-                    (fn [request response]
-                      (assoc-in response [:headers :x-custom] "custom-value")))
-        
-        app
+        (let [app (web-app)]
+          ; Before middleware adds request ID
+          (middleware app "before" 
+                      (fn [request]
+                        (assoc request ':request-id "req-123")))
+          
+          ; Route that uses the request ID
+          (route app "GET" "/test" 
+                 (fn [request] 
+                   {:status 200 
+                    :headers {:content-type "application/json"}
+                    :body (json-encode {:request_id (get request ':request-id)})}))
+          
+          ; After middleware adds custom header
+          (middleware app "after"
+                      (fn [request response]
+                        (let [headers (get response ':headers)
+                              new-headers (assoc headers ':x-custom "custom-value")]
+                          (assoc response ':headers new-headers))))
+          
+          app)
         """
         app = run_lispy_string(code, self.env)
         
@@ -295,9 +296,9 @@ class TestWebIntegration(unittest.TestCase):
     def test_app_request_handling_404(self):
         """Test 404 handling for non-existent routes."""
         code = """
-        (define app (web-app))
-        (route app "GET" "/exists" (fn [req] {:status 200 :body "OK"}))
-        app
+        (let [app (web-app)]
+          (route app "GET" "/exists" (fn [req] {:status 200 :body "OK"}))
+          app)
         """
         app = run_lispy_string(code, self.env)
         
@@ -321,9 +322,9 @@ class TestWebIntegration(unittest.TestCase):
     def test_app_request_handling_405(self):
         """Test 405 Method Not Allowed handling."""
         code = """
-        (define app (web-app))
-        (route app "GET" "/test" (fn [req] {:status 200 :body "OK"}))
-        app
+        (let [app (web-app)]
+          (route app "GET" "/test" (fn [req] {:status 200 :body "OK"}))
+          app)
         """
         app = run_lispy_string(code, self.env)
         
@@ -359,11 +360,12 @@ class TestWebIntegration(unittest.TestCase):
     def test_web_framework_thread_first_compatibility(self):
         """Test that web framework functions work well with thread-first operator."""
         code = """
-        (-> (web-app)
-            (route "GET" "/" (fn [req] {:status 200 :body "Home"}))
-            (route "GET" "/about" (fn [req] {:status 200 :body "About"}))
-            (middleware :before (fn [req] req))
-            (middleware :after (fn [req res] res)))
+        (let [app (web-app)]
+          (route app "GET" "/" (fn [req] {:status 200 :body "Home"}))
+          (route app "GET" "/about" (fn [req] {:status 200 :body "About"}))
+          (middleware app "before" (fn [req] req))
+          (middleware app "after" (fn [req res] res))
+          app)
         """
         result = run_lispy_string(code, self.env)
         

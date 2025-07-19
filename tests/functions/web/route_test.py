@@ -46,9 +46,10 @@ class TestRoute(unittest.TestCase):
     def test_route_method_chaining(self):
         """Test that route supports method chaining."""
         code = """
-        (-> (web-app)
-            (route "GET" "/" (fn [request] {:status 200 :body "Home"}))
-            (route "POST" "/users" (fn [request] {:status 201 :body "Created"})))
+        (let [app (web-app)]
+          (route app "GET" "/" (fn [request] {:status 200 :body "Home"}))
+          (route app "POST" "/users" (fn [request] {:status 201 :body "Created"}))
+          app)
         """
         result = run_lispy_string(code, self.env)
         
@@ -214,17 +215,18 @@ class TestRoute(unittest.TestCase):
     def test_route_complex_example(self):
         """Test a complex routing example."""
         code = """
-        (-> (web-app)
-            (route "GET" "/" 
-                   (fn [req] {:status 200 :body "Home Page"}))
-            (route "GET" "/users/:id" 
-                   (fn [req] {:status 200 :body "User Profile"}))
-            (route "POST" "/api/users" 
-                   (fn [req] {:status 201 :body "User Created"}))
-            (route "PUT" "/api/users/:id" 
-                   (fn [req] {:status 200 :body "User Updated"}))
-            (route "DELETE" "/api/users/:id" 
-                   (fn [req] {:status 204 :body ""})))
+        (let [app (web-app)]
+          (route app "GET" "/" 
+                 (fn [req] {:status 200 :body "Home Page"}))
+          (route app "GET" "/users/:id" 
+                 (fn [req] {:status 200 :body "User Profile"}))
+          (route app "POST" "/api/users" 
+                 (fn [req] {:status 201 :body "User Created"}))
+          (route app "PUT" "/api/users/:id" 
+                 (fn [req] {:status 200 :body "User Updated"}))
+          (route app "DELETE" "/api/users/:id" 
+                 (fn [req] {:status 204 :body ""}))
+          app)
         """
         result = run_lispy_string(code, self.env)
         

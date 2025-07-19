@@ -1,6 +1,6 @@
 # LisPy Evaluator
 
-from .types import Symbol, Vector, LispyList, LispyPromise
+from .types import Symbol, Vector, LispyList, LispyPromise, LispyMapLiteral
 from .exceptions import EvaluationError, AssertionFailure, UserThrownError
 from .environment import Environment
 from .closure import Function
@@ -141,7 +141,14 @@ def _evaluate_list_form_as_call(
 # --- Main Evaluation Logic ---
 def evaluate(expression: Any, env: Environment) -> Any:
     """Evaluates a LisPy expression (AST node) in a given environment."""
-    if (
+    if isinstance(expression, LispyMapLiteral):
+        # Evaluate map literal values (map literals from parser need their values evaluated)
+        # Must check this before dict since LispyMapLiteral inherits from dict
+        evaluated_dict = {}
+        for key, value in expression.items():
+            evaluated_dict[key] = evaluate(value, env)
+        return evaluated_dict
+    elif (
         isinstance(
             expression, (int, float, str, bool, dict, Function, Vector, LispyPromise)
         )

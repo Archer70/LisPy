@@ -55,6 +55,17 @@ class LispyList(list):
     # If lists needed to be hashable, immutability would be a consideration.
 
 
+class LispyMapLiteral(dict):
+    """Represents a map literal from the parser that needs value evaluation.
+    Unlike regular dicts, this type indicates that the values are unevaluated expressions.
+    """
+
+    def __repr__(self):
+        # Provide a Lisp-like representation for map literals
+        items = ' '.join(f"{repr(k)} {repr(v)}" for k, v in self.items())
+        return f"{{{items}}}"
+
+
 class LispyPromise:
     """Represents an asynchronous operation in LisPy."""
 

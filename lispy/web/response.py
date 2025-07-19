@@ -10,7 +10,6 @@ from lispy.types import Symbol
 
 DEFAULT_HEADERS = {
     'Server': 'LisPy-Web/1.0',
-    'Content-Type': 'text/plain; charset=utf-8',
 }
 
 
@@ -45,12 +44,13 @@ def normalize_response_headers(headers: Dict[Any, Any]) -> Dict[str, str]:
 def get_content_type_from_body(body: Any) -> str:
     """
     Determine appropriate Content-Type based on response body.
+    Auto-detected content types include charset.
     
     Args:
         body: Response body (string, dict, list, etc.)
         
     Returns:
-        Appropriate Content-Type header value
+        Appropriate Content-Type header value with charset
     """
     if isinstance(body, str):
         # Check if it looks like HTML
@@ -91,7 +91,7 @@ def serialize_response_body(body: Any, content_type: str) -> str:
     return str(body)
 
 
-def format_response(response_data: Dict[Symbol, Any]) -> Tuple[int, Dict[str, str], str]:
+def format_response(response_data: Dict[Symbol, Any], enhance_json: bool = False) -> Tuple[int, Dict[str, str], str]:
     """
     Format LisPy response into HTTP response components.
     
@@ -118,13 +118,19 @@ def format_response(response_data: Dict[Symbol, Any]) -> Tuple[int, Dict[str, st
     # Normalize headers
     http_headers = normalize_response_headers(response_headers)
     
+    # Auto-detect content type if not specified by user
+    if 'Content-Type' not in http_headers:
+        http_headers['Content-Type'] = get_content_type_from_body(body)
+    
     # Merge with defaults, user headers take precedence
     final_headers = DEFAULT_HEADERS.copy()
     final_headers.update(http_headers)
     
-    # Auto-detect content type if not specified
-    if 'Content-Type' not in final_headers:
-        final_headers['Content-Type'] = get_content_type_from_body(body)
+    # Add charset for JSON responses if requested (web app enhancement)
+    if enhance_json:
+        content_type = final_headers.get('Content-Type', '')
+        if 'application/json' in content_type and 'charset=' not in content_type:
+            final_headers['Content-Type'] = content_type + '; charset=utf-8'
     
     # Serialize body
     body_string = serialize_response_body(body, final_headers['Content-Type'])

@@ -84,8 +84,9 @@ def parse(tokens: list[tuple]):
 
     def _parse_map():
         """Parses a map form '{}', consuming '{' and '}' and all key-value pairs."""
+        from .types import LispyMapLiteral  # Import here to avoid circular imports
         _tokens.pop(0)  # Consume '{'
-        map_data = {}
+        map_data = LispyMapLiteral()
 
         while _tokens:
             if _tokens[0][0] == TOKEN_RBRACE:
