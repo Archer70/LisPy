@@ -214,26 +214,14 @@ def _convert_for_json(value):
 def http_delete_documentation():
     """Returns documentation for the http-delete function."""
     return """
-http-delete: Make an HTTP DELETE request
-
-Usage:
-  (http-delete url)
-  (http-delete url data)
-  (http-delete url data headers)
+Function: http-delete
+Arguments: (url [data] [headers])
+Description: Make an HTTP DELETE request and return a promise.
 
 Arguments:
   url     - String URL to request (must be http:// or https://)
   data    - Optional data to send in request body (rarely used with DELETE)
   headers - Optional map of headers to send
-
-Returns:
-  Promise that resolves to a response map with keys:
-    :status  - HTTP status code (number)
-    :headers - Response headers (map)
-    :body    - Response body (string)
-    :url     - Request URL (string)
-    :ok      - True if status 2xx, false otherwise
-    :json    - Parsed JSON (only if response is valid JSON)
 
 Examples:
   ; Simple DELETE request

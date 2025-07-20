@@ -213,26 +213,15 @@ def _convert_for_json(value):
 @lispy_documentation("http-put")
 def http_put_documentation():
     return """
-http-put: Make an HTTP PUT request
-
-Usage:
-  (http-put url)
-  (http-put url data)
-  (http-put url data headers)
+Function: http-put
+Arguments: (url [data] [headers])
+Description: Make an HTTP PUT request and return a promise.
 
 Arguments:
   url     - String URL to request (must be http:// or https://)
   data    - Optional data to send in request body (map, string, etc.)
   headers - Optional map of headers to send
 
-Returns:
-  Promise that resolves to a response map with keys:
-    :status  - HTTP status code (number)
-    :headers - Response headers (map)
-    :body    - Response body (string)
-    :url     - Request URL (string)
-    :ok      - True if status 2xx, false otherwise
-    :json    - Parsed JSON (only if response is valid JSON)
 
 Examples:
   ; Simple PUT request
@@ -251,12 +240,6 @@ Examples:
   ; PUT with string data
   (http-put "https://api.example.com/content/789"
             "Updated content")
-
-Data Encoding:
-  - Maps/dictionaries: Encoded as JSON by default
-  - Strings: Sent as plain text
-  - Other types: Converted to string
-  - Content-Type header set automatically unless provided
 
 Notes:
   - Requests timeout after 30 seconds

@@ -236,27 +236,15 @@ def _convert_for_json(value):
 @lispy_documentation("http-request")
 def http_request_documentation():
     return """
-http-request: Make a generic HTTP request with any method
-
-Usage:
-  (http-request method url)
-  (http-request method url data)
-  (http-request method url data headers)
+Function: http-request
+Arguments: (method url [data] [headers])
+Description: Make a generic HTTP request with any method and return a promise.
 
 Arguments:
   method  - String HTTP method (GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH, etc.)
   url     - String URL to request (must be http:// or https://)
   data    - Optional data to send in request body (map, string, etc.)
   headers - Optional map of headers to send
-
-Returns:
-  Promise that resolves to a response map with keys:
-    :status  - HTTP status code (number)
-    :headers - Response headers (map)
-    :body    - Response body (string)
-    :url     - Request URL (string)
-    :ok      - True if status 2xx, false otherwise
-    :json    - Parsed JSON (only if response is valid JSON)
 
 Examples:
   ; GET request
@@ -286,18 +274,6 @@ Examples:
   ; PATCH for partial updates
   (http-request "PATCH" "https://api.example.com/users/123"
                 {:status "active"})
-
-Method Support:
-  - Standard methods: GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH
-  - Less common: TRACE, CONNECT
-  - Custom methods: Accepted but may not work with all servers
-
-Data Encoding:
-  - Maps/dictionaries: Encoded as JSON by default
-  - Strings: Sent as plain text
-  - Other types: Converted to string
-  - Content-Type header set automatically unless provided
-  - Body only sent for methods that typically support it (POST, PUT, PATCH, DELETE)
 
 Notes:
   - Requests timeout after 30 seconds

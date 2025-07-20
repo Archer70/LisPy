@@ -212,26 +212,14 @@ def _convert_for_json(value):
 @lispy_documentation("http-post")
 def http_post_documentation():
     return """
-http-post: Make an HTTP POST request
-
-Usage:
-  (http-post url)
-  (http-post url data)
-  (http-post url data headers)
+Function: http-post
+Arguments: (url [data] [headers])
+Description: Make an HTTP POST request and return a promise.
 
 Arguments:
   url     - String URL to request (must be http:// or https://)
   data    - Optional data to send in request body (map, string, etc.)
   headers - Optional map of headers to send
-
-Returns:
-  Promise that resolves to a response map with keys:
-    :status  - HTTP status code (number)
-    :headers - Response headers (map)
-    :body    - Response body (string)
-    :url     - Request URL (string)
-    :ok      - True if status 2xx, false otherwise
-    :json    - Parsed JSON (only if response is valid JSON)
 
 Examples:
   ; Simple POST request
@@ -250,12 +238,6 @@ Examples:
   ; POST with string data
   (http-post "https://api.example.com/text"
              "Raw text data")
-
-Data Encoding:
-  - Maps/dictionaries: Encoded as JSON by default
-  - Strings: Sent as plain text
-  - Other types: Converted to string
-  - Content-Type header set automatically unless provided
 
 Notes:
   - Requests timeout after 30 seconds

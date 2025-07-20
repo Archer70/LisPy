@@ -101,24 +101,9 @@ def http_get(args, env):
 @lispy_documentation("http-get")
 def http_get_documentation():
     return """
-http-get: Make an HTTP GET request
-
-Usage:
-  (http-get url)
-  (http-get url headers)
-
-Arguments:
-  url     - String URL to request (must be http:// or https://)
-  headers - Optional map of headers to send
-
-Returns:
-  Promise that resolves to a response map with keys:
-    :status  - HTTP status code (number)
-    :headers - Response headers (map)
-    :body    - Response body (string)
-    :url     - Request URL (string)
-    :ok      - True if status 2xx, false otherwise
-    :json    - Parsed JSON (only if response is valid JSON)
+Function: http-get
+Arguments: (url [headers])
+Description: Make an HTTP GET request and return a promise.
 
 Examples:
   ; Simple GET request
