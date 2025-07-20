@@ -6,18 +6,18 @@ from lispy.types import LispyPromise, Symbol, Vector
 from lispy.special_forms.async_form import handle_async_form
 from lispy.special_forms.await_form import handle_await_form
 from lispy.special_forms.defn_async_form import handle_defn_async_form
-from lispy.functions.promises.promise import builtin_promise
-from lispy.functions.promises.resolve import builtin_resolve
-from lispy.functions.promises.reject import builtin_reject
+from lispy.functions.promises.promise import promise
+from lispy.functions.promises.resolve import resolve
+from lispy.functions.promises.reject import reject
 
 
 class TestAsyncSpecialForms(unittest.TestCase):
     def setUp(self):
         self.env = Environment()
         # Add promise functions to environment
-        self.env.define("promise", builtin_promise)
-        self.env.define("resolve", builtin_resolve)
-        self.env.define("reject", builtin_reject)
+        self.env.define("promise", promise)
+        self.env.define("resolve", resolve)
+        self.env.define("reject", reject)
 
     def evaluate_fn(self, expr, env):
         """Simple evaluator for testing."""
@@ -25,11 +25,11 @@ class TestAsyncSpecialForms(unittest.TestCase):
             return expr
         elif isinstance(expr, list) and len(expr) > 0:
             if expr[0] == Symbol("promise"):
-                return builtin_promise(expr[1:], env)
+                return promise(expr[1:], env)
             elif expr[0] == Symbol("resolve"):
-                return builtin_resolve(expr[1:], env)
+                return resolve(expr[1:], env)
             elif expr[0] == Symbol("reject"):
-                return builtin_reject(expr[1:], env)
+                return reject(expr[1:], env)
             elif expr[0] == Symbol("+"):
                 return sum(self.evaluate_fn(arg, env) for arg in expr[1:])
             elif expr[0] == Symbol("*"):
@@ -85,7 +85,7 @@ class TestAsyncSpecialForms(unittest.TestCase):
 
     def test_await_with_resolved_promise(self):
         """Test await with a resolved promise."""
-        promise = builtin_resolve([42], self.env)
+        promise = resolve([42], self.env)
         result = handle_await_form(
             [Symbol("await"), promise], self.env, self.evaluate_fn
         )
@@ -98,15 +98,15 @@ class TestAsyncSpecialForms(unittest.TestCase):
             time.sleep(0.01)
             return "awaited result"
 
-        promise = builtin_promise([slow_fn], self.env)
+        promise_obj = promise([slow_fn], self.env)
         result = handle_await_form(
-            [Symbol("await"), promise], self.env, self.evaluate_fn
+            [Symbol("await"), promise_obj], self.env, self.evaluate_fn
         )
         self.assertEqual(result, "awaited result")
 
     def test_await_with_rejected_promise(self):
         """Test await with a rejected promise."""
-        promise = builtin_reject(["Test error"], self.env)
+        promise = reject(["Test error"], self.env)
         with self.assertRaises(EvaluationError) as cm:
             handle_await_form([Symbol("await"), promise], self.env, self.evaluate_fn)
         self.assertEqual(str(cm.exception), "Promise rejected: Test error")
@@ -129,7 +129,7 @@ class TestAsyncSpecialForms(unittest.TestCase):
             "SyntaxError: 'await' expects exactly 1 argument (promise expression), got 0.",
         )
 
-        promise = builtin_resolve([1], self.env)
+        promise = resolve([1], self.env)
         with self.assertRaises(EvaluationError) as cm:
             handle_await_form(
                 [Symbol("await"), promise, promise], self.env, self.evaluate_fn

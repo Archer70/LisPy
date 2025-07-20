@@ -1,35 +1,10 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 from lispy.closure import Function
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_on_reject(args, env):
-    """Handle promise rejection with a callback.
-
-    Usage: (on-reject promise error-callback)
-
-    Args:
-        promise: A promise to handle errors for
-        error-callback: Function to call with the rejection reason
-
-    Returns:
-        A new promise that resolves with the error-callback's return value
-        if the original promise rejects, or resolves with the original value
-        if it succeeds
-
-    Examples:
-        (on-reject (reject "error") (fn [err] (str "Handled: " err)))
-        ; => Promise that resolves to "Handled: error"
-
-        (on-reject (resolve 42) (fn [err] "not called"))
-        ; => Promise that resolves to 42
-
-        ; Thread-first style error handling:
-        (-> (fetch-user-data)
-            (then extract-user-name)
-            (on-reject (fn [err] "Unknown User"))
-            (then (fn [name] (str "Hello, " name))))
-    """
+@lispy_function("on-reject")
+def on_reject(args, env):
     if len(args) != 2:
         raise EvaluationError(
             f"SyntaxError: 'on-reject' expects 2 arguments (promise error-callback), got {len(args)}."
@@ -84,7 +59,8 @@ def builtin_on_reject(args, env):
     return promise.catch(lispy_error_callback)
 
 
-def documentation_on_reject() -> str:
+@lispy_documentation("on-reject")
+def on_reject_documentation() -> str:
     """Returns documentation for the on-reject function."""
     return """Function: on-reject
 Arguments: (on-reject promise error-callback)

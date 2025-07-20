@@ -2,9 +2,11 @@ from typing import List, Any
 from lispy.types import Vector  # For type checking
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment  # Added Environment import
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_empty_q(args: List[Any], env: Environment) -> bool:  # Added env parameter
+@lispy_function("empty?")
+def empty_q(args: List[Any], env: Environment) -> bool:  # Added env parameter
     """Checks if a collection (list, vector, map, string) or nil is empty. (empty? collection)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -27,7 +29,8 @@ def builtin_empty_q(args: List[Any], env: Environment) -> bool:  # Added env par
         )
 
 
-def documentation_empty_q() -> str:
+@lispy_documentation("empty?")
+def empty_q_documentation() -> str:
     """Returns documentation for the empty? function."""
     return """Function: empty?
 Arguments: (empty? collection)

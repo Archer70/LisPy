@@ -2,15 +2,13 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
 
-def builtin_subtract(args: List[Any], env: Environment) -> Numeric:
-    """Subtracts numbers. (- num1 num2 ...)
-    If one argument, returns its negation (- num).
-    If no arguments, raises error.
-    """
+@lispy_function("-")
+def subtract(args: List[Any], env: Environment) -> Numeric:
     if not args:
         raise EvaluationError("SyntaxError: '-' requires at least one argument.")
 
@@ -29,8 +27,8 @@ def builtin_subtract(args: List[Any], env: Environment) -> Numeric:
         return result
 
 
-def documentation_subtract() -> str:
-    """Returns documentation for the - function."""
+@lispy_documentation("-")
+def subtract_documentation() -> str:
     return """Function: -
 Arguments: (- number1 number2 ...) OR (- number)
 Description: Subtracts numbers or negates a single number.

@@ -15,15 +15,11 @@ from lispy.closure import Function
 from lispy.types import LispyPromise, Vector, List
 from lispy.exceptions import EvaluationError
 import threading
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_async_map(args, env):
-    """
-    Async map function - concurrent mapping with Promise.all semantics.
-
-    Maps each element through callback concurrently, returns promise of results.
-    Follows JavaScript Array.map() + Promise.all() pattern exactly.
-    """
+@lispy_function("async-map")
+def async_map(args, env):
     # Validate argument count
     if len(args) != 2:
         raise EvaluationError(
@@ -143,7 +139,8 @@ def builtin_async_map(args, env):
     return result_promise
 
 
-def documentation_async_map() -> str:
+@lispy_documentation("async-map")
+def async_map_documentation() -> str:
     """Returns documentation for the async-map function."""
     return """Function: async-map
 Arguments: (async-map collection callback)

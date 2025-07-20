@@ -1,8 +1,10 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyList, Vector, Symbol
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def to_str_fn(args, env):
+@lispy_function("to-str")
+def to_str(args, env):
     """Convert a value to its string representation.
 
     Usage: (to-str value)
@@ -52,8 +54,8 @@ def to_str_fn(args, env):
         # For hash maps, create a simple representation
         items = []
         for k, v in value.items():
-            key_str = to_str_fn([k], env) if hasattr(k, "name") else str(k)
-            val_str = to_str_fn([v], env)
+            key_str = to_str([k], env) if hasattr(k, "name") else str(k)
+            val_str = to_str([v], env)
             items.append(f"{key_str} {val_str}")
         return "{" + " ".join(items) + "}"
     else:
@@ -61,7 +63,8 @@ def to_str_fn(args, env):
         return str(value)
 
 
-def documentation_to_str() -> str:
+@lispy_documentation("to-str")
+def to_str_documentation() -> str:
     """Returns documentation for the to-str function."""
     return """Function: to-str
 Arguments: (to-str value)

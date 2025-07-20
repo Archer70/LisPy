@@ -2,9 +2,10 @@ from lispy.exceptions import EvaluationError, PromiseError
 from lispy.closure import Function
 import threading
 import time
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_throttle(args, env):
+@lispy_function("throttle")
+def throttle(args, env):
     """Create a throttled version of a function (rate limiting).
 
     Usage: (throttle fn rate)
@@ -112,7 +113,8 @@ def builtin_throttle(args, env):
     return throttled_function
 
 
-def documentation_throttle() -> str:
+@lispy_documentation("throttle")
+def throttle_documentation() -> str:
     """Returns documentation for the throttle function."""
     return """Function: throttle
 Arguments: (throttle fn rate)

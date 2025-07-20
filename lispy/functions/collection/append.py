@@ -1,7 +1,9 @@
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def append_fn(args, env):
+@lispy_function("append")
+def append(args, env):
     """Append multiple strings into a single string.
 
     Usage: (append string1 string2 ...)
@@ -33,7 +35,8 @@ def append_fn(args, env):
     return "".join(args)
 
 
-def documentation_append() -> str:
+@lispy_documentation("append")
+def append_documentation() -> str:
     """Returns documentation for the append function."""
     return """Function: append
 Arguments: (append string1 string2 ...)

@@ -1,6 +1,8 @@
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-def to_int_fn(args, env):
+@lispy_function("to-int")
+def to_int(args, env):
     """Convert a value to an integer, if possible.
 
     Usage: (to-int value)
@@ -22,7 +24,8 @@ def to_int_fn(args, env):
             raise EvaluationError(f"TypeError: Cannot convert string '{value}' to int.")
     raise EvaluationError(f"TypeError: Cannot convert {type(value).__name__} to int.")
 
-def documentation_to_int():
+@lispy_documentation("to-int")
+def to_int_documentation():
     return '''Function: to-int
 Arguments: (to-int value)
 Description: Converts a value to an integer, if possible. Raises an error if conversion is not possible.

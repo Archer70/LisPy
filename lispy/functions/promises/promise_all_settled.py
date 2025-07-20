@@ -1,31 +1,12 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector, Symbol
-from lispy.functions.map import builtin_hash_map
+from lispy.functions.map import hash_map
 import threading
 import time
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_promise_all_settled(args, env):
-    """Wait for all promises to settle and return their status objects.
-
-    Usage: (promise-all-settled collection)
-
-    Args:
-        collection: A vector or list of promises
-
-    Returns:
-        A promise that resolves with a collection of status objects.
-        Each object contains either {:status "fulfilled" :value result}
-        or {:status "rejected" :reason error}
-
-    Examples:
-        (promise-all-settled [(resolve 1) (reject "error") (resolve 3)])
-        ; => Promise that resolves to [
-        ;      {:status "fulfilled" :value 1}
-        ;      {:status "rejected" :reason "error"}
-        ;      {:status "fulfilled" :value 3}
-        ;    ]
-    """
+@lispy_function("promise-all-settled")
+def promise_all_settled(args, env):
     if len(args) != 1:
         raise EvaluationError(
             f"SyntaxError: 'promise-all-settled' expects 1 argument, got {len(args)}."
@@ -70,7 +51,7 @@ def builtin_promise_all_settled(args, env):
                 # Create status object based on settlement
                 if promise.state == "resolved":
                     # Create fulfilled status object using hash-map with Symbol keys
-                    status_obj = builtin_hash_map(
+                    status_obj = hash_map(
                         [
                             Symbol(":status"),
                             "fulfilled",
@@ -81,7 +62,7 @@ def builtin_promise_all_settled(args, env):
                     )
                 elif promise.state == "rejected":
                     # Create rejected status object using hash-map with Symbol keys
-                    status_obj = builtin_hash_map(
+                    status_obj = hash_map(
                         [
                             Symbol(":status"),
                             "rejected",
@@ -92,7 +73,7 @@ def builtin_promise_all_settled(args, env):
                     )
                 else:
                     # This should never happen, but handle gracefully
-                    status_obj = builtin_hash_map(
+                    status_obj = hash_map(
                         [
                             Symbol(":status"),
                             "unknown",
@@ -118,7 +99,8 @@ def builtin_promise_all_settled(args, env):
     return all_settled_promise
 
 
-def documentation_promise_all_settled() -> str:
+@lispy_documentation("promise-all-settled")
+def promise_all_settled_documentation() -> str:
     """Returns documentation for the promise-all-settled function."""
     return """Function: promise-all-settled
 Arguments: (promise-all-settled collection)

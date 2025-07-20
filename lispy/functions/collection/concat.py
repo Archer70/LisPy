@@ -1,8 +1,10 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyList, Vector
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def concat_fn(args, env):
+@lispy_function("concat")
+def concat(args, env):
     """Concatenate multiple collections into a single collection.
 
     Usage: (concat collection1 collection2 ...)
@@ -52,7 +54,8 @@ def concat_fn(args, env):
     return result_type(all_elements)
 
 
-def documentation_concat() -> str:
+@lispy_documentation("concat")
+def concat_documentation() -> str:
     """Returns documentation for the concat function."""
     return """Function: concat
 Arguments: (concat collection1 collection2 ...)

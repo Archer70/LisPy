@@ -3,9 +3,11 @@ from typing import List, Any
 from lispy.types import Vector  # For type checking
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment  # Added Environment import
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_count(args: List[Any], env: Environment) -> int:  # Added env parameter
+@lispy_function("count")
+def count(args: List[Any], env: Environment) -> int:  # Added env parameter
     """Returns the number of items in a collection (list, vector, map, string) or 0 for nil. (count collection)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -28,7 +30,8 @@ def builtin_count(args: List[Any], env: Environment) -> int:  # Added env parame
         )
 
 
-def documentation_count() -> str:
+@lispy_documentation("count")
+def count_documentation() -> str:
     """Returns documentation for the count function."""
     return """Function: count
 Arguments: (count collection)

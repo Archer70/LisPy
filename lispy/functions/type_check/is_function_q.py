@@ -1,10 +1,11 @@
 from typing import List, Any
-from ...environment import Environment
-from ...exceptions import EvaluationError
-from ...closure import Function
+from lispy.environment import Environment
+from lispy.exceptions import EvaluationError
+from lispy.closure import Function
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_is_function_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("is-function?")
+def is_function_q(args: List[Any], env: Environment) -> bool:
     """Implementation of the (is-function? value) LisPy function.
 
     Returns true if the argument is a function (either user-defined or built-in), false otherwise.
@@ -41,7 +42,8 @@ def builtin_is_function_q(args: List[Any], env: Environment) -> bool:
     return False
 
 
-def documentation_is_function_q() -> str:
+@lispy_documentation("is-function?")
+def is_function_q_documentation() -> str:
     """Returns documentation for the is-function? function."""
     return """Function: is-function?
 Arguments: (is-function? value)

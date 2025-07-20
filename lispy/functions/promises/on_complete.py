@@ -1,34 +1,10 @@
 from lispy.exceptions import EvaluationError, PromiseError
 from lispy.types import LispyPromise
 from lispy.closure import Function
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_on_complete(args, env):
-    """Execute cleanup code regardless of promise outcome.
-
-    Usage: (on-complete promise cleanup-callback)
-
-    Args:
-        promise: A promise to attach cleanup to
-        cleanup-callback: Function to call when promise settles (resolves or rejects)
-
-    Returns:
-        A new promise that settles with the same value/error as the original,
-        but ensures cleanup-callback is executed
-
-    Examples:
-        (on-complete (resolve 42) (fn [_] (println "Cleanup")))
-        ; => Promise that resolves to 42, after printing "Cleanup"
-
-        (on-complete (reject "error") (fn [_] (println "Cleanup")))
-        ; => Promise that rejects with "error", after printing "Cleanup"
-
-        ; Thread-first style with cleanup:
-        (-> (fetch-data)
-            (then process-data)
-            (on-reject handle-error)
-            (on-complete (fn [_] (close-connection))))
-    """
+@lispy_function("on-complete")
+def on_complete(args, env):
     if len(args) != 2:
         raise EvaluationError(
             f"SyntaxError: 'on-complete' expects 2 arguments (promise cleanup-callback), got {len(args)}."
@@ -105,7 +81,8 @@ def builtin_on_complete(args, env):
     return new_promise
 
 
-def documentation_on_complete() -> str:
+@lispy_documentation("on-complete")
+def on_complete_documentation() -> str:
     """Returns documentation for the on-complete function."""
     return """Function: on-complete
 Arguments: (on-complete promise cleanup-callback)

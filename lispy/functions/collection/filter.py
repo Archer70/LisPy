@@ -4,6 +4,7 @@ from lispy.closure import Function  # For user-defined procedures
 from lispy.exceptions import EvaluationError, ArityError
 from lispy.evaluator import evaluate  # For evaluating user-defined function bodies
 from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
 def _call_predicate(
@@ -36,8 +37,8 @@ def _call_predicate(
             f"InternalError: Invalid predicate type in _call_predicate: {type(predicate)}"
         )
 
-
-def builtin_filter(args: List[Any], env: Environment):
+@lispy_function("filter")
+def filter(args: List[Any], env: Environment):
     """Implementation of the (filter collection predicate) LisPy function."""
     if len(args) != 2:
         raise EvaluationError(
@@ -87,7 +88,8 @@ def builtin_filter(args: List[Any], env: Environment):
         return LispyList(filtered_items)
 
 
-def documentation_filter() -> str:
+@lispy_documentation("filter")
+def filter_documentation() -> str:
     """Returns documentation for the filter function."""
     return """Function: filter
 Arguments: (filter collection predicate)

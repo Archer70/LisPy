@@ -1,65 +1,62 @@
 """LisPy Promise Functions"""
 
-from .promise import builtin_promise, documentation_promise
-from .resolve import builtin_resolve, documentation_resolve
-from .reject import builtin_reject, documentation_reject
-from .promise_all import builtin_promise_all, documentation_promise_all
-from .promise_race import builtin_promise_race, documentation_promise_race
+from .promise import promise, promise_documentation
+from .resolve import resolve, resolve_documentation
+from .reject import reject, reject_documentation
+from .promise_all import promise_all, promise_all_documentation
+from .promise_race import promise_race, promise_race_documentation
 
-from .promise_any import builtin_promise_any, documentation_promise_any
-from .promise_all_settled import (
-    builtin_promise_all_settled,
-    documentation_promise_all_settled,
-)
-from .then import builtin_promise_then, documentation_promise_then
-from .on_reject import builtin_on_reject, documentation_on_reject
-from .on_complete import builtin_on_complete, documentation_on_complete
-from .timeout import builtin_timeout, documentation_timeout
-from .with_timeout import builtin_with_timeout, documentation_with_timeout
-from .async_map import builtin_async_map, documentation_async_map
-from .async_filter import builtin_async_filter, documentation_async_filter
-from .async_reduce import builtin_async_reduce, documentation_async_reduce
-from .debounce import builtin_debounce, documentation_debounce
-from .retry import builtin_retry, documentation_retry
-from .throttle import builtin_throttle, documentation_throttle
+from .promise_any import promise_any, promise_any_documentation
+from .promise_all_settled import promise_all_settled, promise_all_settled_documentation
+from .then import promise_then, promise_then_documentation
+from .on_reject import on_reject, on_reject_documentation
+from .on_complete import on_complete, on_complete_documentation
+from .timeout import timeout, timeout_documentation
+from .with_timeout import with_timeout, with_timeout_documentation
+from .async_map import async_map, async_map_documentation
+from .async_filter import async_filter, async_filter_documentation
+from .async_reduce import async_reduce, async_reduce_documentation
+from .debounce import debounce, debounce_documentation
+from .retry import retry, retry_documentation
+from .throttle import throttle, throttle_documentation
 
 __all__ = [
     # Functions
-    "builtin_promise",
-    "builtin_resolve",
-    "builtin_reject",
-    "builtin_promise_all",
-    "builtin_promise_race",
-    "builtin_promise_any",
-    "builtin_promise_all_settled",
-    "builtin_promise_then",
-    "builtin_on_reject",
-    "builtin_on_complete",
-    "builtin_timeout",
-    "builtin_with_timeout",
-    "builtin_async_map",
-    "builtin_async_filter",
-    "builtin_async_reduce",
-    "builtin_debounce",
-    "builtin_retry",
-    "builtin_throttle",
+    "promise",
+    "resolve",
+    "reject",
+    "promise_all",
+    "promise_race",
+    "promise_any",
+    "promise_all_settled",
+    "promise_then",
+    "on_reject",
+    "on_complete",
+    "timeout",
+    "with_timeout",
+    "async_map",
+    "async_filter",
+    "async_reduce",
+    "debounce",
+    "retry",
+    "throttle",
     # Documentation
-    "documentation_promise",
-    "documentation_resolve",
-    "documentation_reject",
-    "documentation_promise_all",
-    "documentation_promise_race",
-    "documentation_promise_any",
-    "documentation_promise_all_settled",
-    "documentation_promise_then",
-    "documentation_on_reject",
-    "documentation_on_complete",
-    "documentation_timeout",
-    "documentation_with_timeout",
-    "documentation_async_map",
-    "documentation_async_filter",
-    "documentation_async_reduce",
-    "documentation_debounce",
-    "documentation_retry",
-    "documentation_throttle",
+    "promise_documentation",
+    "resolve_documentation",
+    "reject_documentation",
+    "promise_all_documentation",
+    "promise_race_documentation",
+    "promise_any_documentation",
+    "promise_all_settled_documentation",
+    "promise_then_documentation",
+    "on_reject_documentation",
+    "on_complete_documentation",
+    "timeout_documentation",
+    "with_timeout_documentation",
+    "async_map_documentation",
+    "async_filter_documentation",
+    "async_reduce_documentation",
+    "debounce_documentation",
+    "retry_documentation",
+    "throttle_documentation",
 ]

@@ -2,15 +2,12 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
-# import math # Not strictly needed for multiply, but good if using math.prod later
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
-
-def builtin_multiply(args: List[Any], env: Environment) -> Numeric:
-    """Multiplies numbers. (* num1 num2 ...)
-    If no arguments, returns 1 (identity for multiplication).
-    """
+@lispy_function("*")
+def multiply(args: List[Any], env: Environment) -> Numeric:
     if not args:
         return 1  # Identity for multiplication
 
@@ -24,8 +21,8 @@ def builtin_multiply(args: List[Any], env: Environment) -> Numeric:
     return product
 
 
-def documentation_multiply() -> str:
-    """Returns documentation for the * function."""
+@lispy_documentation("*")
+def multiply_documentation() -> str:
     return """Function: *
 Arguments: (* number1 number2 ...)
 Description: Multiplies zero or more numbers together.

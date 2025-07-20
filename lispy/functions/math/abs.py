@@ -2,12 +2,12 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
-
-def builtin_abs(args: List[Any], env: Environment) -> Numeric:
-    """Returns the absolute value of a number. (abs num)"""
+@lispy_function("abs")
+def abs_fn(args: List[Any], env: Environment) -> Numeric:
     if len(args) != 1:
         raise EvaluationError(
             f"SyntaxError: 'abs' expects 1 argument, got {len(args)}."
@@ -22,8 +22,8 @@ def builtin_abs(args: List[Any], env: Environment) -> Numeric:
     return abs(arg)
 
 
-def documentation_abs() -> str:
-    """Returns documentation for the abs function."""
+@lispy_documentation("abs")
+def abs_documentation() -> str:
     return """Function: abs
 Arguments: (abs number)
 Description: Returns the absolute value of a number.
@@ -32,9 +32,11 @@ Examples:
   (abs 5)       ; => 5
   (abs -5)      ; => 5
   (abs 0)       ; => 0
+  (abs 3.14)    ; => 3.14
   (abs -3.14)   ; => 3.14
-  (abs (- 2 7)) ; => 5
 
 Notes:
-  - Always returns a non-negative number
-  - Preserves the type (int or float) of the input"""
+  - Requires exactly one argument
+  - Returns the distance from zero on the number line
+  - Works with both integers and floating-point numbers
+  - Negative numbers become positive, positive numbers stay positive"""

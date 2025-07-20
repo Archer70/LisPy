@@ -2,11 +2,12 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
-
-def builtin_min(args: List[Any], env: Environment) -> Numeric:
+@lispy_function("min")
+def min_fn(args: List[Any], env: Environment) -> Numeric:
     """Returns the minimum of the given numbers. (min num1 num2 ...)"""
     if len(args) == 0:
         raise EvaluationError("SyntaxError: 'min' expects at least 1 argument, got 0.")
@@ -25,7 +26,8 @@ def builtin_min(args: List[Any], env: Environment) -> Numeric:
     return minimum
 
 
-def documentation_min() -> str:
+@lispy_documentation("min")
+def min_documentation() -> str:
     """Returns documentation for the min function."""
     return """Function: min
 Arguments: (min number1 number2 ...)

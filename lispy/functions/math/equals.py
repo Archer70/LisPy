@@ -1,13 +1,11 @@
 from typing import List, Any
 from ...exceptions import EvaluationError
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 
-def builtin_equals(args: List[Any], env: Environment) -> bool:
-    """Checks if all arguments are equal. (= item1 item2 ...)
-    Requires at least two arguments.
-    Currently only supports number comparison.
-    """
+@lispy_function("=")
+def equals(args: List[Any], env: Environment) -> bool:
     if len(args) < 2:
         raise EvaluationError("SyntaxError: '=' requires at least two arguments.")
 
@@ -28,7 +26,8 @@ def builtin_equals(args: List[Any], env: Environment) -> bool:
     return True
 
 
-def documentation_equals() -> str:
+@lispy_documentation("=")
+def equals_documentation() -> str:
     """Returns documentation for the = function."""
     return """Function: =
 Arguments: (= number1 number2 ...)

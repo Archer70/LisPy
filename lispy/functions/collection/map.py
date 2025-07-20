@@ -3,9 +3,10 @@ from lispy.closure import Function  # Import Function for user-defined procedure
 from lispy.exceptions import EvaluationError
 from lispy.evaluator import evaluate  # For evaluating user-defined function bodies
 from lispy.environment import Environment  # Added import for Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_map(args, env):
+@lispy_function("map")
+def map(args, env):
     """Implementation of the (map vector procedure) LisPy function.
     Applies procedure to each element of vector and returns a new vector of the results.
     Usage: (map vector procedure)
@@ -86,7 +87,8 @@ def builtin_map(args, env):
     return Vector(result_vector_elements)
 
 
-def documentation_map() -> str:
+@lispy_documentation("map")
+def map_documentation() -> str:
     """Returns documentation for the map function."""
     return """Function: map
 Arguments: (map vector function)

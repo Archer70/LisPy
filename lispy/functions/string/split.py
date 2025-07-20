@@ -1,26 +1,9 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import Vector
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
+@lispy_function("split")
 def split_fn(args, env):
-    """Split a string into a vector of substrings.
-
-    Usage: (split string separator)
-
-    Args:
-        string: The string to split
-        separator: The separator to split on
-
-    Returns:
-        A vector of substrings
-
-    Examples:
-        (split "a,b,c" ",") => ["a" "b" "c"]
-        (split "hello world" " ") => ["hello" "world"]
-        (split "one-two-three" "-") => ["one" "two" "three"]
-        (split "hello" "") => ["h" "e" "l" "l" "o"]  ; Split into characters
-        (split "" ",") => [""]  ; Empty string gives vector with one empty string
-    """
     if len(args) != 2:
         raise EvaluationError(
             f"SyntaxError: 'split' expects 2 arguments, got {len(args)}."
@@ -49,7 +32,8 @@ def split_fn(args, env):
     return Vector(parts)
 
 
-def documentation_split() -> str:
+@lispy_documentation("split")
+def split_documentation() -> str:
     """Returns documentation for the split function."""
     return """Function: split
 Arguments: (split string separator)

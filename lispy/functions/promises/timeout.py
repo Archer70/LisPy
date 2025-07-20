@@ -2,9 +2,10 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 import threading
 import time
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_timeout(args, env):
+@lispy_function("timeout")
+def timeout(args, env):
     """Create a promise that resolves after a specified timeout.
 
     Usage: (timeout ms)
@@ -59,7 +60,8 @@ def builtin_timeout(args, env):
     return promise
 
 
-def documentation_timeout() -> str:
+@lispy_documentation("timeout")
+def timeout_documentation() -> str:
     """Returns documentation for the timeout function."""
     return """Function: timeout
 Arguments: (timeout ms [value])

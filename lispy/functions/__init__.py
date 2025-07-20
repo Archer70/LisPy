@@ -7,6 +7,23 @@ from .function_registry import get_function_registry
 from .doc import register_documentation
 from ..special_forms import setup_special_form_documentation
 
+# Import all subpackages to trigger decorator registration
+# This ensures that all @lispy_function decorated functions get registered
+from . import math
+from . import logical  
+from . import collection
+from . import list
+from . import map
+from . import type_check
+from . import string
+from . import typing
+from . import io
+from . import promises
+from . import json
+from . import http
+from . import web
+from . import bdd_assertions
+
 # Legacy special forms lists (to be migrated to decorators)
 WEB_UNSAFE_SPECIAL_FORMS = {
     'import': 'Module loading with filesystem access - can load arbitrary modules',

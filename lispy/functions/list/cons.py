@@ -1,9 +1,11 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_cons(args: List[Any], env: Environment) -> List[Any]:
+@lispy_function("cons")
+def cons(args: List[Any], env: Environment) -> List[Any]:
     """Prepends an item to a list. (cons item list)"""
     if len(args) != 2:
         raise EvaluationError(
@@ -21,7 +23,8 @@ def builtin_cons(args: List[Any], env: Environment) -> List[Any]:
     return [item] + list_arg
 
 
-def documentation_cons() -> str:
+@lispy_documentation("cons")
+def cons_doc() -> str:
     """Returns documentation for the cons function."""
     return """Function: cons
 Arguments: (cons item list)

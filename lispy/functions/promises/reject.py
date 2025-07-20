@@ -2,9 +2,11 @@ from typing import List, Any
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_reject(args: List[Any], env: Environment) -> LispyPromise:
+@lispy_function("reject")
+def reject(args: List[Any], env: Environment) -> LispyPromise:
     """Creates a rejected promise with the given error. (reject error)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -21,7 +23,8 @@ def builtin_reject(args: List[Any], env: Environment) -> LispyPromise:
     return promise
 
 
-def documentation_reject() -> str:
+@lispy_documentation("reject")
+def reject_documentation() -> str:
     """Returns documentation for the reject function."""
     return """Function: reject
 Arguments: (reject error)

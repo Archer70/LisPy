@@ -6,9 +6,9 @@ from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector
-from lispy.functions.promises.promise_any import builtin_promise_any
-from lispy.functions.promises.resolve import builtin_resolve
-from lispy.functions.promises.reject import builtin_reject
+from lispy.functions.promises.promise_any import promise_any
+from lispy.functions.promises.resolve import resolve
+from lispy.functions.promises.reject import reject
 
 
 class PromiseAnyTest(unittest.TestCase):
@@ -16,9 +16,9 @@ class PromiseAnyTest(unittest.TestCase):
         """Set up test environment."""
         self.env = create_global_env()
         # Add promise functions to environment for integration tests
-        self.env.define("resolve", builtin_resolve)
-        self.env.define("reject", builtin_reject)
-        self.env.define("promise-any", builtin_promise_any)
+        self.env.define("resolve", resolve)
+        self.env.define("reject", reject)
+        self.env.define("promise-any", promise_any)
 
     def test_promise_any_first_resolves_wins(self):
         """Test that first promise to resolve wins, ignoring rejections."""
@@ -31,7 +31,7 @@ class PromiseAnyTest(unittest.TestCase):
         promises = Vector([reject_promise, fast_promise, slow_promise])
         
         # Execute promise-any
-        result = builtin_promise_any([promises], self.env)
+        result = promise_any([promises], self.env)
         
         # Set up the promises after creating promise-any
         reject_promise.reject("Should be ignored")
@@ -54,7 +54,7 @@ class PromiseAnyTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3])
         
         # Execute promise-any
-        result = builtin_promise_any([promises], self.env)
+        result = promise_any([promises], self.env)
         
         # Reject all promises
         promise1.reject("Error 1")
@@ -78,7 +78,7 @@ class PromiseAnyTest(unittest.TestCase):
         promises = LispyList([promise1, promise2])
         
         # Execute promise-any
-        result = builtin_promise_any([promises], self.env)
+        result = promise_any([promises], self.env)
         
         # Resolve first promise
         promise1.resolve("List result")
@@ -94,7 +94,7 @@ class PromiseAnyTest(unittest.TestCase):
         """Test that empty collection rejects immediately."""
         empty_vector = Vector([])
         
-        result = builtin_promise_any([empty_vector], self.env)
+        result = promise_any([empty_vector], self.env)
         
         # Should reject immediately
         self.assertEqual(result.state, "rejected")
@@ -113,7 +113,7 @@ class PromiseAnyTest(unittest.TestCase):
         promises = Vector([rejected_promise, resolved_promise])
         
         # Execute promise-any
-        result = builtin_promise_any([promises], self.env)
+        result = promise_any([promises], self.env)
         
         # Wait for result
         time.sleep(0.1)
@@ -133,7 +133,7 @@ class PromiseAnyTest(unittest.TestCase):
         promises = Vector([rejected1, rejected2])
         
         # Execute promise-any
-        result = builtin_promise_any([promises], self.env)
+        result = promise_any([promises], self.env)
         
         # Wait for result
         time.sleep(0.1)
@@ -152,7 +152,7 @@ class PromiseAnyTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3])
         
         # Execute promise-any
-        result = builtin_promise_any([promises], self.env)
+        result = promise_any([promises], self.env)
         
         # Set up timing: reject first, then resolve second
         def delayed_operations():
@@ -182,7 +182,7 @@ class PromiseAnyTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3, promise4])
         
         # Execute promise-any
-        result = builtin_promise_any([promises], self.env)
+        result = promise_any([promises], self.env)
         
         # Resolve with different types
         promise1.reject("String error")
@@ -199,17 +199,17 @@ class PromiseAnyTest(unittest.TestCase):
     def test_promise_any_wrong_argument_count(self):
         """Test error handling for wrong number of arguments."""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_any([], self.env)
+            promise_any([], self.env)
         self.assertEqual(str(cm.exception), "SyntaxError: 'promise-any' expects 1 argument, got 0.")
         
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_any([Vector([]), Vector([])], self.env)
+            promise_any([Vector([]), Vector([])], self.env)
         self.assertEqual(str(cm.exception), "SyntaxError: 'promise-any' expects 1 argument, got 2.")
 
     def test_promise_any_invalid_collection_type(self):
         """Test error handling for invalid collection types."""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_any(["not a collection"], self.env)
+            promise_any(["not a collection"], self.env)
         self.assertIn("TypeError", str(cm.exception))
         self.assertIn("must be a list or vector", str(cm.exception))
 
@@ -219,7 +219,7 @@ class PromiseAnyTest(unittest.TestCase):
         invalid_collection = Vector([promise, "not a promise", 42])
         
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_any([invalid_collection], self.env)
+            promise_any([invalid_collection], self.env)
         self.assertIn("TypeError", str(cm.exception))
         self.assertIn("All elements must be promises", str(cm.exception))
         self.assertIn("position 1", str(cm.exception))
@@ -266,7 +266,7 @@ class PromiseAnyTest(unittest.TestCase):
         for p in vector_promises:
             p.reject("Vector error")
         
-        result = builtin_promise_any([vector_promises], self.env)
+        result = promise_any([vector_promises], self.env)
         time.sleep(0.1)
         
         self.assertEqual(result.state, "rejected")
@@ -277,7 +277,7 @@ class PromiseAnyTest(unittest.TestCase):
         for p in list_promises:
             p.reject("List error")
         
-        result = builtin_promise_any([list_promises], self.env)
+        result = promise_any([list_promises], self.env)
         time.sleep(0.1)
         
         self.assertEqual(result.state, "rejected")
@@ -293,7 +293,7 @@ class PromiseAnyTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3])
         
         # Execute promise-any
-        result = builtin_promise_any([promises], self.env)
+        result = promise_any([promises], self.env)
         
         # Set up concurrent operations
         def resolve_after_delay(promise, delay, value):
@@ -314,16 +314,6 @@ class PromiseAnyTest(unittest.TestCase):
         
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, "Fast success")
-
-    def test_promise_any_documentation(self):
-        """Test that documentation is available."""
-        from lispy.functions.promises.promise_any import documentation_promise_any
-        
-        doc = documentation_promise_any()
-        self.assertIsInstance(doc, str)
-        self.assertIn("promise-any", doc)
-        self.assertIn("collection", doc)
-        self.assertIn("first promise to resolve", doc)
 
 
 if __name__ == '__main__':

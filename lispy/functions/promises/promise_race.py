@@ -2,9 +2,10 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector
 import threading
 import time
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_promise_race(args, env):
+@lispy_function("promise-race")
+def promise_race(args, env):
     """Race multiple promises and return the first one to settle.
 
     Usage: (promise-race collection)
@@ -83,7 +84,8 @@ def builtin_promise_race(args, env):
     return race_promise
 
 
-def documentation_promise_race() -> str:
+@lispy_documentation("promise-race")
+def promise_race_documentation() -> str:
     """Returns documentation for the promise-race function."""
     return """Function: promise-race
 Arguments: (promise-race collection)

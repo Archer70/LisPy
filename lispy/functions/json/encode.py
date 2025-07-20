@@ -7,6 +7,7 @@ Converts LisPy data structures to JSON strings.
 import json
 from lispy.exceptions import LisPyError
 from lispy.types import Symbol, Vector, LispyList
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
 class JSONEncodeError(LisPyError):
@@ -14,7 +15,8 @@ class JSONEncodeError(LisPyError):
     pass
 
 
-def builtin_json_encode(args, env):
+@lispy_function("json-encode")
+def json_encode(args, env):
     """
     Encode LisPy data as a JSON string.
     
@@ -93,7 +95,9 @@ def _convert_for_json(value):
 
 
 # Documentation
-documentation_json_encode = """
+@lispy_documentation("json-encode")
+def json_encode_documentation():
+    return """
 json-encode: Convert LisPy data to JSON string
 
 Usage:

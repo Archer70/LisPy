@@ -1,9 +1,10 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 from lispy.closure import Function
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_promise_then(args, env):
+@lispy_function("promise-then")
+def promise_then(args, env):
     """Chain a callback to be executed when promise resolves.
 
     Usage: (promise-then promise callback)
@@ -83,7 +84,8 @@ def builtin_promise_then(args, env):
     return promise.then(lispy_callback)
 
 
-def documentation_promise_then() -> str:
+@lispy_documentation("promise-then")
+def promise_then_documentation() -> str:
     """Returns documentation for the then function."""
     return """Function: promise-then
 Arguments: (promise-then promise callback)

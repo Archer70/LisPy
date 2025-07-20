@@ -1,9 +1,10 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
-from lispy.functions.promises.timeout import builtin_timeout
+from lispy.functions.promises.timeout import timeout
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_with_timeout(args, env):
+@lispy_function("with-timeout")
+def with_timeout(args, env):
     """Wrap a promise with a timeout and fallback value.
 
     Usage: (with-timeout promise fallback-value timeout-ms)
@@ -62,7 +63,7 @@ def builtin_with_timeout(args, env):
         )
 
     # Create timeout promise that rejects with timeout signal
-    timeout_promise = builtin_timeout([timeout_ms, "TIMEOUT_SIGNAL"], env)
+    timeout_promise = timeout([timeout_ms, "TIMEOUT_SIGNAL"], env)
 
     # Create new promise for the result
     result_promise = LispyPromise()
@@ -102,7 +103,8 @@ def builtin_with_timeout(args, env):
     return result_promise
 
 
-def documentation_with_timeout() -> str:
+@lispy_documentation("with-timeout")
+def with_timeout_documentation() -> str:
     """Returns documentation for the with-timeout function."""
     return """Function: with-timeout
 Arguments: (with-timeout promise fallback-value timeout-ms)

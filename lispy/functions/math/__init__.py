@@ -1,34 +1,36 @@
-"""LisPy Math Functions"""
+"""LisPy Math Functions - Now using decorator-based registration"""
 
-from .abs import builtin_abs, documentation_abs
-from .add import builtin_add, documentation_add
-from .divide import builtin_divide, documentation_divide
-from .equals import builtin_equals, documentation_equals
-from .max import builtin_max, documentation_max
-from .min import builtin_min, documentation_min
-from .modulo import builtin_modulo, documentation_modulo
-from .multiply import builtin_multiply, documentation_multiply
-from .subtract import builtin_subtract, documentation_subtract
+# The functions are now automatically registered via decorators
+# Import them to trigger the decorator registration
+from .abs import abs_fn, abs_documentation
+from .add import add, add_documentation
+from .divide import divide, divide_documentation
+from .equals import equals, equals_documentation
+from .max import max_fn, max_documentation
+from .min import min_fn, min_documentation
+from .modulo import modulo, modulo_documentation
+from .multiply import multiply, multiply_documentation
+from .subtract import subtract, subtract_documentation
 
 __all__ = [
-    # Functions
-    "builtin_abs",
-    "builtin_add",
-    "builtin_divide",
-    "builtin_equals",
-    "builtin_max",
-    "builtin_min",
-    "builtin_modulo",
-    "builtin_multiply",
-    "builtin_subtract",
-    # Documentation
-    "documentation_abs",
-    "documentation_add",
-    "documentation_divide",
-    "documentation_equals",
-    "documentation_max",
-    "documentation_min",
-    "documentation_modulo",
-    "documentation_multiply",
-    "documentation_subtract",
+    # Functions (new names)
+    "abs_fn",
+    "add",
+    "divide", 
+    "equals",
+    "max_fn",
+    "min_fn",
+    "modulo",
+    "multiply",
+    "subtract",
+    # Documentation (new names)
+    "abs_documentation",
+    "add_documentation",
+    "divide_documentation",
+    "equals_documentation",
+    "max_documentation",
+    "min_documentation",
+    "modulo_documentation",
+    "multiply_documentation",
+    "subtract_documentation",
 ]

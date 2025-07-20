@@ -1,10 +1,11 @@
 # lispy_project/lispy/functions/type_check/is_map_q.py
 from typing import List, Any
-from ...exceptions import EvaluationError
-from ...environment import Environment
+from lispy.exceptions import EvaluationError
+from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_is_map_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("is-map?")
+def is_map_q(args: List[Any], env: Environment) -> bool:
     """Returns true if the argument is a map, false otherwise. (is-map? value)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -15,7 +16,8 @@ def builtin_is_map_q(args: List[Any], env: Environment) -> bool:
     return isinstance(arg, dict)
 
 
-def documentation_is_map_q() -> str:
+@lispy_documentation("is-map?")
+def is_map_q_documentation() -> str:
     """Returns documentation for the is-map? function."""
     return """Function: is-map?
 Arguments: (is-map? value)

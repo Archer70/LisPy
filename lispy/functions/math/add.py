@@ -2,13 +2,12 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
-
-def builtin_add(args: List[Any], env: Environment) -> Numeric:
-    """Adds a list of numbers. (+ num1 num2 ...)"""
-    # args is now a list of the evaluated arguments
+@lispy_function("+")
+def add(args: List[Any], env: Environment) -> Numeric:
     if not args:  # Handles (+)
         return 0  # Standard Lisp behavior for (+) is 0
 
@@ -23,8 +22,8 @@ def builtin_add(args: List[Any], env: Environment) -> Numeric:
     return total
 
 
-def documentation_add() -> str:
-    """Returns documentation for the + function."""
+@lispy_documentation("+")
+def add_documentation() -> str:
     return """Function: +
 Arguments: (+ number1 number2 ...)
 Description: Adds zero or more numbers together.

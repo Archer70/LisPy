@@ -1,10 +1,12 @@
 from lispy.types import Symbol
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 from typing import List, Any
 
 
-def builtin_hash_map(args: List[Any], env: Environment):
+@lispy_function("hash-map")
+def hash_map(args: List[Any], env: Environment):
     """Implementation of the (hash-map ...) LisPy function.
     Creates a new map from the evaluated arguments, which are treated as key-value pairs.
     Usage: (hash-map key1 val1 key2 val2 ...)
@@ -27,7 +29,8 @@ def builtin_hash_map(args: List[Any], env: Environment):
     return new_map
 
 
-def documentation_hash_map() -> str:
+@lispy_documentation("hash-map")
+def hash_map_doc() -> str:
     """Returns documentation for the hash-map function."""
     return """Function: hash-map
 Arguments: (hash-map key1 value1 key2 value2 ...)

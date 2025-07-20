@@ -1,9 +1,11 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_car(args: List[Any], env: Environment) -> Any:
+@lispy_function("car")
+def car(args: List[Any], env: Environment) -> Any:
     """Returns the first element of a list. (car list)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -23,7 +25,8 @@ def builtin_car(args: List[Any], env: Environment) -> Any:
     return list_arg[0]
 
 
-def documentation_car() -> str:
+@lispy_documentation("car")
+def car_doc() -> str:
     """Returns documentation for the car function."""
     return """Function: car
 Arguments: (car list)

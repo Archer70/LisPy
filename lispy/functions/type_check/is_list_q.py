@@ -1,11 +1,13 @@
 # lispy_project/lispy/functions/type_check/is_list_q.py
 from typing import List, Any
-from ...types import LispyList
-from ...exceptions import EvaluationError
-from ...environment import Environment
+from lispy.types import LispyList
+from lispy.exceptions import EvaluationError
+from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_is_list_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("is-list?")
+def is_list_q(args: List[Any], env: Environment) -> bool:
     """Returns true if the argument is a list, false otherwise. (is-list? value)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -16,7 +18,8 @@ def builtin_is_list_q(args: List[Any], env: Environment) -> bool:
     return isinstance(arg, LispyList)
 
 
-def documentation_is_list_q() -> str:
+@lispy_documentation("is-list?")
+def is_list_q_documentation() -> str:
     """Returns documentation for the is-list? function."""
     return """Function: is-list?
 Arguments: (is-list? value)

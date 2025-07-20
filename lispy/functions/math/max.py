@@ -2,11 +2,13 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
 
-def builtin_max(args: List[Any], env: Environment) -> Numeric:
+@lispy_function("max")
+def max_fn(args: List[Any], env: Environment) -> Numeric:
     """Returns the maximum of the given numbers. (max num1 num2 ...)"""
     if len(args) == 0:
         raise EvaluationError("SyntaxError: 'max' expects at least 1 argument, got 0.")
@@ -25,7 +27,8 @@ def builtin_max(args: List[Any], env: Environment) -> Numeric:
     return maximum
 
 
-def documentation_max() -> str:
+@lispy_documentation("max")
+def max_documentation() -> str:
     """Returns documentation for the max function."""
     return """Function: max
 Arguments: (max number1 number2 ...)
