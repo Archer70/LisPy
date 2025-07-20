@@ -1,12 +1,14 @@
 # LisPy Evaluator
 
-from .types import Symbol, Vector, LispyList, LispyPromise, LispyMapLiteral
-from .exceptions import EvaluationError, AssertionFailure, UserThrownError
-from .environment import Environment
+from typing import Any, Callable
+from typing import List as TypingList
+
 from .closure import Function
+from .environment import Environment
+from .exceptions import AssertionFailure, EvaluationError, UserThrownError
 from .special_forms import special_form_handlers
 from .tail_call import TailCall
-from typing import List as TypingList, Any, Callable
+from .types import LispyList, LispyMapLiteral, LispyPromise, Symbol, Vector
 
 # Maximum recursion depth for regular function calls
 MAX_RECURSION_DEPTH = 100
@@ -189,19 +191,19 @@ def evaluate(expression: Any, env: Environment) -> Any:
         else:
             # Convert to regular dict and return
             return dict(expression)
-    
+
     # Handle runtime dictionaries (already evaluated, keep as-is)
     elif isinstance(expression, dict):
         return expression
-    
+
     # Handle self-evaluating types
     elif _is_self_evaluating(expression):
         return expression
-    
+
     # Handle symbol lookup
     elif isinstance(expression, Symbol):
         return env.lookup(expression.name)
-    
+
     # Handle list expressions (function calls and special forms)
     elif isinstance(expression, (list, LispyList)):
         # If expression is an empty list (parsed from '()'), it should raise an error.
@@ -213,7 +215,7 @@ def evaluate(expression: Any, env: Environment) -> Any:
         first_element = expression[0]
         if isinstance(first_element, Symbol):
             # Check if environment has custom special form handlers (for web-safe mode)
-            handlers = getattr(env, '_special_form_handlers', special_form_handlers)
+            handlers = getattr(env, "_special_form_handlers", special_form_handlers)
             handler = handlers.get(first_element.name)
             if handler:
                 # Pass expression as is (could be list or LispyList)
@@ -221,7 +223,7 @@ def evaluate(expression: Any, env: Environment) -> Any:
 
         # Pass expression as is (could be list or LispyList)
         return _evaluate_list_form_as_call(expression, env, evaluate)
-    
+
     # Unhandled expression type
     else:
         raise EvaluationError(f"Cannot evaluate type: {type(expression).__name__}")

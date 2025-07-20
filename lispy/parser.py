@@ -1,20 +1,13 @@
 # Parser implementation will go here
-from .lexer import (
-    TOKEN_NUMBER,
-    TOKEN_STRING,
-    TOKEN_BOOLEAN,
-    TOKEN_NIL,
-    TOKEN_SYMBOL,
-    TOKEN_LPAREN,
-    TOKEN_RPAREN,
-    TOKEN_QUOTE,
-    TOKEN_LBRACKET,
-    TOKEN_RBRACKET,  # Added LBRACKET, RBRACKET
-    TOKEN_LBRACE,
-    TOKEN_RBRACE,  # Added LBRACE, RBRACE
-)
-from .types import Symbol, Vector, LispyList, LispyMapLiteral  # Import LispyMapLiteral
 from .exceptions import ParseError  # Updated import
+from .lexer import TOKEN_RBRACE  # Added LBRACE, RBRACE
+from .lexer import TOKEN_RBRACKET  # Added LBRACKET, RBRACKET
+from .lexer import (TOKEN_BOOLEAN, TOKEN_LBRACE, TOKEN_LBRACKET, TOKEN_LPAREN,
+                    TOKEN_NIL, TOKEN_NUMBER, TOKEN_QUOTE, TOKEN_RPAREN,
+                    TOKEN_STRING, TOKEN_SYMBOL)
+from .types import (LispyList, LispyMapLiteral,  # Import LispyMapLiteral
+                    Symbol, Vector)
+
 # ... import other token types as needed ...
 
 
@@ -101,10 +94,18 @@ def parse(tokens: list[tuple]):
             key_token_type, key_token_value = _tokens[0]  # Peek at key token
 
             # Allow symbols, strings, numbers, booleans, and nil as map keys
-            if key_token_type not in (TOKEN_SYMBOL, TOKEN_STRING, TOKEN_NUMBER, TOKEN_BOOLEAN, TOKEN_NIL):
-                raise ParseError(f"Map key must be a symbol, string, number, boolean, or nil, got {key_token_type}")
+            if key_token_type not in (
+                TOKEN_SYMBOL,
+                TOKEN_STRING,
+                TOKEN_NUMBER,
+                TOKEN_BOOLEAN,
+                TOKEN_NIL,
+            ):
+                raise ParseError(
+                    f"Map key must be a symbol, string, number, boolean, or nil, got {key_token_type}"
+                )
 
-            # Parse the key 
+            # Parse the key
             key = _parse_form()  # This will consume the key token
 
             # --- Parse Value ---

@@ -1,9 +1,9 @@
 # lispy_project/tests/functions/not_fn_test.py
 import unittest
 
-from lispy.functions import global_env, create_global_env
-from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env, global_env
+from lispy.utils import run_lispy_string
 
 
 class NotFunctionTest(unittest.TestCase):

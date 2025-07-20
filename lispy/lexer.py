@@ -1,6 +1,7 @@
 # Lexer implementation will go here
 
 import re  # Import the regex module
+
 from .exceptions import LexerError  # Import LexerError
 
 # Token Types (constants)

@@ -1,9 +1,11 @@
 # lispy_project/lispy/functions/type_check/is_vector_q.py
-from typing import List, Any
-from lispy.types import Vector
-from lispy.exceptions import EvaluationError
+from typing import Any, List
+
 from lispy.environment import Environment
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import Vector
+
 
 @lispy_function("is-vector?")
 def is_vector_q(args: List[Any], env: Environment) -> bool:

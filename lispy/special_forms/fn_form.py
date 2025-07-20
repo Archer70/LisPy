@@ -1,9 +1,9 @@
-from typing import List, Any, Callable
+from typing import Any, Callable, List
 
-from ..types import Symbol
-from ..exceptions import EvaluationError
-from ..environment import Environment
 from ..closure import Function  # For creating Function instances
+from ..environment import Environment
+from ..exceptions import EvaluationError
+from ..types import Symbol
 
 
 def documentation_fn():

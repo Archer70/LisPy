@@ -1,10 +1,10 @@
 import unittest
 
-from lispy.evaluator import evaluate
-from lispy.functions import global_env
 from lispy.environment import Environment
-from lispy.types import Symbol
+from lispy.evaluator import evaluate
 from lispy.exceptions import EvaluationError
+from lispy.functions import global_env
+from lispy.types import Symbol
 
 
 class RecurFormTest(unittest.TestCase):

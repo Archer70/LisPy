@@ -1,35 +1,35 @@
 # lispy_project/lispy/special_forms/__init__.py
-from typing import Dict, Callable, List, Any
-from ..environment import Environment  # For type hint in handler signature
+from typing import Any, Callable, Dict, List
 
+from ..environment import Environment  # For type hint in handler signature
 # Import handler functions (alphabetized)
-from .and_form import handle_and_form, documentation_and
-from .async_form import handle_async_form, documentation_async
-from .await_form import handle_await_form, documentation_await
+from .and_form import documentation_and, handle_and_form
+from .async_form import documentation_async, handle_async_form
+from .await_form import documentation_await, handle_await_form
 from .bdd.action_form import action_form_handler
 from .bdd.assert_raises_q_form import assert_raises_q_form_handler
 from .bdd.describe_form import describe_form_handler
 from .bdd.given_form import given_form_handler
 from .bdd.it_form import it_form_handler
 from .bdd.then_form import then_form_handler
-from .cond_form import handle_cond, documentation_cond
-from .define_form import handle_define_form, documentation_define
-from .defn_async_form import handle_defn_async_form, documentation_defn_async
-from .doseq_form import handle_doseq_form, documentation_doseq
-from .export_form import export_form, documentation_export
-from .fn_form import handle_fn_form, documentation_fn
-from .if_form import handle_if_form, documentation_if
-from .import_form import import_form, documentation_import
-from .let_form import handle_let_form, documentation_let
-from .loop_form import handle_loop_form, documentation_loop
-from .or_form import handle_or_form, documentation_or
-from .quote_form import handle_quote_form, documentation_quote
-from .recur_form import handle_recur, documentation_recur
-from .thread_first import handle_thread_first, documentation_thread_first
-from .thread_last import handle_thread_last, documentation_thread_last
-from .throw_form import handle_throw_form, documentation_throw
-from .try_form import handle_try_form, documentation_try
-from .when_form import handle_when_form, documentation_when
+from .cond_form import documentation_cond, handle_cond
+from .define_form import documentation_define, handle_define_form
+from .defn_async_form import documentation_defn_async, handle_defn_async_form
+from .doseq_form import documentation_doseq, handle_doseq_form
+from .export_form import documentation_export, export_form
+from .fn_form import documentation_fn, handle_fn_form
+from .if_form import documentation_if, handle_if_form
+from .import_form import documentation_import, import_form
+from .let_form import documentation_let, handle_let_form
+from .loop_form import documentation_loop, handle_loop_form
+from .or_form import documentation_or, handle_or_form
+from .quote_form import documentation_quote, handle_quote_form
+from .recur_form import documentation_recur, handle_recur
+from .thread_first import documentation_thread_first, handle_thread_first
+from .thread_last import documentation_thread_last, handle_thread_last
+from .throw_form import documentation_throw, handle_throw_form
+from .try_form import documentation_try, handle_try_form
+from .when_form import documentation_when, handle_when_form
 
 # A registry for special form handlers (alphabetized by key)
 # Maps the symbol (as a string) to the handler function
@@ -65,16 +65,17 @@ special_form_handlers: Dict[str, Callable[[List[Any], Environment, Callable], An
 
 # Security configuration for web-safe environments
 WEB_UNSAFE_SPECIAL_FORMS = {
-    'import': 'Module loading with filesystem access - can load arbitrary modules',
-    'export': 'Module export functionality - not needed without import',
-    'throw': 'Exception throwing mechanism - could be misused for flow control attacks',
-    'describe': 'BDD testing framework - not needed in production',
-    'it': 'BDD test definition - not needed in production',
-    'given': 'BDD test setup - not needed in production',
-    'then': 'BDD test assertion - not needed in production',
-    'action': 'BDD test action - not needed in production',
-    'assert-raises?': 'BDD exception testing - not needed in production'
+    "import": "Module loading with filesystem access - can load arbitrary modules",
+    "export": "Module export functionality - not needed without import",
+    "throw": "Exception throwing mechanism - could be misused for flow control attacks",
+    "describe": "BDD testing framework - not needed in production",
+    "it": "BDD test definition - not needed in production",
+    "given": "BDD test setup - not needed in production",
+    "then": "BDD test assertion - not needed in production",
+    "action": "BDD test action - not needed in production",
+    "assert-raises?": "BDD exception testing - not needed in production",
 }
+
 
 # Web-safe special form handlers registry (excludes dangerous forms)
 def _create_web_safe_special_form_handlers():
@@ -84,13 +85,15 @@ def _create_web_safe_special_form_handlers():
         safe_handlers.pop(unsafe_form, None)  # Remove if exists, ignore if not
     return safe_handlers
 
+
 web_safe_special_form_handlers = _create_web_safe_special_form_handlers()
+
 
 def setup_special_form_documentation():
     """Register all special form documentation functions with their corresponding names."""
     # Import register_documentation here to avoid circular imports
     from ..functions.doc import register_documentation
-    
+
     # Register special form documentation
     register_documentation("->", documentation_thread_first)
     register_documentation("->>", documentation_thread_last)
@@ -118,7 +121,7 @@ def setup_special_form_documentation():
 def get_web_unsafe_special_forms():
     """
     Returns a set of special form names that are excluded from web-safe environments.
-    
+
     Returns:
         set: Set of special form names that are unsafe for web environments
     """
@@ -150,5 +153,5 @@ __all__ = [
     "documentation_thread_last",
     "documentation_throw",
     "documentation_try",
-    "documentation_when"
+    "documentation_when",
 ]

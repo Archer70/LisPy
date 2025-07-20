@@ -1,10 +1,11 @@
 # tests/functions/empty_test.py
 import unittest
 
-from lispy.utils import run_lispy_string
-from lispy.functions import create_global_env  # To get an environment with 'empty?'
-from lispy.exceptions import EvaluationError
 from lispy.closure import Function  # Import Function for testing
+from lispy.exceptions import EvaluationError
+from lispy.functions import \
+    create_global_env  # To get an environment with 'empty?'
+from lispy.utils import run_lispy_string
 
 
 class EmptyFnTest(unittest.TestCase):

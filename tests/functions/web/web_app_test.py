@@ -3,9 +3,10 @@ Tests for web-app function.
 """
 
 import unittest
+
+from lispy.exceptions import EvaluationError
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
-from lispy.exceptions import EvaluationError
 from lispy.web.app import WebApp
 
 
@@ -19,7 +20,7 @@ class TestWebApp(unittest.TestCase):
     def test_web_app_creation(self):
         """Test that web-app creates a WebApp instance."""
         result = run_lispy_string("(web-app)", self.env)
-        
+
         self.assertIsInstance(result, WebApp)
         self.assertFalse(result.is_running)
         self.assertEqual(len(result.router.routes), 0)
@@ -39,7 +40,7 @@ class TestWebApp(unittest.TestCase):
           (equal? app1 app2))
         """
         result = run_lispy_string(code, self.env)
-        
+
         # Should be different instances
         self.assertFalse(result)
 
@@ -50,14 +51,14 @@ class TestWebApp(unittest.TestCase):
           my-app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertIsInstance(result, WebApp)
 
     def test_web_app_function_documentation(self):
         """Test that web-app has documentation."""
         # Access documentation through the doc function
         result = run_lispy_string("(doc web-app)", self.env)
-        
+
         self.assertIsInstance(result, str)
         self.assertIn("web-app", result)
         self.assertIn("Creates a new web application", result)
@@ -69,9 +70,9 @@ class TestWebApp(unittest.TestCase):
         (-> (web-app))
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertIsInstance(result, WebApp)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

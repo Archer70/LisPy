@@ -1,9 +1,9 @@
 import unittest
 
-from lispy.functions import create_global_env
-from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
 from lispy.types import Vector
+from lispy.utils import run_lispy_string
 
 
 class RangeFnTest(unittest.TestCase):
@@ -180,8 +180,8 @@ class RangeFnTest(unittest.TestCase):
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string('(range "not-number")', self.env)
         self.assertEqual(
-            str(cm.exception), 
-            "TypeError: Argument 1 to 'range' must be an integer, got str: 'not-number'"
+            str(cm.exception),
+            "TypeError: Argument 1 to 'range' must be an integer, got str: 'not-number'",
         )
 
     def test_range_float_first_arg(self):
@@ -189,8 +189,8 @@ class RangeFnTest(unittest.TestCase):
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(range 3.14)", self.env)
         self.assertEqual(
-            str(cm.exception), 
-            "TypeError: Argument 1 to 'range' must be an integer, got float: '3.14'"
+            str(cm.exception),
+            "TypeError: Argument 1 to 'range' must be an integer, got float: '3.14'",
         )
 
     def test_range_non_integer_second_arg(self):
@@ -198,8 +198,8 @@ class RangeFnTest(unittest.TestCase):
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(range 1 2.5)", self.env)
         self.assertEqual(
-            str(cm.exception), 
-            "TypeError: Argument 2 to 'range' must be an integer, got float: '2.5'"
+            str(cm.exception),
+            "TypeError: Argument 2 to 'range' must be an integer, got float: '2.5'",
         )
 
     def test_range_boolean_arg(self):
@@ -208,8 +208,8 @@ class RangeFnTest(unittest.TestCase):
         # So let's test that True and False work as expected rather than error
         result_true = run_lispy_string("(range true)", self.env)
         self.assertEqual(result_true, Vector([0]))  # range(1) = [0]
-        
-        result_false = run_lispy_string("(range false)", self.env) 
+
+        result_false = run_lispy_string("(range false)", self.env)
         self.assertEqual(result_false, Vector([]))  # range(0) = []
 
     def test_range_vector_arg(self):
@@ -217,8 +217,8 @@ class RangeFnTest(unittest.TestCase):
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(range [1 2 3])", self.env)
         self.assertEqual(
-            str(cm.exception), 
-            "TypeError: Argument 1 to 'range' must be an integer, got Vector: '[1 2 3]'"
+            str(cm.exception),
+            "TypeError: Argument 1 to 'range' must be an integer, got Vector: '[1 2 3]'",
         )
 
     def test_range_zero_step(self):
@@ -234,8 +234,8 @@ class RangeFnTest(unittest.TestCase):
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(range 1 10 1.5)", self.env)
         self.assertEqual(
-            str(cm.exception), 
-            "TypeError: Argument 3 to 'range' must be an integer, got float: '1.5'"
+            str(cm.exception),
+            "TypeError: Argument 3 to 'range' must be an integer, got float: '1.5'",
         )
 
     def test_range_nil_arg(self):
@@ -243,8 +243,8 @@ class RangeFnTest(unittest.TestCase):
         with self.assertRaises(EvaluationError) as cm:
             run_lispy_string("(range nil)", self.env)
         self.assertEqual(
-            str(cm.exception), 
-            "TypeError: Argument 1 to 'range' must be an integer, got NoneType: 'None'"
+            str(cm.exception),
+            "TypeError: Argument 1 to 'range' must be an integer, got NoneType: 'None'",
         )
 
     # --- Integration and usage tests ---
@@ -267,7 +267,7 @@ class RangeFnTest(unittest.TestCase):
         """Test empty range with collection functions."""
         result = run_lispy_string("(count (range 0))", self.env)
         self.assertEqual(result, 0)
-        
+
         result = run_lispy_string("(empty? (range 5 5))", self.env)
         self.assertEqual(result, True)
 
@@ -285,7 +285,9 @@ class RangeFnTest(unittest.TestCase):
 
     def test_range_with_filter(self):
         """Test range used with filter function."""
-        result = run_lispy_string("(filter (range 10) (fn [x] (= (% x 2) 0)))", self.env)
+        result = run_lispy_string(
+            "(filter (range 10) (fn [x] (= (% x 2) 0)))", self.env
+        )
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([0, 2, 4, 6, 8]))
 
@@ -303,4 +305,4 @@ class RangeFnTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()

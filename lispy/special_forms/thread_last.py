@@ -18,8 +18,8 @@ Examples:
     ; => (* 2 (- 100 10)) => (* 2 90) => 180
 """
 
-from ..types import Symbol, LispyList
 from ..exceptions import EvaluationError
+from ..types import LispyList, Symbol
 
 
 def documentation_thread_last():

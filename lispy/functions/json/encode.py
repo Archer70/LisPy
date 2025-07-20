@@ -5,13 +5,15 @@ Converts LisPy data structures to JSON strings.
 """
 
 import json
+
 from lispy.exceptions import LisPyError
-from lispy.types import Symbol, Vector, LispyList
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyList, Symbol, Vector
 
 
 class JSONEncodeError(LisPyError):
     """Exception raised for JSON encoding errors."""
+
     pass
 
 
@@ -19,29 +21,31 @@ class JSONEncodeError(LisPyError):
 def json_encode(args, env):
     """
     Encode LisPy data as a JSON string.
-    
+
     Args:
         args: List containing one argument - the data to encode
         env: Environment (unused)
-        
+
     Returns:
         str: JSON string representation of the data
-        
+
     Raises:
         JSONEncodeError: If data cannot be encoded as JSON
     """
     if len(args) != 1:
-        raise JSONEncodeError(f"json-encode expects exactly 1 argument, got {len(args)}")
-    
+        raise JSONEncodeError(
+            f"json-encode expects exactly 1 argument, got {len(args)}"
+        )
+
     data = args[0]
-    
+
     try:
         # Convert LisPy data to JSON-compatible format
         json_compatible = _convert_for_json(data)
-        
+
         # Encode as JSON string
         return json.dumps(json_compatible)
-        
+
     except (TypeError, ValueError) as e:
         raise JSONEncodeError(f"Cannot encode as JSON: {str(e)}")
 
@@ -49,22 +53,22 @@ def json_encode(args, env):
 def _convert_for_json(value):
     """
     Convert LisPy values to JSON-compatible Python values.
-    
+
     Args:
         value: Value to convert
-        
+
     Returns:
         JSON-compatible value (dict, list, str, int, float, bool, None)
     """
     if isinstance(value, Symbol):
         # Convert symbols to strings (removing leading colon if present)
         symbol_name = value.name
-        return symbol_name[1:] if symbol_name.startswith(':') else symbol_name
-        
+        return symbol_name[1:] if symbol_name.startswith(":") else symbol_name
+
     elif isinstance(value, (list, Vector, LispyList)):
         # Recursively convert list/vector elements
         return [_convert_for_json(item) for item in value]
-        
+
     elif isinstance(value, dict):
         # Recursively convert dictionary values and normalize keys
         result = {}
@@ -72,22 +76,22 @@ def _convert_for_json(value):
             # Convert keys to strings
             if isinstance(k, Symbol):
                 str_key = k.name
-                if str_key.startswith(':'):
+                if str_key.startswith(":"):
                     str_key = str_key[1:]
             else:
                 str_key = str(k)
-            
+
             result[str_key] = _convert_for_json(v)
         return result
-        
+
     elif value is None:
         # None becomes JSON null
         return None
-        
+
     elif isinstance(value, (int, float, bool, str)):
         # Primitives are already JSON-compatible
         return value
-        
+
     else:
         # For other types, convert to string representation
         # This includes functions, promises, etc.
@@ -144,4 +148,4 @@ Notes:
   - Output is compact (no pretty-printing)
 
 See also: json-decode for the reverse operation
-""" 
+"""

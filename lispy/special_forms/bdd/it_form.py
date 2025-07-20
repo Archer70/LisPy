@@ -1,6 +1,8 @@
-from lispy.exceptions import EvaluationError
+from typing import Any
+from typing import List as TypingList
+
 from lispy.bdd import registry
-from typing import List as TypingList, Any
+from lispy.exceptions import EvaluationError
 
 
 def it_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) -> Any:

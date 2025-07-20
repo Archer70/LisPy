@@ -2,8 +2,8 @@
 import unittest
 
 from lispy.functions import create_global_env
+from lispy.types import LispyList, Symbol
 from lispy.utils import run_lispy_string
-from lispy.types import Symbol, LispyList
 
 
 class ListFunctionTest(unittest.TestCase):

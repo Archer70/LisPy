@@ -3,9 +3,10 @@ Tests for route function.
 """
 
 import unittest
+
+from lispy.exceptions import EvaluationError
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
-from lispy.exceptions import EvaluationError
 from lispy.web.app import WebApp
 
 
@@ -24,10 +25,10 @@ class TestRoute(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertIsInstance(result, WebApp)
         self.assertEqual(len(result.router.routes), 1)
-        
+
         route = result.router.routes[0]
         self.assertEqual(route.method, "GET")
         self.assertEqual(route.pattern, "/")
@@ -40,7 +41,7 @@ class TestRoute(unittest.TestCase):
           (equal? app result))
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertTrue(result)
 
     def test_route_method_chaining(self):
@@ -52,7 +53,7 @@ class TestRoute(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertIsInstance(result, WebApp)
         self.assertEqual(len(result.router.routes), 2)
 
@@ -64,7 +65,7 @@ class TestRoute(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.router.routes), 1)
         route = result.router.routes[0]
         self.assertEqual(route.pattern, "/users/:id")
@@ -79,7 +80,7 @@ class TestRoute(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         route = result.router.routes[0]
         self.assertEqual(route.pattern, "/users/:id/posts/:post_id")
         self.assertEqual(route.param_names, ["id", "post_id"])
@@ -92,7 +93,7 @@ class TestRoute(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         route = result.router.routes[0]
         self.assertEqual(route.method, "GET")
 
@@ -104,7 +105,7 @@ class TestRoute(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         route = result.router.routes[0]
         self.assertEqual(route.pattern, "/home")
 
@@ -120,7 +121,7 @@ class TestRoute(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.router.routes), 5)
         methods = [route.method for route in result.router.routes]
         self.assertEqual(methods, ["GET", "POST", "PUT", "DELETE", "PATCH"])
@@ -207,7 +208,7 @@ class TestRoute(unittest.TestCase):
     def test_route_documentation(self):
         """Test that route has documentation."""
         result = run_lispy_string("(doc route)", self.env)
-        
+
         self.assertIsInstance(result, str)
         self.assertIn("route", result)
         self.assertIn("Adds an HTTP route", result)
@@ -229,19 +230,25 @@ class TestRoute(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.router.routes), 5)
-        
+
         # Check route patterns
         patterns = [route.pattern for route in result.router.routes]
-        expected_patterns = ["/", "/users/:id", "/api/users", "/api/users/:id", "/api/users/:id"]
+        expected_patterns = [
+            "/",
+            "/users/:id",
+            "/api/users",
+            "/api/users/:id",
+            "/api/users/:id",
+        ]
         self.assertEqual(patterns, expected_patterns)
-        
+
         # Check methods
         methods = [route.method for route in result.router.routes]
         expected_methods = ["GET", "GET", "POST", "PUT", "DELETE"]
         self.assertEqual(methods, expected_methods)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,6 @@
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
 from lispy.types import LispyList, Vector
-from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
 @lispy_function("concat")

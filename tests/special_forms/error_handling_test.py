@@ -1,9 +1,10 @@
 import unittest
+
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError, UserThrownError
-from lispy.types import Symbol
 from lispy.special_forms.throw_form import handle_throw_form
 from lispy.special_forms.try_form import handle_try_form
+from lispy.types import Symbol
 
 
 class TestErrorHandling(unittest.TestCase):

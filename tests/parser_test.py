@@ -1,20 +1,11 @@
 import unittest
-from lispy.parser import parse
+
 from lispy.exceptions import ParseError
-from lispy.lexer import (
-    TOKEN_NUMBER,
-    TOKEN_STRING,
-    TOKEN_BOOLEAN,
-    TOKEN_NIL,
-    TOKEN_SYMBOL,
-    TOKEN_LPAREN,
-    TOKEN_RPAREN,
-    TOKEN_QUOTE,
-    TOKEN_LBRACKET,
-    TOKEN_RBRACKET,
-    TOKEN_LBRACE,
-    TOKEN_RBRACE,
-)
+from lispy.lexer import (TOKEN_BOOLEAN, TOKEN_LBRACE, TOKEN_LBRACKET,
+                         TOKEN_LPAREN, TOKEN_NIL, TOKEN_NUMBER, TOKEN_QUOTE,
+                         TOKEN_RBRACE, TOKEN_RBRACKET, TOKEN_RPAREN,
+                         TOKEN_STRING, TOKEN_SYMBOL)
+from lispy.parser import parse
 from lispy.types import Symbol
 
 
@@ -315,7 +306,10 @@ class ParserTest(unittest.TestCase):
             (TOKEN_STRING, "value"),
             (TOKEN_RBRACE, "}"),
         ]
-        with self.assertRaisesRegex(ParseError, "Map key must be a symbol, string, number, boolean, or nil, got LPAREN"):
+        with self.assertRaisesRegex(
+            ParseError,
+            "Map key must be a symbol, string, number, boolean, or nil, got LPAREN",
+        ):
             parse(tokens)
 
     # --- Tests for Mismatched Delimiters and Unexpected Tokens ---

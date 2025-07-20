@@ -3,27 +3,28 @@ Web app creation function for LisPy Web Framework.
 """
 
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
 from lispy.web.app import WebApp
-from lispy.functions.decorators import lispy_function, lispy_documentation
+
 
 @lispy_function("web-app", web_safe=False, reason="Network access")
 def web_app(args, env):
     """
     Create a new web application instance.
-    
+
     Usage: (web-app)
-    
+
     Returns:
         A WebApp instance that can be configured with routes and middleware
-        
+
     Examples:
         ; Create a new web application
         (define app (web-app))
-        
+
         ; Add routes to the application
         (route app "GET" "/" home-handler)
         (route app "POST" "/api/users" create-user-handler)
-        
+
         ; Start the server
         (start-server app {:port 8080})
     """
@@ -31,7 +32,7 @@ def web_app(args, env):
         raise EvaluationError(
             f"SyntaxError: 'web-app' expects 0 arguments, got {len(args)}."
         )
-    
+
     # Create and return a new WebApp instance
     return WebApp()
 

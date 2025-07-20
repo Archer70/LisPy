@@ -1,8 +1,9 @@
 # lispy_project/lispy/functions/type_check/is_nil_q.py
-from typing import List, Any
-from ...exceptions import EvaluationError
+from typing import Any, List
+
 from ...environment import Environment
-from ..decorators import lispy_function, lispy_documentation
+from ...exceptions import EvaluationError
+from ..decorators import lispy_documentation, lispy_function
 
 
 @lispy_function("is-nil?")

@@ -2,8 +2,8 @@
 
 # The functions are now automatically registered via decorators
 # Import them to trigger the decorator registration
-from .join import join_fn, join_documentation
-from .split import split_fn, split_documentation
+from .join import join_documentation, join_fn
+from .split import split_documentation, split_fn
 
 __all__ = [
     # Functions (new names)

@@ -1,12 +1,11 @@
 # lispy_project/tests/special_forms/fn_form_test.py
 import unittest
 
-from lispy.functions import create_global_env
+from lispy.closure import \
+    Function  # For type checking and direct instantiation in tests
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
-from lispy.closure import (
-    Function,
-)  # For type checking and direct instantiation in tests
 
 
 class FnFormTest(unittest.TestCase):  # Renamed class

@@ -1,7 +1,8 @@
 from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise
+from lispy.functions.decorators import lispy_documentation, lispy_function
 from lispy.functions.promises.timeout import timeout
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.types import LispyPromise
+
 
 @lispy_function("with-timeout")
 def with_timeout(args, env):

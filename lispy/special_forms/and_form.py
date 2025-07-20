@@ -1,6 +1,7 @@
-from typing import List, Any, Callable
+from typing import Any, Callable, List
 
 from ..environment import Environment
+
 # No EvaluationError needed here as argument count is flexible
 
 
@@ -25,6 +26,7 @@ Notes:
   - Useful for validation chains
 
 See Also: or, if, when"""
+
 
 def handle_and_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable

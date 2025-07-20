@@ -1,7 +1,8 @@
-import unittest
 import time
-from lispy.utils import run_lispy_string
+import unittest
+
 from lispy.functions import global_env
+from lispy.utils import run_lispy_string
 
 
 class TestAsyncIntegration(unittest.TestCase):

@@ -1,7 +1,9 @@
-from typing import List, Any
+from typing import Any, List
+
 from lispy.environment import Environment
+from lispy.functions.decorators import lispy_documentation, lispy_function
 from lispy.types import LispyList
-from lispy.functions.decorators import lispy_function, lispy_documentation
+
 
 @lispy_function("list")
 def list_fn(args: List[Any], env: Environment) -> LispyList:

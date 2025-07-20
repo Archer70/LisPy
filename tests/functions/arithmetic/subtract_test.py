@@ -1,9 +1,9 @@
 # lispy_project/tests/functions/subtract_test.py
 import unittest
 
-from lispy.utils import run_lispy_string
-from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
+from lispy.utils import run_lispy_string
 
 
 class SubtractFunctionTest(unittest.TestCase):

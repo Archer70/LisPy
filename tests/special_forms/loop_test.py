@@ -1,7 +1,8 @@
 import unittest
+
+from lispy.exceptions import EvaluationError
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
-from lispy.exceptions import EvaluationError
 
 
 class LoopSpecialFormTest(unittest.TestCase):

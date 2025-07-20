@@ -1,6 +1,7 @@
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
 from lispy.types import LispyList, Vector
-from lispy.functions.decorators import lispy_function, lispy_documentation
+
 
 @lispy_function("reverse")
 def reverse(args, env):
@@ -37,6 +38,7 @@ def reverse(args, env):
         return Vector(collection[::-1])
     else:  # LispyList
         return LispyList(collection[::-1])
+
 
 @lispy_documentation("reverse")
 def reverse_documentation() -> str:

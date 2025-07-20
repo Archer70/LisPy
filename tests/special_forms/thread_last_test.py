@@ -6,10 +6,10 @@ Thread-last threads values as the LAST argument to each function in the pipeline
 
 import unittest
 
-from lispy.functions import create_global_env
-from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
 from lispy.types import Vector
+from lispy.utils import run_lispy_string
 
 
 class ThreadLastTest(unittest.TestCase):

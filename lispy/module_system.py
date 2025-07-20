@@ -1,5 +1,6 @@
 import os
-from typing import Dict, Set, List, Optional
+from typing import Dict, List, Optional, Set
+
 from .environment import Environment
 from .exceptions import EvaluationError
 from .lexer import tokenize

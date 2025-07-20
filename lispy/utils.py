@@ -1,8 +1,9 @@
 # lispy_project/lispy/utils.py
 
+from lispy.evaluator import evaluate
 from lispy.lexer import tokenize
 from lispy.parser import parse
-from lispy.evaluator import evaluate
+
 # from lispy.environment import Environment # For type hinting if desired later
 # from typing import Any # For type hinting if desired later
 

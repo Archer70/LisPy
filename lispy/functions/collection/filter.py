@@ -1,10 +1,12 @@
-from typing import List, Any, Callable
-from lispy.types import LispyList, Vector
+from typing import Any, Callable, List
+
 from lispy.closure import Function  # For user-defined procedures
-from lispy.exceptions import EvaluationError, ArityError
-from lispy.evaluator import evaluate  # For evaluating user-defined function bodies
 from lispy.environment import Environment
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.evaluator import \
+    evaluate  # For evaluating user-defined function bodies
+from lispy.exceptions import ArityError, EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyList, Vector
 
 
 def _call_predicate(
@@ -36,6 +38,7 @@ def _call_predicate(
         raise EvaluationError(
             f"InternalError: Invalid predicate type in _call_predicate: {type(predicate)}"
         )
+
 
 @lispy_function("filter")
 def filter(args: List[Any], env: Environment):

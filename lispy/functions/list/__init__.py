@@ -3,7 +3,7 @@
 from .car import car, car_doc
 from .cdr import cdr, cdr_doc
 from .cons import cons, cons_doc
-from .list import list_fn, list_doc
+from .list import list_doc, list_fn
 from .vector import vector, vector_doc
 
 __all__ = [

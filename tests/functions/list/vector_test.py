@@ -1,7 +1,7 @@
 import unittest
 
-from lispy.types import Vector
 from lispy.functions import create_global_env
+from lispy.types import Vector
 from lispy.utils import run_lispy_string
 
 

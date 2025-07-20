@@ -1,1 +1,1 @@
-# Map function tests 
+# Map function tests

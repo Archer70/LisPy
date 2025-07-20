@@ -2,12 +2,12 @@
 
 # The functions are now automatically registered via decorators
 # Import them to trigger the decorator registration
-from .abs import abs_fn, abs_documentation
+from .abs import abs_documentation, abs_fn
 from .add import add, add_documentation
 from .divide import divide, divide_documentation
 from .equals import equals, equals_documentation
-from .max import max_fn, max_documentation
-from .min import min_fn, min_documentation
+from .max import max_documentation, max_fn
+from .min import min_documentation, min_fn
 from .modulo import modulo, modulo_documentation
 from .multiply import multiply, multiply_documentation
 from .subtract import subtract, subtract_documentation
@@ -16,7 +16,7 @@ __all__ = [
     # Functions (new names)
     "abs_fn",
     "add",
-    "divide", 
+    "divide",
     "equals",
     "max_fn",
     "min_fn",

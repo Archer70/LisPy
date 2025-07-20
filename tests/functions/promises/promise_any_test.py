@@ -1,14 +1,14 @@
-import unittest
 import time
+import unittest
 from unittest.mock import Mock
 
-from lispy.functions import create_global_env
-from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise, LispyList, Vector
+from lispy.functions import create_global_env
 from lispy.functions.promises.promise_any import promise_any
-from lispy.functions.promises.resolve import resolve
 from lispy.functions.promises.reject import reject
+from lispy.functions.promises.resolve import resolve
+from lispy.types import LispyList, LispyPromise, Vector
+from lispy.utils import run_lispy_string
 
 
 class PromiseAnyTest(unittest.TestCase):
@@ -26,21 +26,21 @@ class PromiseAnyTest(unittest.TestCase):
         slow_promise = LispyPromise()
         fast_promise = LispyPromise()
         reject_promise = LispyPromise()
-        
+
         # Create collection
         promises = Vector([reject_promise, fast_promise, slow_promise])
-        
+
         # Execute promise-any
         result = promise_any([promises], self.env)
-        
+
         # Set up the promises after creating promise-any
         reject_promise.reject("Should be ignored")
         fast_promise.resolve("Fast result")
         slow_promise.resolve("Slow result")
-        
+
         # Wait for result
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, "Fast result")
 
@@ -50,20 +50,20 @@ class PromiseAnyTest(unittest.TestCase):
         promise1 = LispyPromise()
         promise2 = LispyPromise()
         promise3 = LispyPromise()
-        
+
         promises = Vector([promise1, promise2, promise3])
-        
+
         # Execute promise-any
         result = promise_any([promises], self.env)
-        
+
         # Reject all promises
         promise1.reject("Error 1")
         promise2.reject("Error 2")
         promise3.reject("Error 3")
-        
+
         # Wait for result
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "rejected")
         self.assertIn("AggregateError", result.error)
         self.assertIn("Error 1", result.error)
@@ -74,28 +74,28 @@ class PromiseAnyTest(unittest.TestCase):
         """Test promise-any works with list collections."""
         promise1 = LispyPromise()
         promise2 = LispyPromise()
-        
+
         promises = LispyList([promise1, promise2])
-        
+
         # Execute promise-any
         result = promise_any([promises], self.env)
-        
+
         # Resolve first promise
         promise1.resolve("List result")
         promise2.reject("Should be ignored")
-        
+
         # Wait for result
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, "List result")
 
     def test_promise_any_empty_collection_rejects(self):
         """Test that empty collection rejects immediately."""
         empty_vector = Vector([])
-        
+
         result = promise_any([empty_vector], self.env)
-        
+
         # Should reject immediately
         self.assertEqual(result.state, "rejected")
         self.assertIn("AggregateError", result.error)
@@ -106,18 +106,18 @@ class PromiseAnyTest(unittest.TestCase):
         # Create pre-resolved promises
         resolved_promise = LispyPromise()
         resolved_promise.resolve("Already resolved")
-        
+
         rejected_promise = LispyPromise()
         rejected_promise.reject("Already rejected")
-        
+
         promises = Vector([rejected_promise, resolved_promise])
-        
+
         # Execute promise-any
         result = promise_any([promises], self.env)
-        
+
         # Wait for result
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, "Already resolved")
 
@@ -126,18 +126,18 @@ class PromiseAnyTest(unittest.TestCase):
         # Create pre-rejected promises
         rejected1 = LispyPromise()
         rejected1.reject("Pre-rejected 1")
-        
+
         rejected2 = LispyPromise()
         rejected2.reject("Pre-rejected 2")
-        
+
         promises = Vector([rejected1, rejected2])
-        
+
         # Execute promise-any
         result = promise_any([promises], self.env)
-        
+
         # Wait for result
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "rejected")
         self.assertIn("AggregateError", result.error)
         self.assertIn("Pre-rejected 1", result.error)
@@ -148,12 +148,12 @@ class PromiseAnyTest(unittest.TestCase):
         promise1 = LispyPromise()
         promise2 = LispyPromise()
         promise3 = LispyPromise()
-        
+
         promises = Vector([promise1, promise2, promise3])
-        
+
         # Execute promise-any
         result = promise_any([promises], self.env)
-        
+
         # Set up timing: reject first, then resolve second
         def delayed_operations():
             time.sleep(0.05)
@@ -162,13 +162,14 @@ class PromiseAnyTest(unittest.TestCase):
             promise2.resolve("Second resolution")
             time.sleep(0.05)
             promise3.reject("Third rejection")
-        
+
         import threading
+
         threading.Thread(target=delayed_operations, daemon=True).start()
-        
+
         # Wait for result
         time.sleep(0.2)
-        
+
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, "Second resolution")
 
@@ -178,21 +179,21 @@ class PromiseAnyTest(unittest.TestCase):
         promise2 = LispyPromise()
         promise3 = LispyPromise()
         promise4 = LispyPromise()
-        
+
         promises = Vector([promise1, promise2, promise3, promise4])
-        
+
         # Execute promise-any
         result = promise_any([promises], self.env)
-        
+
         # Resolve with different types
         promise1.reject("String error")
         promise2.resolve(42)  # Number should win
         promise3.resolve(Vector([1, 2, 3]))
         promise4.resolve({"key": "value"})
-        
+
         # Wait for result
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, 42)
 
@@ -200,11 +201,15 @@ class PromiseAnyTest(unittest.TestCase):
         """Test error handling for wrong number of arguments."""
         with self.assertRaises(EvaluationError) as cm:
             promise_any([], self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'promise-any' expects 1 argument, got 0.")
-        
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'promise-any' expects 1 argument, got 0."
+        )
+
         with self.assertRaises(EvaluationError) as cm:
             promise_any([Vector([]), Vector([])], self.env)
-        self.assertEqual(str(cm.exception), "SyntaxError: 'promise-any' expects 1 argument, got 2.")
+        self.assertEqual(
+            str(cm.exception), "SyntaxError: 'promise-any' expects 1 argument, got 2."
+        )
 
     def test_promise_any_invalid_collection_type(self):
         """Test error handling for invalid collection types."""
@@ -217,7 +222,7 @@ class PromiseAnyTest(unittest.TestCase):
         """Test error handling for non-promise elements in collection."""
         promise = LispyPromise()
         invalid_collection = Vector([promise, "not a promise", 42])
-        
+
         with self.assertRaises(EvaluationError) as cm:
             promise_any([invalid_collection], self.env)
         self.assertIn("TypeError", str(cm.exception))
@@ -230,13 +235,13 @@ class PromiseAnyTest(unittest.TestCase):
         run_lispy_string('(define p1 (reject "error 1"))', self.env)
         run_lispy_string('(define p2 (resolve "success"))', self.env)
         run_lispy_string('(define p3 (reject "error 2"))', self.env)
-        
+
         # Test with resolved promises - first one should win
-        result = run_lispy_string('(promise-any (vector p1 p2 p3))', self.env)
-        
+        result = run_lispy_string("(promise-any (vector p1 p2 p3))", self.env)
+
         # Wait for result
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, "success")
 
@@ -246,13 +251,13 @@ class PromiseAnyTest(unittest.TestCase):
         run_lispy_string('(define p1 (reject "error 1"))', self.env)
         run_lispy_string('(define p2 (reject "error 2"))', self.env)
         run_lispy_string('(define p3 (reject "error 3"))', self.env)
-        
+
         # Test with all rejected promises
-        result = run_lispy_string('(promise-any (vector p1 p2 p3))', self.env)
-        
+        result = run_lispy_string("(promise-any (vector p1 p2 p3))", self.env)
+
         # Wait for result
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "rejected")
         self.assertIn("AggregateError", result.error)
         self.assertIn("error 1", result.error)
@@ -265,21 +270,21 @@ class PromiseAnyTest(unittest.TestCase):
         vector_promises = Vector([LispyPromise(), LispyPromise()])
         for p in vector_promises:
             p.reject("Vector error")
-        
+
         result = promise_any([vector_promises], self.env)
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "rejected")
         self.assertIn("Vector", result.error)
-        
+
         # Test with List
         list_promises = LispyList([LispyPromise(), LispyPromise()])
         for p in list_promises:
             p.reject("List error")
-        
+
         result = promise_any([list_promises], self.env)
         time.sleep(0.1)
-        
+
         self.assertEqual(result.state, "rejected")
         # The error format shows the collection type name in parentheses
         self.assertIn("List error", result.error)
@@ -289,32 +294,43 @@ class PromiseAnyTest(unittest.TestCase):
         promise1 = LispyPromise()
         promise2 = LispyPromise()
         promise3 = LispyPromise()
-        
+
         promises = Vector([promise1, promise2, promise3])
-        
+
         # Execute promise-any
         result = promise_any([promises], self.env)
-        
+
         # Set up concurrent operations
         def resolve_after_delay(promise, delay, value):
             time.sleep(delay)
             promise.resolve(value)
-        
+
         def reject_after_delay(promise, delay, error):
             time.sleep(delay)
             promise.reject(error)
-        
+
         import threading
-        threading.Thread(target=reject_after_delay, args=(promise1, 0.1, "Error 1"), daemon=True).start()
-        threading.Thread(target=resolve_after_delay, args=(promise2, 0.05, "Fast success"), daemon=True).start()
-        threading.Thread(target=resolve_after_delay, args=(promise3, 0.15, "Slow success"), daemon=True).start()
-        
+
+        threading.Thread(
+            target=reject_after_delay, args=(promise1, 0.1, "Error 1"), daemon=True
+        ).start()
+        threading.Thread(
+            target=resolve_after_delay,
+            args=(promise2, 0.05, "Fast success"),
+            daemon=True,
+        ).start()
+        threading.Thread(
+            target=resolve_after_delay,
+            args=(promise3, 0.15, "Slow success"),
+            daemon=True,
+        ).start()
+
         # Wait for result
         time.sleep(0.2)
-        
+
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, "Fast success")
 
 
-if __name__ == '__main__':
-    unittest.main() 
+if __name__ == "__main__":
+    unittest.main()

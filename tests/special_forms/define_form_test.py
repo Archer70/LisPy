@@ -1,8 +1,8 @@
 # lispy_project/tests/special_forms/define_form_test.py
 import unittest
 
-from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 
 

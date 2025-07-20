@@ -1,9 +1,9 @@
 import unittest
 
+from lispy.exceptions import ArityError, EvaluationError
 from lispy.functions import create_global_env
-from lispy.utils import run_lispy_string
-from lispy.exceptions import EvaluationError, ArityError
 from lispy.types import LispyList
+from lispy.utils import run_lispy_string
 
 
 class ReduceFnTest(unittest.TestCase):

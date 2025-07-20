@@ -1,11 +1,12 @@
-from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise
-from lispy.closure import Function
-from lispy.evaluator import evaluate
-from lispy.environment import Environment
-from lispy.functions.decorators import lispy_function, lispy_documentation
 import threading
 import time
+
+from lispy.closure import Function
+from lispy.environment import Environment
+from lispy.evaluator import evaluate
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyPromise
 
 
 @lispy_function("retry")
@@ -150,13 +151,19 @@ def retry(args, env):
 
             # All attempts failed - reject with the last error
             if last_error:
-                retry_promise.reject(f"RetryError: Failed after {max_attempts} attempts. Last error: {last_error}")
+                retry_promise.reject(
+                    f"RetryError: Failed after {max_attempts} attempts. Last error: {last_error}"
+                )
             else:
-                retry_promise.reject(f"RetryError: Failed after {max_attempts} attempts with unknown error.")
+                retry_promise.reject(
+                    f"RetryError: Failed after {max_attempts} attempts with unknown error."
+                )
 
         except Exception as e:
             # Unexpected error in retry logic itself
-            retry_promise.reject(f"RetryError: Unexpected error in retry logic: {str(e)}")
+            retry_promise.reject(
+                f"RetryError: Unexpected error in retry logic: {str(e)}"
+            )
 
     # Start retry loop in background thread
     retry_thread = threading.Thread(target=retry_loop, daemon=True)
@@ -230,4 +237,4 @@ Notes:
   - Runs asynchronously in background thread
   - Compatible with promise chaining and thread-first (->) operator
   - Similar to retry patterns in JavaScript/Node.js libraries
-""" 
+"""

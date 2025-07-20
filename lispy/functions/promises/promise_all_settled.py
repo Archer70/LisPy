@@ -1,9 +1,11 @@
-from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise, LispyList, Vector, Symbol
-from lispy.functions.map import hash_map
 import threading
 import time
-from lispy.functions.decorators import lispy_function, lispy_documentation
+
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.functions.map import hash_map
+from lispy.types import LispyList, LispyPromise, Symbol, Vector
+
 
 @lispy_function("promise-all-settled")
 def promise_all_settled(args, env):

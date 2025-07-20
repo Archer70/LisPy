@@ -1,9 +1,9 @@
 # tests/bdd_integration_test.py
 import unittest
 
+from lispy.bdd import registry  # Import the whole registry module
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
-from lispy.bdd import registry  # Import the whole registry module
 
 
 class TestBddIntegration(unittest.TestCase):

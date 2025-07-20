@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """LisPy REPL Functionality"""
 
-import sys
 import os
 import re  # For improved word extraction
+import sys
 from pathlib import Path
 
 # Add the project root to Python path if not already (e.g. when run directly)
@@ -15,24 +15,25 @@ elif __name__ == "__main__":  # If run from project root
     project_root = Path(__file__).parent
     sys.path.insert(0, str(project_root.parent))
 
-from lispy.exceptions import EvaluationError, ParseError, LexerError
-from lispy.utils import run_lispy_string
-from lispy.environment import Environment  # Corrected import
-from lispy.lexer import tokenize as lispy_tokenize  # For _check_buffer_completeness
-
-# Import for dynamic loading of known symbols
-from lispy.special_forms import special_form_handlers
-# from lispy.functions import global_env_vars # This was incorrect, built-ins are in the env itself
-
 # For prompt_toolkit integration
 from prompt_toolkit import PromptSession
+from prompt_toolkit.completion import (Completer,  # Added for completion
+                                       Completion)
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.lexers import PygmentsLexer  # For syntax highlighting
-from pygments.lexers.lisp import SchemeLexer  # Using SchemeLexer as a base for LisPy
-from prompt_toolkit.completion import (
-    Completer,
-    Completion,
-)  # Added for completion
+from pygments.lexers.lisp import \
+    SchemeLexer  # Using SchemeLexer as a base for LisPy
+
+from lispy.environment import Environment  # Corrected import
+from lispy.exceptions import EvaluationError, LexerError, ParseError
+from lispy.lexer import \
+    tokenize as lispy_tokenize  # For _check_buffer_completeness
+# Import for dynamic loading of known symbols
+from lispy.special_forms import special_form_handlers
+from lispy.utils import run_lispy_string
+
+# from lispy.functions import global_env_vars # This was incorrect, built-ins are in the env itself
+
 
 INDENT_UNIT = "  "  # 2 spaces for indentation
 
@@ -306,9 +307,8 @@ class LispyRepl:
 if __name__ == "__main__":
     # This allows running the REPL directly for testing
     print("(Running LisPy REPL directly for development testing)")
-    from lispy.functions import (
-        create_global_env,
-    )  # Correct: create_global_env is in functions
+    from lispy.functions import \
+        create_global_env  # Correct: create_global_env is in functions
 
     # Setup project root for module loading if run directly
     # This is a bit redundant with top-level path setup but ensures context for direct run.

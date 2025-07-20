@@ -1,8 +1,8 @@
-from typing import List, Any, Callable
+from typing import Any, Callable, List
 
-# from lispy.evaluator import evaluate # Removed to break circular import
-from lispy.exceptions import EvaluationError, AssertionFailure
 from lispy.environment import Environment
+# from lispy.evaluator import evaluate # Removed to break circular import
+from lispy.exceptions import AssertionFailure, EvaluationError
 
 # Forward declaration or a way to access the currently executing evaluate function
 # This is tricky. Python's closures and module system usually handle this if not for the circular import.

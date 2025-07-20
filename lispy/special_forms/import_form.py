@@ -1,6 +1,6 @@
 from ..exceptions import EvaluationError
-from ..types import Symbol
 from ..module_system import get_module_loader
+from ..types import Symbol
 
 
 def documentation_import():

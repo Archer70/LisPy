@@ -1,8 +1,8 @@
 import unittest
 
-from lispy.types import Symbol
-from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
+from lispy.types import Symbol
 from lispy.utils import run_lispy_string
 
 
@@ -93,7 +93,7 @@ class DissocFnTest(unittest.TestCase):
         result = run_lispy_string(lispy_code, self.env)
         expected = {42: "answer"}
         self.assertEqual(result, expected)
-        
+
     def test_dissoc_string_key(self):
         """Test dissoc works with string keys."""
         lispy_code = '(dissoc {"name" "Alice" "age" 30} "age")'

@@ -1,1 +1,1 @@
-# Type check function tests 
+# Type check function tests

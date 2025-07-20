@@ -1,9 +1,9 @@
 # lispy_project/tests/functions/greater_than_or_equal_test.py
 import unittest
 
+from lispy.exceptions import EvaluationError
 from lispy.functions import global_env
 from lispy.utils import run_lispy_string
-from lispy.exceptions import EvaluationError
 
 
 class GreaterThanOrEqualFunctionTest(unittest.TestCase):

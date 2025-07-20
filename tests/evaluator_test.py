@@ -1,10 +1,10 @@
 import unittest
 
-from lispy.evaluator import evaluate
-from lispy.functions import global_env
-from lispy.exceptions import EvaluationError
-from lispy.types import Symbol
 from lispy.environment import Environment
+from lispy.evaluator import evaluate
+from lispy.exceptions import EvaluationError
+from lispy.functions import global_env
+from lispy.types import Symbol
 
 # We might need to parse some simple expressions to feed the evaluator
 # from lispy.parser import parse # If needed for more complex test cases later

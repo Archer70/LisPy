@@ -1,14 +1,15 @@
-import unittest
 import time
+import unittest
+
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise, Symbol, Vector
+from lispy.functions.promises.promise import promise
+from lispy.functions.promises.reject import reject
+from lispy.functions.promises.resolve import resolve
 from lispy.special_forms.async_form import handle_async_form
 from lispy.special_forms.await_form import handle_await_form
 from lispy.special_forms.defn_async_form import handle_defn_async_form
-from lispy.functions.promises.promise import promise
-from lispy.functions.promises.resolve import resolve
-from lispy.functions.promises.reject import reject
+from lispy.types import LispyPromise, Symbol, Vector
 
 
 class TestAsyncSpecialForms(unittest.TestCase):

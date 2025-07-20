@@ -1,24 +1,24 @@
 """LisPy Promise Functions"""
 
-from .promise import promise, promise_documentation
-from .resolve import resolve, resolve_documentation
-from .reject import reject, reject_documentation
-from .promise_all import promise_all, promise_all_documentation
-from .promise_race import promise_race, promise_race_documentation
-
-from .promise_any import promise_any, promise_any_documentation
-from .promise_all_settled import promise_all_settled, promise_all_settled_documentation
-from .then import promise_then, promise_then_documentation
-from .on_reject import on_reject, on_reject_documentation
-from .on_complete import on_complete, on_complete_documentation
-from .timeout import timeout, timeout_documentation
-from .with_timeout import with_timeout, with_timeout_documentation
-from .async_map import async_map, async_map_documentation
 from .async_filter import async_filter, async_filter_documentation
+from .async_map import async_map, async_map_documentation
 from .async_reduce import async_reduce, async_reduce_documentation
 from .debounce import debounce, debounce_documentation
+from .on_complete import on_complete, on_complete_documentation
+from .on_reject import on_reject, on_reject_documentation
+from .promise import promise, promise_documentation
+from .promise_all import promise_all, promise_all_documentation
+from .promise_all_settled import (promise_all_settled,
+                                  promise_all_settled_documentation)
+from .promise_any import promise_any, promise_any_documentation
+from .promise_race import promise_race, promise_race_documentation
+from .reject import reject, reject_documentation
+from .resolve import resolve, resolve_documentation
 from .retry import retry, retry_documentation
+from .then import promise_then, promise_then_documentation
 from .throttle import throttle, throttle_documentation
+from .timeout import timeout, timeout_documentation
+from .with_timeout import with_timeout, with_timeout_documentation
 
 __all__ = [
     # Functions

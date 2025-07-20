@@ -1,4 +1,5 @@
-from typing import List, Any, Callable
+from typing import Any, Callable, List
+
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, Symbol

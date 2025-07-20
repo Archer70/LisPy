@@ -1,5 +1,5 @@
-from ..types import Symbol, LispyList
 from ..exceptions import EvaluationError
+from ..types import LispyList, Symbol
 
 
 def documentation_thread_first():

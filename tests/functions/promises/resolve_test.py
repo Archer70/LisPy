@@ -1,11 +1,12 @@
 """Tests for resolve function - creates immediately resolved promises"""
 
 import unittest
+
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise, Vector, LispyList
-from lispy.functions.promises.resolve import resolve
 from lispy.functions import create_global_env
+from lispy.functions.promises.resolve import resolve
+from lispy.types import LispyList, LispyPromise, Vector
 
 
 class TestResolve(unittest.TestCase):
@@ -104,7 +105,7 @@ class TestResolve(unittest.TestCase):
         nested = {
             "list": [1, 2, Vector([3, 4])],
             "dict": {"inner": "value"},
-            "mixed": Vector([1, {"key": "val"}, LispyList([5, 6])])
+            "mixed": Vector([1, {"key": "val"}, LispyList([5, 6])]),
         }
         result = resolve([nested], self.env)
         self.assertEqual(result.state, "resolved")
@@ -116,7 +117,7 @@ class TestResolve(unittest.TestCase):
             resolve([], self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'resolve' expects 1 argument (value), got 0."
+            "SyntaxError: 'resolve' expects 1 argument (value), got 0.",
         )
 
     def test_resolve_wrong_arg_count_many(self):
@@ -125,24 +126,24 @@ class TestResolve(unittest.TestCase):
             resolve([1, 2], self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'resolve' expects 1 argument (value), got 2."
+            "SyntaxError: 'resolve' expects 1 argument (value), got 2.",
         )
 
         with self.assertRaises(EvaluationError) as cm:
             resolve([1, 2, 3], self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'resolve' expects 1 argument (value), got 3."
+            "SyntaxError: 'resolve' expects 1 argument (value), got 3.",
         )
 
     def test_resolve_immediate_availability(self):
         """Test that resolved promises are immediately available"""
         result = resolve(["immediate"], self.env)
-        
+
         # Should be immediately resolved, no waiting needed
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, "immediate")
-        
+
         # Can be used immediately in then/catch chains
         chained = result.then(lambda x: x.upper())
         self.assertEqual(chained.state, "resolved")
@@ -150,9 +151,10 @@ class TestResolve(unittest.TestCase):
 
     def test_resolve_with_function_object(self):
         """Test resolve with function objects"""
+
         def test_fn():
             return "function result"
-            
+
         result = resolve([test_fn], self.env)
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, test_fn)
@@ -160,11 +162,11 @@ class TestResolve(unittest.TestCase):
     def test_resolve_chain_compatibility(self):
         """Test resolve works in promise chains"""
         result = resolve([10], self.env)
-        
+
         # Chain multiple operations
         chain1 = result.then(lambda x: x * 2)
         chain2 = chain1.then(lambda x: x + 5)
-        
+
         self.assertEqual(chain1.state, "resolved")
         self.assertEqual(chain1.value, 20)
         self.assertEqual(chain2.state, "resolved")
@@ -173,7 +175,7 @@ class TestResolve(unittest.TestCase):
     def test_resolve_error_handling_compatibility(self):
         """Test resolve works with error handling chains"""
         result = resolve(["success"], self.env)
-        
+
         # Should not trigger catch handler
         caught = result.catch(lambda e: "error handled")
         self.assertEqual(caught.state, "resolved")
@@ -181,4 +183,4 @@ class TestResolve(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()

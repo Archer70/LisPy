@@ -11,11 +11,12 @@ This function implements JavaScript's Array.map() + Promise.all() pattern:
 Usage: (async-map collection callback)
 """
 
-from lispy.closure import Function
-from lispy.types import LispyPromise, Vector, List
-from lispy.exceptions import EvaluationError
 import threading
-from lispy.functions.decorators import lispy_function, lispy_documentation
+
+from lispy.closure import Function
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyPromise, List, Vector
 
 
 @lispy_function("async-map")

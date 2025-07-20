@@ -1,8 +1,10 @@
-from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise, LispyList, Vector
 import threading
 import time
-from lispy.functions.decorators import lispy_function, lispy_documentation
+
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyList, LispyPromise, Vector
+
 
 @lispy_function("promise-race")
 def promise_race(args, env):

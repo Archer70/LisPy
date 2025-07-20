@@ -1,20 +1,10 @@
 import unittest
-from lispy.lexer import (
-    tokenize,
-    TOKEN_NUMBER,
-    TOKEN_STRING,
-    TOKEN_BOOLEAN,
-    TOKEN_NIL,
-    TOKEN_SYMBOL,
-    TOKEN_LPAREN,
-    TOKEN_RPAREN,
-    TOKEN_LBRACKET,
-    TOKEN_RBRACKET,
-    TOKEN_LBRACE,
-    TOKEN_RBRACE,
-    TOKEN_QUOTE,
-)
+
 from lispy.exceptions import LexerError
+from lispy.lexer import (TOKEN_BOOLEAN, TOKEN_LBRACE, TOKEN_LBRACKET,
+                         TOKEN_LPAREN, TOKEN_NIL, TOKEN_NUMBER, TOKEN_QUOTE,
+                         TOKEN_RBRACE, TOKEN_RBRACKET, TOKEN_RPAREN,
+                         TOKEN_STRING, TOKEN_SYMBOL, tokenize)
 
 
 # Changed class name to follow Python conventions (PascalCase)

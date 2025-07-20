@@ -1,8 +1,8 @@
-from typing import List, Any, Callable
+from typing import Any, Callable, List
 
-from ..types import Symbol
-from ..exceptions import EvaluationError
 from ..environment import Environment
+from ..exceptions import EvaluationError
+from ..types import Symbol
 
 
 def documentation_define():
@@ -26,6 +26,7 @@ Notes:
   - Redefining overwrites the previous value
 
 See Also: let, fn"""
+
 
 def handle_define_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable

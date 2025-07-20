@@ -9,9 +9,9 @@ Usage:
     python lispy_interpreter.py --bdd "tests/bdd_features/**/*.lpy" # Run BDD tests
 """
 
-import sys
-import os
 import argparse
+import os
+import sys
 from pathlib import Path
 
 # Add the project root to Python path so we can import lispy modules
@@ -20,14 +20,15 @@ sys.path.insert(0, str(project_root))
 # Add scripts directory to path for development tools
 sys.path.insert(0, str(project_root / "scripts"))
 
-from lispy.lexer import tokenize
-from lispy.parser import parse
-from lispy.evaluator import evaluate
-from lispy.functions import create_global_env
-from lispy.module_system import get_module_loader
-from lispy.exceptions import EvaluationError, ParseError, LexerError
 from lispy_bdd_runner import run_bdd_tests
 from lispy_repl import LispyRepl
+
+from lispy.evaluator import evaluate
+from lispy.exceptions import EvaluationError, LexerError, ParseError
+from lispy.functions import create_global_env
+from lispy.lexer import tokenize
+from lispy.module_system import get_module_loader
+from lispy.parser import parse
 
 
 class LispyInterpreter:

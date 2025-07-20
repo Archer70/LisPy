@@ -1,8 +1,8 @@
 import unittest
 
-from lispy.types import Symbol
-from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
+from lispy.types import Symbol
 from lispy.utils import run_lispy_string
 
 
@@ -119,7 +119,7 @@ class AssocFnTest(unittest.TestCase):
 
     def test_assoc_mixed_key_types(self):
         """Test assoc works with mixed key types."""
-        lispy_code = "(assoc {} ':name \"Alice\" \"age\" 30 42 true)"
+        lispy_code = '(assoc {} \':name "Alice" "age" 30 42 true)'
         result = run_lispy_string(lispy_code, self.env)
         expected = {Symbol(":name"): "Alice", "age": 30, 42: True}
         self.assertEqual(result, expected)

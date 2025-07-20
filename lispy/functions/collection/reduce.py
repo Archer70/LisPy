@@ -1,10 +1,12 @@
-from typing import List, Any, Callable
-from lispy.types import LispyList, Vector
+from typing import Any, Callable, List
+
 from lispy.closure import Function  # For user-defined procedures
-from lispy.exceptions import EvaluationError, ArityError
-from lispy.evaluator import evaluate
 from lispy.environment import Environment
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.evaluator import evaluate
+from lispy.exceptions import ArityError, EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyList, Vector
+
 
 def _call_reducing_procedure(
     proc: Any, acc: Any, item: Any, env: Environment, evaluate_fn: Callable
@@ -36,6 +38,7 @@ def _call_reducing_procedure(
         raise EvaluationError(
             f"InternalError: Invalid procedure type in _call_reducing_procedure: {type(proc)}"
         )
+
 
 @lispy_function("reduce")
 def reduce(args: List[Any], env: Environment):

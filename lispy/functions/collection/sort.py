@@ -1,9 +1,11 @@
-from lispy.types import Vector
-from lispy.exceptions import EvaluationError
-from lispy.environment import Environment
+from typing import Any, Callable, List
+
 from lispy.closure import Function
-from typing import List, Any, Callable
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.environment import Environment
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import Vector
+
 
 def _call_comparison_function(
     compare_fn: Any, a: Any, b: Any, env: Environment, evaluate_fn: Callable
@@ -57,6 +59,7 @@ def _call_comparison_function(
             )
     else:
         raise EvaluationError(f"Invalid comparison function type: {type(compare_fn)}")
+
 
 @lispy_function("sort")
 def sort(args: List[Any], env: Environment):
@@ -124,6 +127,7 @@ def sort(args: List[Any], env: Environment):
         elements.sort(key=cmp_to_key(compare_wrapper))
 
     return Vector(elements)
+
 
 @lispy_documentation("sort")
 def sort_documentation() -> str:

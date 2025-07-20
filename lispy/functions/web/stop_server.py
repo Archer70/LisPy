@@ -3,32 +3,34 @@ Server shutdown function for LisPy Web Framework.
 """
 
 from lispy.exceptions import EvaluationError
-from lispy.web.app import WebApp
+from lispy.functions.decorators import lispy_documentation, lispy_function
 from lispy.types import Symbol
+from lispy.web.app import WebApp
+
 from .start_server import _running_servers
-from lispy.functions.decorators import lispy_function, lispy_documentation
+
 
 @lispy_function("stop-server", web_safe=False, reason="Network access")
 def stop_server(args, env):
     """
     Stop a running HTTP server gracefully.
-    
+
     Usage: (stop-server app)
            (stop-server server-info)
-    
+
     Args:
         app: WebApp instance that is currently running, OR
         server-info: Server information dict returned by start-server
-        
+
     Returns:
         True if server was stopped, False if server was not running
-        
+
     Examples:
         ; Stop by app instance
         (define app (web-app))
         (start-server app {:port 8080})
         (stop-server app)
-        
+
         ; Stop by server info
         (define server-info (await (start-server app {:port 8080})))
         (stop-server server-info)
@@ -37,9 +39,9 @@ def stop_server(args, env):
         raise EvaluationError(
             f"SyntaxError: 'stop-server' expects 1 argument (app or server-info), got {len(args)}."
         )
-    
+
     target = args[0]
-    
+
     # Determine if argument is WebApp or server info dict
     if isinstance(target, WebApp):
         # Stop by WebApp instance
@@ -57,7 +59,7 @@ def _stop_server_by_app(app: WebApp) -> bool:
     """Stop server by WebApp instance."""
     if not app.is_running:
         return False
-    
+
     # Find the server running this app
     for server_id, server in list(_running_servers.items()):
         if server.web_app is app:
@@ -68,7 +70,7 @@ def _stop_server_by_app(app: WebApp) -> bool:
             except Exception as e:
                 print(f"Warning: Error stopping server {server_id}: {e}")
                 return False
-    
+
     # App says it's running but we can't find the server
     app.is_running = False
     return False
@@ -77,14 +79,16 @@ def _stop_server_by_app(app: WebApp) -> bool:
 def _stop_server_by_info(server_info: dict) -> bool:
     """Stop server by server info dict."""
     # Extract server ID from info
-    server_id = server_info.get(Symbol(':server_id'), server_info.get('server_id'))
-    
+    server_id = server_info.get(Symbol(":server_id"), server_info.get("server_id"))
+
     if not server_id:
-        raise EvaluationError("Server info dict must contain :server_id or 'server_id' key.")
-    
+        raise EvaluationError(
+            "Server info dict must contain :server_id or 'server_id' key."
+        )
+
     if server_id not in _running_servers:
         return False  # Server not running
-    
+
     try:
         server = _running_servers[server_id]
         server.stop()

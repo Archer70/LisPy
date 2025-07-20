@@ -1,7 +1,8 @@
-from typing import List, Any, Callable
+from typing import Any, Callable, List
 
 # from ..types import Symbol # Not needed here
 from ..exceptions import EvaluationError
+
 # from ..environment import Environment # Not needed here
 
 
@@ -27,6 +28,7 @@ Notes:
   - Often abbreviated with the ' reader macro
 
 See Also: eval, list"""
+
 
 def handle_quote_form(expression: List[Any], env: Any, evaluate_fn: Callable) -> Any:
     """Handles the (quote expression) special form."""

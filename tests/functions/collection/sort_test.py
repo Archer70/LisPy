@@ -1,9 +1,9 @@
 import unittest
 
-from lispy.functions import create_global_env
-from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
 from lispy.types import Vector
+from lispy.utils import run_lispy_string
 
 
 class SortFnTest(unittest.TestCase):
@@ -174,7 +174,7 @@ class SortFnTest(unittest.TestCase):
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([5, 4, 3, 2, 1]))
 
-        # Use the built-in < function  
+        # Use the built-in < function
         result = run_lispy_string("(sort [5 4 3 2 1] <)", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 2, 3, 4, 5]))
@@ -202,7 +202,7 @@ class SortFnTest(unittest.TestCase):
     def test_sort_custom_comparison_positive_return(self):
         """Test sort with custom comparison that returns positive numbers."""
         # Always return positive number (a > b) - this means a is always greater than b
-        run_lispy_string("(define always-greater (fn [a b] 10))", self.env) 
+        run_lispy_string("(define always-greater (fn [a b] 10))", self.env)
         result = run_lispy_string("(sort [1 3 2] always-greater)", self.env)
         self.assertIsInstance(result, Vector)
         # The actual result depends on Python's sort algorithm behavior
@@ -233,7 +233,10 @@ class SortFnTest(unittest.TestCase):
     def test_sort_boolean_comparison_function(self):
         """Test sort with comparison function that returns booleans."""
         # Function that returns true when first arg is even and second is odd
-        run_lispy_string("(define even-before-odd (fn [a b] (and (= (% a 2) 0) (= (% b 2) 1))))", self.env)
+        run_lispy_string(
+            "(define even-before-odd (fn [a b] (and (= (% a 2) 0) (= (% b 2) 1))))",
+            self.env,
+        )
         result = run_lispy_string("(sort [1 2 3 4 5 6] even-before-odd)", self.env)
         self.assertIsInstance(result, Vector)
         # Result should have evens before odds in some order
@@ -249,13 +252,16 @@ class SortFnTest(unittest.TestCase):
     def test_sort_comparison_function_calls_with_parameters(self):
         """Test that comparison function receives correct parameters."""
         # Function that checks if parameters are passed correctly using is-number?
-        run_lispy_string("""
+        run_lispy_string(
+            """
         (define check-params 
           (fn [a b] 
             (if (and (is-number? a) (is-number? b))
               (< a b)
               false)))
-        """, self.env)
+        """,
+            self.env,
+        )
         result = run_lispy_string("(sort [3 1 4 1 5] check-params)", self.env)
         self.assertIsInstance(result, Vector)
         self.assertEqual(result, Vector([1, 1, 3, 4, 5]))

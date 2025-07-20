@@ -1,12 +1,13 @@
-import unittest
 import os
-import tempfile
 import shutil
-from lispy.module_system import Module, get_module_loader
+import tempfile
+import unittest
+
 from lispy.evaluator import evaluate
 from lispy.exceptions import EvaluationError
-from lispy.utils import run_lispy_string
 from lispy.functions import create_global_env
+from lispy.module_system import Module, get_module_loader
+from lispy.utils import run_lispy_string
 
 
 class ModuleSystemTest(unittest.TestCase):

@@ -1,8 +1,9 @@
-from typing import List, Any
+import os
+from typing import Any, List
+
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
-import os
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.functions.decorators import lispy_documentation, lispy_function
 
 
 @lispy_function("slurp", web_safe=False, reason="File system access")
@@ -60,6 +61,7 @@ def slurp(args: List[Any], env: Environment) -> str:
         raise EvaluationError(
             "Error: Unexpected error reading file '{}': {}.".format(filename, str(e))
         )
+
 
 @lispy_documentation("slurp")
 def slurp_documentation() -> str:

@@ -2,40 +2,41 @@
 Middleware registration function for LisPy Web Framework.
 """
 
-from lispy.exceptions import EvaluationError
-from lispy.web.app import WebApp
 from lispy.closure import Function
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
 from lispy.types import Symbol
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.web.app import WebApp
+
 
 @lispy_function("middleware", web_safe=False, reason="Network access")
 def middleware(args, env):
     """
     Add middleware to a web application.
-    
+
     Usage: (middleware app type handler)
-    
+
     Args:
         app: WebApp instance created by (web-app)
         type: Middleware type - either :before or :after (or string equivalents)
         handler: Function that processes requests/responses
-        
+
     Returns:
         The WebApp instance (for chaining)
-        
+
     Examples:
         ; Before middleware (runs before route handler)
         (middleware app :before
           (fn [request]
             (println "Incoming request:" (:method request) (:path request))
             request))  ; Must return request object
-        
+
         ; After middleware (runs after route handler)
         (middleware app :after
           (fn [request response]
             (println "Response status:" (:status response))
             response))  ; Must return response object
-        
+
         ; Authentication middleware
         (middleware app :before
           (fn [request]
@@ -48,22 +49,22 @@ def middleware(args, env):
         raise EvaluationError(
             f"SyntaxError: 'middleware' expects 3 arguments (app type handler), got {len(args)}."
         )
-    
+
     app = args[0]
     middleware_type = args[1]
     handler = args[2]
-    
+
     # Validate app argument
     if not isinstance(app, WebApp):
         raise EvaluationError(
             f"TypeError: 'middleware' first argument must be a web application (created by web-app), got {type(app).__name__}."
         )
-    
+
     # Validate and normalize middleware type
     if isinstance(middleware_type, Symbol):
         type_str = middleware_type.name
         # Remove leading colon if present
-        if type_str.startswith(':'):
+        if type_str.startswith(":"):
             type_str = type_str[1:]
     elif isinstance(middleware_type, str):
         type_str = middleware_type.strip()
@@ -71,36 +72,40 @@ def middleware(args, env):
         raise EvaluationError(
             f"TypeError: 'middleware' type must be :before, :after, 'before', or 'after', got {type(middleware_type).__name__}."
         )
-    
-    if type_str not in ['before', 'after']:
+
+    if type_str not in ["before", "after"]:
         raise EvaluationError(
             f"ValueError: 'middleware' type must be 'before' or 'after', got '{type_str}'."
         )
-    
+
     # Validate handler argument
     is_user_defined_fn = isinstance(handler, Function)
     is_builtin_fn = callable(handler) and not is_user_defined_fn
-    
+
     if not (is_user_defined_fn or is_builtin_fn):
         raise EvaluationError(
             f"TypeError: 'middleware' handler must be a function, got {type(handler).__name__}."
         )
-    
+
     # Validate handler arity for user-defined functions
     if is_user_defined_fn:
-        expected_params = 1 if type_str == 'before' else 2
+        expected_params = 1 if type_str == "before" else 2
         if len(handler.params) != expected_params:
-            param_desc = "1 argument (request)" if type_str == 'before' else "2 arguments (request response)"
+            param_desc = (
+                "1 argument (request)"
+                if type_str == "before"
+                else "2 arguments (request response)"
+            )
             raise EvaluationError(
                 f"TypeError: '{type_str}' middleware function must take {param_desc}, got {len(handler.params)}."
             )
-    
+
     # Add middleware to the application
     try:
         app.add_middleware(type_str, handler)
     except Exception as e:
         raise EvaluationError(f"Failed to add {type_str} middleware: {str(e)}")
-    
+
     # Return the app for chaining
     return app
 

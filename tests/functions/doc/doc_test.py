@@ -1,9 +1,9 @@
 # tests/functions/doc_test.py
 import unittest
 
-from lispy.utils import run_lispy_string
-from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
+from lispy.utils import run_lispy_string
 
 
 class DocFnTest(unittest.TestCase):
@@ -80,11 +80,11 @@ class DocFnTest(unittest.TestCase):
 
     def test_doc_consistency_both_forms_work(self):
         """Test that both (doc +) and (doc '+) work for functions."""
-        # Test unquoted form 
+        # Test unquoted form
         result_unquoted = run_lispy_string("(doc abs)", self.env)
         # Test quoted form
         result_quoted = run_lispy_string("(doc 'abs)", self.env)
-        
+
         # Both should return the same documentation
         self.assertEqual(result_unquoted, result_quoted)
         self.assertIn("Function: abs", result_unquoted)

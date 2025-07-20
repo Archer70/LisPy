@@ -1,12 +1,13 @@
-import unittest
 import time
+import unittest
+
 from lispy.environment import Environment
 from lispy.evaluator import evaluate
-from lispy.parser import parse
-from lispy.lexer import tokenize
-from lispy.types import LispyPromise
 from lispy.exceptions import EvaluationError
-from lispy.functions import global_env, create_global_env
+from lispy.functions import create_global_env, global_env
+from lispy.lexer import tokenize
+from lispy.parser import parse
+from lispy.types import LispyPromise
 
 
 def run_lispy_string(code_string, env=None):

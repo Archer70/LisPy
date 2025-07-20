@@ -8,10 +8,11 @@ Examples:
   (doseq [item items] (process item)) ; Process each item for side effects
 """
 
-from typing import List, Any, Callable
-from ..types import Vector, LispyList, Symbol
-from ..exceptions import EvaluationError
+from typing import Any, Callable, List
+
 from ..environment import Environment
+from ..exceptions import EvaluationError
+from ..types import LispyList, Symbol, Vector
 
 
 def documentation_doseq():

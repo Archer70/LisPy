@@ -1,7 +1,9 @@
-from typing import List, Any
+from typing import Any, List
+
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.functions.decorators import lispy_documentation, lispy_function
+
 
 @lispy_function("read-line", web_safe=False, reason="File system access")
 def read_line(args: List[Any], env: Environment) -> str:

@@ -1,10 +1,11 @@
 """Tests for reject function - creates immediately rejected promises"""
 
 import unittest
-from lispy.functions import create_global_env
+
 from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise, Vector, LispyList
+from lispy.functions import create_global_env
 from lispy.functions.promises.reject import reject
+from lispy.types import LispyList, LispyPromise, Vector
 
 
 class TestReject(unittest.TestCase):
@@ -98,7 +99,7 @@ class TestReject(unittest.TestCase):
             "type": "ValidationError",
             "details": Vector(["field1", "field2"]),
             "context": {"user": "test", "action": "create"},
-            "stack": LispyList(["func1", "func2", "main"])
+            "stack": LispyList(["func1", "func2", "main"]),
         }
         result = reject([nested_error], self.env)
         self.assertEqual(result.state, "rejected")
@@ -110,7 +111,7 @@ class TestReject(unittest.TestCase):
             reject([], self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'reject' expects 1 argument (error), got 0."
+            "SyntaxError: 'reject' expects 1 argument (error), got 0.",
         )
 
     def test_reject_wrong_arg_count_many(self):
@@ -119,20 +120,20 @@ class TestReject(unittest.TestCase):
             reject(["error1", "error2"], self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'reject' expects 1 argument (error), got 2."
+            "SyntaxError: 'reject' expects 1 argument (error), got 2.",
         )
 
         with self.assertRaises(EvaluationError) as cm:
             reject(["error1", "error2", "error3"], self.env)
         self.assertEqual(
             str(cm.exception),
-            "SyntaxError: 'reject' expects 1 argument (error), got 3."
+            "SyntaxError: 'reject' expects 1 argument (error), got 3.",
         )
 
     def test_reject_immediate_availability(self):
         """Test that rejected promises are immediately available"""
         result = reject(["immediate error"], self.env)
-        
+
         # Should be immediately rejected, no waiting needed
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, "immediate error")
@@ -140,7 +141,7 @@ class TestReject(unittest.TestCase):
     def test_reject_chain_error_propagation(self):
         """Test reject propagates through promise chains"""
         result = reject(["original error"], self.env)
-        
+
         # then() should be skipped, error should propagate
         chained = result.then(lambda x: "should not execute")
         self.assertEqual(chained.state, "rejected")
@@ -149,7 +150,7 @@ class TestReject(unittest.TestCase):
     def test_reject_error_handling_compatibility(self):
         """Test reject works with error handling chains"""
         result = reject(["test error"], self.env)
-        
+
         # Should trigger catch handler
         caught = result.catch(lambda e: f"handled: {e}")
         self.assertEqual(caught.state, "resolved")
@@ -168,11 +169,11 @@ class TestReject(unittest.TestCase):
     def test_reject_multiple_catch_handlers(self):
         """Test reject with multiple catch handlers in chain"""
         result = reject(["original"], self.env)
-        
+
         # First catch should handle the error
         caught1 = result.catch(lambda e: f"first: {e}")
         caught2 = caught1.catch(lambda e: f"second: {e}")
-        
+
         self.assertEqual(caught1.state, "resolved")
         self.assertEqual(caught1.value, "first: original")
         self.assertEqual(caught2.state, "resolved")
@@ -181,25 +182,27 @@ class TestReject(unittest.TestCase):
     def test_reject_then_catch_chain(self):
         """Test reject in then-catch chains"""
         result = reject(["error"], self.env)
-        
+
         # Complex chain: reject -> then (skipped) -> catch (handles) -> then (executes)
-        chain = (result
-                .then(lambda x: f"processed: {x}")  # Skipped
-                .catch(lambda e: f"handled: {e}")   # Executes
-                .then(lambda x: f"final: {x}"))     # Executes
-        
+        chain = (
+            result.then(lambda x: f"processed: {x}")  # Skipped
+            .catch(lambda e: f"handled: {e}")  # Executes
+            .then(lambda x: f"final: {x}")
+        )  # Executes
+
         self.assertEqual(chain.state, "resolved")
         self.assertEqual(chain.value, "final: handled: error")
 
     def test_reject_with_function_object_error(self):
         """Test reject with function objects as error"""
+
         def error_fn():
             return "error function"
-            
+
         result = reject([error_fn], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, error_fn)
 
 
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()

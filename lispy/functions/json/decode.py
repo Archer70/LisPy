@@ -5,13 +5,15 @@ Converts JSON strings to LisPy data structures.
 """
 
 import json
+
 from lispy.exceptions import LisPyError
+from lispy.functions.decorators import lispy_documentation, lispy_function
 from lispy.types import Symbol, Vector
-from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
 class JSONDecodeError(LisPyError):
     """Exception raised for JSON decoding errors."""
+
     pass
 
 
@@ -19,32 +21,36 @@ class JSONDecodeError(LisPyError):
 def json_decode(args, env):
     """
     Decode a JSON string to LisPy data.
-    
+
     Args:
         args: List containing one argument - the JSON string to decode
         env: Environment (unused)
-        
+
     Returns:
         Decoded LisPy data structure
-        
+
     Raises:
         JSONDecodeError: If JSON string is invalid or cannot be decoded
     """
     if len(args) != 1:
-        raise JSONDecodeError(f"json-decode expects exactly 1 argument, got {len(args)}")
-    
+        raise JSONDecodeError(
+            f"json-decode expects exactly 1 argument, got {len(args)}"
+        )
+
     json_string = args[0]
-    
+
     if not isinstance(json_string, str):
-        raise JSONDecodeError(f"json-decode expects a string, got {type(json_string).__name__}")
-    
+        raise JSONDecodeError(
+            f"json-decode expects a string, got {type(json_string).__name__}"
+        )
+
     try:
         # Parse JSON string
         parsed_data = json.loads(json_string)
-        
+
         # Convert to LisPy data structures
         return _convert_from_json(parsed_data)
-        
+
     except json.JSONDecodeError as e:
         raise JSONDecodeError(f"Invalid JSON: {str(e)}")
     except Exception as e:
@@ -54,10 +60,10 @@ def json_decode(args, env):
 def _convert_from_json(value):
     """
     Convert JSON-parsed Python values to LisPy data structures.
-    
+
     Args:
         value: Value from json.loads()
-        
+
     Returns:
         LisPy-compatible value with appropriate types
     """
@@ -70,15 +76,15 @@ def _convert_from_json(value):
                 key_symbol = Symbol(f":{k}")
             else:
                 key_symbol = Symbol(f":{str(k)}")
-            
+
             result[key_symbol] = _convert_from_json(v)
         return result
-        
+
     elif isinstance(value, list):
         # Convert arrays to LisPy vectors
         converted_items = [_convert_from_json(item) for item in value]
         return Vector(converted_items)
-        
+
     else:
         # Primitives (str, int, float, bool, None) are already compatible
         return value
@@ -140,4 +146,4 @@ Error Handling:
       (println "Parse error:" e)))
 
 See also: json-encode for the reverse operation
-""" 
+"""

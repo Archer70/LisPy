@@ -1,6 +1,7 @@
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
 from lispy.types import Vector
-from lispy.functions.decorators import lispy_function, lispy_documentation
+
 
 @lispy_function("split")
 def split_fn(args, env):

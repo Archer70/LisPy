@@ -1,10 +1,12 @@
-from typing import List, Any
-from lispy.environment import Environment
-from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise
+from typing import Any, List
+
 from lispy.closure import Function
+from lispy.environment import Environment
 from lispy.evaluator import evaluate
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyPromise
+
 
 @lispy_function("promise")
 def promise(args: List[Any], env: Environment) -> LispyPromise:

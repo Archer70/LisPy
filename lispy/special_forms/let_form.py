@@ -1,9 +1,9 @@
 # lispy_project/lispy/special_forms/let_form.py
-from typing import List, Any, Callable
+from typing import Any, Callable, List
 
-from ..types import Symbol
-from ..exceptions import EvaluationError
 from ..environment import Environment
+from ..exceptions import EvaluationError
+from ..types import Symbol
 
 
 def documentation_let():
@@ -28,6 +28,7 @@ Notes:
   - At least one body expression is required
 
 See Also: define, fn"""
+
 
 def handle_let_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable

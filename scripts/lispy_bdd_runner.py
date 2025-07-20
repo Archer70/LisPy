@@ -1,8 +1,9 @@
 import glob
 import os
-from typing import List, Dict, Any, Tuple
+from typing import Any, Dict, List, Tuple
 
-from lispy.bdd import registry, clear_bdd_results
+from lispy.bdd import clear_bdd_results, registry
+
 # LispyInterpreter will be passed in, so no direct import needed to avoid circularity
 # from .lispy_interpreter import LispyInterpreter # Avoid this if possible
 

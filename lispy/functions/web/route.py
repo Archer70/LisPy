@@ -2,27 +2,28 @@
 Route registration function for LisPy Web Framework.
 """
 
-from lispy.exceptions import EvaluationError
-from lispy.web.app import WebApp
 from lispy.closure import Function
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.web.app import WebApp
+
 
 @lispy_function("route", web_safe=False, reason="Network access")
 def route(args, env):
     """
     Add a route to a web application.
-    
+
     Usage: (route app method pattern handler)
-    
+
     Args:
         app: WebApp instance created by (web-app)
         method: HTTP method as string (GET, POST, PUT, DELETE, etc.)
         pattern: URL pattern as string (e.g., "/users/:id")
         handler: Function that handles requests for this route
-        
+
     Returns:
         The WebApp instance (for chaining)
-        
+
     Examples:
         ; Simple GET route
         (route app "GET" "/"
@@ -30,7 +31,7 @@ def route(args, env):
             {:status 200
              :headers {:content-type "text/html"}
              :body "<h1>Home Page</h1>"}))
-        
+
         ; Route with URL parameters
         (route app "GET" "/users/:id"
           (fn [request]
@@ -38,7 +39,7 @@ def route(args, env):
               {:status 200
                :headers {:content-type "application/json"}
                :body (json-encode {:id user-id :name "User Name"})})))
-        
+
         ; POST route with JSON body
         (route app "POST" "/api/users"
           (fn [request]
@@ -51,68 +52,80 @@ def route(args, env):
         raise EvaluationError(
             f"SyntaxError: 'route' expects 4 arguments (app method pattern handler), got {len(args)}."
         )
-    
+
     app = args[0]
     method = args[1]
     pattern = args[2]
     handler = args[3]
-    
+
     # Validate app argument
     if not isinstance(app, WebApp):
         raise EvaluationError(
             f"TypeError: 'route' first argument must be a web application (created by web-app), got {type(app).__name__}."
         )
-    
+
     # Validate method argument
     if not isinstance(method, str):
         raise EvaluationError(
             f"TypeError: 'route' method must be a string, got {type(method).__name__}."
         )
-    
+
     method = method.upper().strip()
     if not method:
         raise EvaluationError("ValueError: 'route' method cannot be empty.")
-    
+
     # Validate common HTTP methods
-    valid_methods = {'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH', 'TRACE', 'CONNECT'}
+    valid_methods = {
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "HEAD",
+        "OPTIONS",
+        "PATCH",
+        "TRACE",
+        "CONNECT",
+    }
     if method not in valid_methods:
         # Allow non-standard methods but warn
-        print(f"Warning: Non-standard HTTP method '{method}' - this may not work with all clients.")
-    
+        print(
+            f"Warning: Non-standard HTTP method '{method}' - this may not work with all clients."
+        )
+
     # Validate pattern argument
     if not isinstance(pattern, str):
         raise EvaluationError(
             f"TypeError: 'route' pattern must be a string, got {type(pattern).__name__}."
         )
-    
+
     if not pattern.strip():
         raise EvaluationError("ValueError: 'route' pattern cannot be empty.")
-    
+
     # Ensure pattern starts with /
-    if not pattern.startswith('/'):
-        pattern = '/' + pattern
-    
+    if not pattern.startswith("/"):
+        pattern = "/" + pattern
+
     # Validate handler argument
     is_user_defined_fn = isinstance(handler, Function)
     is_builtin_fn = callable(handler) and not is_user_defined_fn
-    
+
     if not (is_user_defined_fn or is_builtin_fn):
         raise EvaluationError(
             f"TypeError: 'route' handler must be a function, got {type(handler).__name__}."
         )
-    
+
     # Validate handler arity for user-defined functions
     if is_user_defined_fn and len(handler.params) != 1:
         raise EvaluationError(
             f"TypeError: 'route' handler function must take 1 argument (request), got {len(handler.params)}."
         )
-    
+
     # Add route to the application
     try:
         app.add_route(method, pattern, handler)
     except Exception as e:
         raise EvaluationError(f"Failed to add route {method} {pattern}: {str(e)}")
-    
+
     # Return the app for chaining
     return app
 

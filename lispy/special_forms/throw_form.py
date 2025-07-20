@@ -1,4 +1,5 @@
-from typing import List, Any, Callable
+from typing import Any, Callable, List
+
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError, UserThrownError
 
@@ -22,6 +23,7 @@ Notes:
   - Useful for error handling and control flow
 
 See Also: try"""
+
 
 def handle_throw_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable

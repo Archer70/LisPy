@@ -6,12 +6,12 @@
 # For now, it can be empty or contain a docstring.
 """LisPy BDD Special Forms Sub-package"""
 
-from .describe_form import describe_form_handler
-from .it_form import it_form_handler
-from .given_form import given_form_handler
 from .action_form import action_form_handler
-from .then_form import then_form_handler
 from .assert_raises_q_form import assert_raises_q_form_handler
+from .describe_form import describe_form_handler
+from .given_form import given_form_handler
+from .it_form import it_form_handler
+from .then_form import then_form_handler
 
 __all__ = [
     "describe_form_handler",

@@ -1,5 +1,6 @@
 from lispy.exceptions import EvaluationError
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.functions.decorators import lispy_documentation, lispy_function
+
 
 @lispy_function("to-bool")
 def to_bool(args, env):
@@ -8,7 +9,9 @@ def to_bool(args, env):
     Usage: (to-bool value)
     """
     if len(args) != 1:
-        raise EvaluationError(f"SyntaxError: 'to-bool' expects 1 argument, got {len(args)}.")
+        raise EvaluationError(
+            f"SyntaxError: 'to-bool' expects 1 argument, got {len(args)}."
+        )
     value = args[0]
     if isinstance(value, bool):
         return value
@@ -25,14 +28,17 @@ def to_bool(args, env):
             return False
         if value.strip() == "":
             return False
-        raise EvaluationError(f"TypeError: Cannot convert string '{value}' to bool. Only 'true', 'false', or empty string allowed.")
+        raise EvaluationError(
+            f"TypeError: Cannot convert string '{value}' to bool. Only 'true', 'false', or empty string allowed."
+        )
     if isinstance(value, (list, dict)):
         return len(value) > 0
     raise EvaluationError(f"TypeError: Cannot convert {type(value).__name__} to bool.")
 
+
 @lispy_documentation("to-bool")
 def to_bool_documentation():
-    return '''Function: to-bool
+    return """Function: to-bool
 Arguments: (to-bool value)
 Description: Converts a value to a boolean, if possible. Raises an error if conversion is not possible.
 
@@ -51,4 +57,4 @@ Examples:
   (to-bool [])          ; => false
   (to-bool {:a 1})      ; => true
   (to-bool {})          ; => false
-''' 
+"""

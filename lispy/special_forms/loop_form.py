@@ -18,6 +18,7 @@ Examples:
         (recur (rest items) (conj result (first items)))))
 """
 
+
 def documentation_loop():
     """Returns documentation for the 'loop' special form."""
     return """Special Form: loop
@@ -43,11 +44,13 @@ Notes:
 
 See Also: recur, let, fn"""
 
-from typing import List, Any, Callable
-from ..types import Symbol
-from ..exceptions import EvaluationError
+
+from typing import Any, Callable, List
+
 from ..environment import Environment
+from ..exceptions import EvaluationError
 from ..tail_call import TailCall
+from ..types import Symbol
 
 
 class LoopFunction:

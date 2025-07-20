@@ -1,9 +1,9 @@
 # lispy_project/lispy/special_forms/if_form.py
-from typing import List, Any, Callable
+from typing import Any, Callable, List
 
+from ..environment import Environment
 # from ..types import Symbol # Not directly needed by if logic itself, but evaluate_fn will handle Symbols
 from ..exceptions import EvaluationError
-from ..environment import Environment
 
 
 def documentation_if():
@@ -26,6 +26,7 @@ Notes:
   - false and nil are falsy, everything else is truthy
 
 See Also: cond, when, and, or"""
+
 
 def handle_if_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable

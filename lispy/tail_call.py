@@ -5,7 +5,8 @@ This module provides the TailCall class and utilities for implementing
 tail call optimization in the LisPy interpreter.
 """
 
-from typing import List, Any
+from typing import Any, List
+
 from .closure import Function
 from .exceptions import EvaluationError
 

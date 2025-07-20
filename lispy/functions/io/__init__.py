@@ -1,6 +1,6 @@
 """LisPy I/O Functions"""
 
-from .print import print_fn, print_documentation
+from .print import print_documentation, print_fn
 from .println import println, println_documentation
 from .read_line import read_line, read_line_documentation
 from .slurp import slurp, slurp_documentation

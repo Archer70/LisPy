@@ -1,9 +1,9 @@
 # tests/functions/bdd_assertions/assert_equal_q_fn_test.py
 import unittest
 
+from lispy.bdd import registry
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
-from lispy.bdd import registry
 
 
 class TestAssertEqualQFn(unittest.TestCase):

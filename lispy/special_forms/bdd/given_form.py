@@ -1,8 +1,10 @@
 # lispy/special_forms/bdd/given_form.py
 
-from lispy.exceptions import EvaluationError
+from typing import Any
+from typing import List as TypingList
+
 from lispy.bdd import registry
-from typing import List as TypingList, Any
+from lispy.exceptions import EvaluationError
 
 
 def given_form_handler(expression: TypingList[Any], env: Any, evaluate_fn: Any) -> Any:

@@ -1,8 +1,9 @@
-from lispy.types import LispyList
-from lispy.exceptions import EvaluationError
+from typing import Any, List
+
 from lispy.environment import Environment
-from lispy.functions.decorators import lispy_function, lispy_documentation
-from typing import List, Any
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyList
 
 
 @lispy_function("vals")

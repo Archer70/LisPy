@@ -18,4 +18,4 @@ __all__ = [
     "to_float_documentation",
     "to_int_documentation",
     "to_str_documentation",
-] 
+]

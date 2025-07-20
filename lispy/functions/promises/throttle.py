@@ -1,8 +1,10 @@
-from lispy.exceptions import EvaluationError, PromiseError
-from lispy.closure import Function
 import threading
 import time
-from lispy.functions.decorators import lispy_function, lispy_documentation
+
+from lispy.closure import Function
+from lispy.exceptions import EvaluationError, PromiseError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+
 
 @lispy_function("throttle")
 def throttle(args, env):
@@ -24,9 +26,9 @@ def throttle(args, env):
         (define api-throttled (throttle api-call 1000))
         (api-throttled "query")    ; Executes immediately
         (api-throttled "query2")   ; Ignored if within 1000ms
-        
+
         ; Common use case for rate limiting:
-        (define handle-scroll (throttle 
+        (define handle-scroll (throttle
                                 (fn [] (println "Scroll event"))
                                 100))
     """
@@ -40,9 +42,10 @@ def throttle(args, env):
 
     # Validate function argument
     from lispy.evaluator import evaluate
+
     is_user_defined_fn = isinstance(fn, Function)
     is_builtin_fn = callable(fn) and not is_user_defined_fn
-    
+
     if not (is_user_defined_fn or is_builtin_fn):
         raise EvaluationError(
             f"TypeError: 'throttle' first argument must be a function, got {type(fn).__name__}."
@@ -60,40 +63,39 @@ def throttle(args, env):
         )
 
     # State for the throttled function
-    state = {
-        'last_execution_time': 0,
-        'lock': threading.Lock()
-    }
-    
+    state = {"last_execution_time": 0, "lock": threading.Lock()}
+
     def throttled_function(inner_args, inner_env):
         """The throttled version of the original function."""
-        
-        with state['lock']:
+
+        with state["lock"]:
             current_time = time.time() * 1000  # Convert to milliseconds
-            time_since_last = current_time - state['last_execution_time']
-            
+            time_since_last = current_time - state["last_execution_time"]
+
             # Check if enough time has passed since last execution
             if time_since_last >= rate:
                 # Update last execution time
-                state['last_execution_time'] = current_time
-                
+                state["last_execution_time"] = current_time
+
                 # Execute the original function
                 try:
                     if is_user_defined_fn:
                         # Call user-defined function
                         from lispy.environment import Environment
-                        
+
                         # Validate argument count
                         if len(inner_args) != len(fn.params):
-                            raise PromiseError(f"Throttled function expects {len(fn.params)} arguments, got {len(inner_args)}.")
-                        
+                            raise PromiseError(
+                                f"Throttled function expects {len(fn.params)} arguments, got {len(inner_args)}."
+                            )
+
                         # Create new environment for function execution using the function's defining environment
                         call_env = Environment(outer=fn.defining_env)
-                        
+
                         # Bind parameters to arguments
                         for param, arg in zip(fn.params, inner_args):
                             call_env.define(param.name, arg)
-                        
+
                         # Execute function body
                         result = None
                         for expr in fn.body:
@@ -184,4 +186,4 @@ Notes:
   - No memory of ignored calls (unlike debounce which can cancel/reset)
   - Similar to rate limiting in JavaScript libraries
   - Complements debounce for different use cases
-""" 
+"""

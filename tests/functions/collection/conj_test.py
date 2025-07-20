@@ -1,8 +1,8 @@
 import unittest
 
-from lispy.types import LispyList, Vector
-from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
+from lispy.types import LispyList, Vector
 from lispy.utils import run_lispy_string
 
 

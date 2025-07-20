@@ -1,8 +1,9 @@
 import unittest
+
 from lispy.evaluator import evaluate
-from lispy.parser import parse
-from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
+from lispy.parser import parse
 from lispy.types import LispyPromise
 
 

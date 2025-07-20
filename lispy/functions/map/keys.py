@@ -1,8 +1,9 @@
-from lispy.types import LispyList  # Changed List to LispyList
-from lispy.exceptions import EvaluationError
+from typing import Any, List  # Added typing imports
+
 from lispy.environment import Environment  # Added Environment import
-from lispy.functions.decorators import lispy_function, lispy_documentation
-from typing import List, Any  # Added typing imports
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyList  # Changed List to LispyList
 
 
 @lispy_function("keys")

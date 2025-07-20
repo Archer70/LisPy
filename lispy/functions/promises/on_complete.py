@@ -1,7 +1,8 @@
-from lispy.exceptions import EvaluationError, PromiseError
-from lispy.types import LispyPromise
 from lispy.closure import Function
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.exceptions import EvaluationError, PromiseError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import LispyPromise
+
 
 @lispy_function("on-complete")
 def on_complete(args, env):

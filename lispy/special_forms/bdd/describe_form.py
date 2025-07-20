@@ -1,8 +1,10 @@
 # lispy/special_forms/bdd/describe_form.py
 
-from lispy.exceptions import EvaluationError
+from typing import Any
+from typing import List as TypingList
+
 from lispy.bdd import registry
-from typing import List as TypingList, Any
+from lispy.exceptions import EvaluationError
 
 
 def describe_form_handler(

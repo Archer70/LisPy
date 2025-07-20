@@ -46,6 +46,7 @@ class LispyMapLiteral(dict):
     """Represents a map literal from source code that needs evaluation.
     This is distinct from runtime dictionaries returned by functions.
     """
+
     pass
 
 

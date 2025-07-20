@@ -1,4 +1,5 @@
-from typing import List, Any, Callable
+from typing import Any, Callable, List
+
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError, UserThrownError
 from lispy.types import Symbol
@@ -28,6 +29,7 @@ Notes:
   - Returns the value of the successful body or catch block
 
 See Also: throw"""
+
 
 def handle_try_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable

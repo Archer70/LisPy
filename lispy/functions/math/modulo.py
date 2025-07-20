@@ -1,8 +1,9 @@
-from typing import List, Any, Union
-from ...exceptions import EvaluationError
 from numbers import Number
+from typing import Any, List, Union
+
 from ...environment import Environment
-from ..decorators import lispy_function, lispy_documentation
+from ...exceptions import EvaluationError
+from ..decorators import lispy_documentation, lispy_function
 
 Numeric = Union[int, float]
 

@@ -1,12 +1,13 @@
-import unittest
 import time
+import unittest
+
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
-from lispy.types import LispyPromise
-from lispy.functions.promises.promise import promise
-from lispy.functions.promises.resolve import resolve
-from lispy.functions.promises.reject import reject
 from lispy.functions import create_global_env
+from lispy.functions.promises.promise import promise
+from lispy.functions.promises.reject import reject
+from lispy.functions.promises.resolve import resolve
+from lispy.types import LispyPromise
 
 
 class TestPromiseFunctions(unittest.TestCase):

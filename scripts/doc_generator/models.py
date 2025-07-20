@@ -3,7 +3,8 @@ Data models for the documentation generator.
 """
 
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import Dict, List
+
 
 @dataclass
 class FunctionDoc:
@@ -16,4 +17,4 @@ class FunctionDoc:
     examples: List[Dict[str, str]]
     notes: List[str]
     see_also: List[str]
-    file_path: str 
+    file_path: str

@@ -1,8 +1,10 @@
-from lispy.exceptions import EvaluationError, PromiseError
-from lispy.closure import Function
-from ..decorators import lispy_function, lispy_documentation
 import threading
 import time
+
+from lispy.closure import Function
+from lispy.exceptions import EvaluationError, PromiseError
+
+from ..decorators import lispy_documentation, lispy_function
 
 
 @lispy_function("debounce")
@@ -23,9 +25,9 @@ def debounce(args, env):
     Examples:
         (define search-debounced (debounce search-api 300))
         (search-debounced "query")    ; Will only execute if no more calls for 300ms
-        
+
         ; Common use case for user input:
-        (define handle-input (debounce 
+        (define handle-input (debounce
                                (fn [text] (println "Searching for:" text))
                                500))
     """
@@ -39,9 +41,10 @@ def debounce(args, env):
 
     # Validate function argument
     from lispy.evaluator import evaluate
+
     is_user_defined_fn = isinstance(fn, Function)
     is_builtin_fn = callable(fn) and not is_user_defined_fn
-    
+
     if not (is_user_defined_fn or is_builtin_fn):
         raise EvaluationError(
             f"TypeError: 'debounce' first argument must be a function, got {type(fn).__name__}."
@@ -59,33 +62,35 @@ def debounce(args, env):
         )
 
     # State for the debounced function
-    timer = {'current': None}
-    
+    timer = {"current": None}
+
     def debounced_function(inner_args, inner_env):
         """The debounced version of the original function."""
-        
+
         # Cancel any existing timer
-        if timer['current'] is not None:
-            timer['current'].cancel()
-        
+        if timer["current"] is not None:
+            timer["current"].cancel()
+
         def execute_original():
             """Execute the original function after delay."""
             try:
                 if is_user_defined_fn:
                     # Call user-defined function
                     from lispy.environment import Environment
-                    
+
                     # Validate argument count
                     if len(inner_args) != len(fn.params):
-                        raise PromiseError(f"Debounced function expects {len(fn.params)} arguments, got {len(inner_args)}.")
-                    
+                        raise PromiseError(
+                            f"Debounced function expects {len(fn.params)} arguments, got {len(inner_args)}."
+                        )
+
                     # Create new environment for function execution
                     call_env = Environment(outer=fn.defining_env)
-                    
+
                     # Bind parameters to arguments
                     for param, arg in zip(fn.params, inner_args):
                         call_env.define(param.name, arg)
-                    
+
                     # Execute function body
                     result = None
                     for expr in fn.body:
@@ -99,13 +104,13 @@ def debounce(args, env):
                 raise PromiseError(f"Debounced function execution failed: {e}")
             finally:
                 # Clear the timer reference
-                timer['current'] = None
-        
+                timer["current"] = None
+
         # Create new timer
-        timer['current'] = threading.Timer(delay / 1000.0, execute_original)
-        timer['current'].daemon = True
-        timer['current'].start()
-        
+        timer["current"] = threading.Timer(delay / 1000.0, execute_original)
+        timer["current"].daemon = True
+        timer["current"].start()
+
         # Debounced functions typically return None/nil immediately
         # The actual result happens asynchronously
         return None
@@ -162,4 +167,4 @@ Notes:
   - Each call to debounced function cancels any pending execution
   - Similar to JavaScript's debounce pattern
   - Thread-safe implementation using Python's threading.Timer
-""" 
+"""

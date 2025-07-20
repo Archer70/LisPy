@@ -1,6 +1,8 @@
-from typing import List, Any
+from typing import Any, List
+
 from lispy.environment import Environment
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.functions.decorators import lispy_documentation, lispy_function
+
 
 @lispy_function("println")
 def println(args: List[Any], env: Environment) -> None:

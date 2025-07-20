@@ -1,1 +1,1 @@
-# Collection function tests 
+# Collection function tests

@@ -1,5 +1,5 @@
 # lispy_project/lispy/special_forms/or_form.py
-from typing import List, Any, Callable
+from typing import Any, Callable, List
 
 from ..environment import Environment
 
@@ -25,6 +25,7 @@ Notes:
   - Useful for default values and fallback chains
 
 See Also: and, if, when"""
+
 
 def handle_or_form(
     expression: List[Any], env: Environment, evaluate_fn: Callable

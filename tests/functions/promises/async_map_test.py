@@ -1,10 +1,11 @@
 """Tests for async-map function - concurrent async mapping"""
 
-import unittest
 import time
+import unittest
+
+from lispy.exceptions import EvaluationError
 from lispy.functions import create_global_env
 from lispy.types import Vector
-from lispy.exceptions import EvaluationError
 from lispy.utils import run_lispy_string
 
 

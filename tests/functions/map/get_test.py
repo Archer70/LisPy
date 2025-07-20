@@ -1,8 +1,8 @@
 import unittest
 
-from lispy.types import Vector, Symbol
-from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
+from lispy.types import Symbol, Vector
 from lispy.utils import run_lispy_string
 
 
@@ -104,14 +104,16 @@ class GetFnTest(unittest.TestCase):
 
     def test_get_map_integer_key(self):
         """Test (get {42 \"answer\"} 42) works with integer keys."""
-        result = run_lispy_string("(get {42 \"answer\"} 42)", self.env)
+        result = run_lispy_string('(get {42 "answer"} 42)', self.env)
         self.assertEqual(result, "answer")
 
     def test_get_map_mixed_key_types(self):
         """Test get works with mixed key types."""
-        result = run_lispy_string('(get {:name "Alice" "age" 30 42 true} "age")', self.env)
+        result = run_lispy_string(
+            '(get {:name "Alice" "age" 30 42 true} "age")', self.env
+        )
         self.assertEqual(result, 30)
-        
+
         result = run_lispy_string('(get {:name "Alice" "age" 30 42 true} 42)', self.env)
         self.assertEqual(result, True)
 

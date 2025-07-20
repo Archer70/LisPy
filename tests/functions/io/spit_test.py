@@ -1,6 +1,6 @@
-import unittest
-import tempfile
 import os
+import tempfile
+import unittest
 from unittest.mock import patch
 
 from lispy.functions import create_global_env

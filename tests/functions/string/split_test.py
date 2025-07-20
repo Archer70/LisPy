@@ -1,9 +1,9 @@
 import unittest
 
-from lispy.functions import create_global_env
-from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
+from lispy.functions import create_global_env
 from lispy.types import Vector
+from lispy.utils import run_lispy_string
 
 
 class SplitFnTest(unittest.TestCase):

@@ -1,9 +1,10 @@
 # lispy_project/lispy/functions/count.py
-from typing import List, Any
-from lispy.types import Vector  # For type checking
-from lispy.exceptions import EvaluationError
+from typing import Any, List
+
 from lispy.environment import Environment  # Added Environment import
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_documentation, lispy_function
+from lispy.types import Vector  # For type checking
 
 
 @lispy_function("count")

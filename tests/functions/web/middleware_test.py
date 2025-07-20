@@ -3,9 +3,10 @@ Tests for middleware function.
 """
 
 import unittest
+
+from lispy.exceptions import EvaluationError
 from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
-from lispy.exceptions import EvaluationError
 from lispy.web.app import WebApp
 
 
@@ -24,10 +25,10 @@ class TestMiddleware(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertIsInstance(result, WebApp)
         self.assertEqual(len(result.middleware_chain.middleware), 1)
-        
+
         middleware = result.middleware_chain.middleware[0]
         self.assertEqual(middleware.middleware_type, "before")
 
@@ -39,7 +40,7 @@ class TestMiddleware(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.middleware_chain.middleware), 1)
         middleware = result.middleware_chain.middleware[0]
         self.assertEqual(middleware.middleware_type, "after")
@@ -52,7 +53,7 @@ class TestMiddleware(unittest.TestCase):
           (equal? app result))
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertTrue(result)
 
     def test_middleware_method_chaining(self):
@@ -64,7 +65,7 @@ class TestMiddleware(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertIsInstance(result, WebApp)
         self.assertEqual(len(result.middleware_chain.middleware), 2)
 
@@ -77,9 +78,11 @@ class TestMiddleware(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.middleware_chain.middleware), 2)
-        self.assertEqual(result.middleware_chain.middleware[0].middleware_type, "before")
+        self.assertEqual(
+            result.middleware_chain.middleware[0].middleware_type, "before"
+        )
         self.assertEqual(result.middleware_chain.middleware[1].middleware_type, "after")
 
     def test_middleware_multiple_before(self):
@@ -92,7 +95,7 @@ class TestMiddleware(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.middleware_chain.middleware), 3)
         for mw in result.middleware_chain.middleware:
             self.assertEqual(mw.middleware_type, "before")
@@ -106,7 +109,7 @@ class TestMiddleware(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.middleware_chain.middleware), 2)
         for mw in result.middleware_chain.middleware:
             self.assertEqual(mw.middleware_type, "after")
@@ -121,7 +124,7 @@ class TestMiddleware(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.middleware_chain.middleware), 3)
         types = [mw.middleware_type for mw in result.middleware_chain.middleware]
         self.assertEqual(types, ["before", "after", "before"])
@@ -139,7 +142,9 @@ class TestMiddleware(unittest.TestCase):
 
         # Test invalid app argument
         with self.assertRaises(EvaluationError) as context:
-            run_lispy_string('(middleware "not-an-app" "before" (fn [req] req))', self.env)
+            run_lispy_string(
+                '(middleware "not-an-app" "before" (fn [req] req))', self.env
+            )
         self.assertIn("must be a web application", str(context.exception))
 
         # Test invalid type argument
@@ -195,7 +200,9 @@ class TestMiddleware(unittest.TestCase):
         """
         with self.assertRaises(EvaluationError) as context:
             run_lispy_string(code, self.env)
-        self.assertIn("must take 2 arguments (request response)", str(context.exception))
+        self.assertIn(
+            "must take 2 arguments (request response)", str(context.exception)
+        )
 
         code = """
         (let [app (web-app)]
@@ -203,7 +210,9 @@ class TestMiddleware(unittest.TestCase):
         """
         with self.assertRaises(EvaluationError) as context:
             run_lispy_string(code, self.env)
-        self.assertIn("must take 2 arguments (request response)", str(context.exception))
+        self.assertIn(
+            "must take 2 arguments (request response)", str(context.exception)
+        )
 
     def test_middleware_with_routes(self):
         """Test middleware combined with routes."""
@@ -215,14 +224,14 @@ class TestMiddleware(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.middleware_chain.middleware), 2)
         self.assertEqual(len(result.router.routes), 1)
 
     def test_middleware_documentation(self):
         """Test that middleware has documentation."""
         result = run_lispy_string("(doc middleware)", self.env)
-        
+
         self.assertIsInstance(result, str)
         self.assertIn("middleware", result)
         self.assertIn("Adds middleware", result)
@@ -258,14 +267,14 @@ class TestMiddleware(unittest.TestCase):
           app)
         """
         result = run_lispy_string(code, self.env)
-        
+
         self.assertEqual(len(result.middleware_chain.middleware), 4)
-        
+
         # Check middleware types in order
         types = [mw.middleware_type for mw in result.middleware_chain.middleware]
         expected_types = ["before", "before", "after", "after"]
         self.assertEqual(types, expected_types)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

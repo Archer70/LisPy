@@ -1,10 +1,10 @@
 import unittest
 
-from lispy.special_forms.and_form import handle_and_form
-from lispy.lexer import tokenize
-from lispy.parser import parse
 from lispy.evaluator import evaluate
 from lispy.functions import create_global_env
+from lispy.lexer import tokenize
+from lispy.parser import parse
+from lispy.special_forms.and_form import handle_and_form
 
 
 class TestAndForm(unittest.TestCase):

@@ -1,8 +1,10 @@
-from typing import List, Any
+from typing import Any, List
+
+from lispy.closure import Function
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
-from lispy.closure import Function
-from lispy.functions.decorators import lispy_function, lispy_documentation
+from lispy.functions.decorators import lispy_documentation, lispy_function
+
 
 @lispy_function("is-function?")
 def is_function_q(args: List[Any], env: Environment) -> bool:
