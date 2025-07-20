@@ -17,6 +17,8 @@ from pathlib import Path
 # Add the project root to Python path so we can import lispy modules
 project_root = Path(__file__).parent.parent  # Go up one level from bin/ to project root
 sys.path.insert(0, str(project_root))
+# Add scripts directory to path for development tools
+sys.path.insert(0, str(project_root / "scripts"))
 
 from lispy.lexer import tokenize
 from lispy.parser import parse

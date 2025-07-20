@@ -9,7 +9,7 @@ REM
 echo Pre-commit: Updating test count in README.md...
 
 REM Run the test count update script
-python bin/update_test_count.py
+python scripts/update_test_count.py
 
 REM Check if the script succeeded
 if %ERRORLEVEL% neq 0 (

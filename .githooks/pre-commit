@@ -9,7 +9,7 @@
 echo "Pre-commit: Updating test count in README.md..."
 
 # Run the test count update script
-python bin/update_test_count.py
+python scripts/update_test_count.py
 
 # Check if the script succeeded
 if [ $? -ne 0 ]; then

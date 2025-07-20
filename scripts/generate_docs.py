@@ -5,9 +5,9 @@ LisPy Documentation Generator
 Scans function and special form definitions to generate a static documentation site.
 
 Usage:
-    python bin/generate_docs.py                    # Generate full docs
-    python bin/generate_docs.py --preview add map  # Generate specific functions
-    python bin/generate_docs.py --serve            # Generate and serve locally
+    python scripts/generate_docs.py                    # Generate full docs
+    python scripts/generate_docs.py --preview add map  # Generate specific functions
+    python scripts/generate_docs.py --serve            # Generate and serve locally
 """
 
 import argparse
