@@ -5,9 +5,10 @@ Route registration function for LisPy Web Framework.
 from lispy.exceptions import EvaluationError
 from lispy.web.app import WebApp
 from lispy.closure import Function
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_route(args, env):
+@lispy_function("route", web_safe=False, reason="Network access")
+def route(args, env):
     """
     Add a route to a web application.
     
@@ -116,7 +117,8 @@ def builtin_route(args, env):
     return app
 
 
-def documentation_route():
+@lispy_documentation("route")
+def route_documentation():
     """Returns documentation for the route function."""
     return """Function: route
 Arguments: (route app method pattern handler)

@@ -2,6 +2,7 @@ from typing import List, Any
 from ..exceptions import EvaluationError
 from ..environment import Environment
 from ..types import Symbol
+from .decorators import lispy_function, lispy_documentation
 
 
 # Documentation registry - maps function names to their documentation functions
@@ -13,7 +14,8 @@ def register_documentation(function_name: str, doc_function):
     DOCUMENTATION_REGISTRY[function_name] = doc_function
 
 
-def builtin_doc(args: List[Any], env: Environment) -> str:
+@lispy_function("doc")
+def doc(args: List[Any], env: Environment) -> str:
     """Returns documentation for a function. (doc function-name)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -63,7 +65,8 @@ def builtin_doc(args: List[Any], env: Environment) -> str:
         return f"No documentation available for function or special form '{function_name}'"
 
 
-def documentation_doc() -> str:
+@lispy_documentation("doc")
+def doc_documentation() -> str:
     """Returns documentation for the doc function."""
     return """Function: doc
 Arguments: (doc 'symbol-name)

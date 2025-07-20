@@ -2,9 +2,11 @@ from typing import List, Any
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
 import os
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_slurp(args: List[Any], env: Environment) -> str:
+@lispy_function("slurp", web_safe=False, reason="File system access")
+def slurp(args: List[Any], env: Environment) -> str:
     """Reads the entire contents of a file as a string. (slurp filename)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -59,8 +61,8 @@ def builtin_slurp(args: List[Any], env: Environment) -> str:
             "Error: Unexpected error reading file '{}': {}.".format(filename, str(e))
         )
 
-
-def documentation_slurp() -> str:
+@lispy_documentation("slurp")
+def slurp_documentation() -> str:
     """Returns documentation for the slurp function."""
     return """Function: slurp
 Arguments: (slurp filename)

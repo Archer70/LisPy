@@ -2,9 +2,10 @@ from lispy.types import LispyList, Vector
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
 from typing import List, Any
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_rest(args: List[Any], env: Environment):
+@lispy_function("rest")
+def rest(args: List[Any], env: Environment):
     """Implementation of the (rest coll) LisPy function.
     Returns a new list or vector containing all but the first item.
     Returns an empty collection of the same type if the input is empty or has one element.
@@ -37,7 +38,8 @@ def builtin_rest(args: List[Any], env: Environment):
         )  # Updated error message
 
 
-def documentation_rest() -> str:
+@lispy_documentation("rest")
+def rest_documentation() -> str:
     """Returns documentation for the rest function."""
     return """Function: rest
 Arguments: (rest collection)

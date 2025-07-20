@@ -1,10 +1,12 @@
 from lispy.types import Vector, Symbol
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 from typing import List, Any
 
 
-def get_fn(args: List[Any], env: Environment):
+@lispy_function("get")
+def get(args: List[Any], env: Environment):
     """Accesses an element from a vector or a map.
 
     Usage: (get collection key [default])
@@ -55,7 +57,8 @@ def get_fn(args: List[Any], env: Environment):
         )
 
 
-def documentation_get() -> str:
+@lispy_documentation("get")
+def get_doc() -> str:
     """Returns documentation for the get function."""
     return """Function: get
 Arguments: (get collection key [default])

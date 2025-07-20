@@ -2,9 +2,10 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector
 import threading
 import time
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_promise_all(args, env):
+@lispy_function("promise-all")
+def promise_all(args, env):
     """Wait for all promises in a collection to resolve.
 
     Usage: (promise-all collection)
@@ -86,7 +87,8 @@ def builtin_promise_all(args, env):
     return all_promise
 
 
-def documentation_promise_all() -> str:
+@lispy_documentation("promise-all")
+def promise_all_documentation() -> str:
     """Returns documentation for the promise-all function."""
     return """Function: promise-all
 Arguments: (promise-all collection)

@@ -1,11 +1,12 @@
 # lispy_project/lispy/functions/type_check/is_number_q.py
 from typing import List, Any
 from numbers import Number
-from ...exceptions import EvaluationError
-from ...environment import Environment
+from lispy.exceptions import EvaluationError
+from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_is_number_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("is-number?")
+def is_number_q(args: List[Any], env: Environment) -> bool:
     """Returns true if the argument is a number, false otherwise. (is-number? value)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -17,7 +18,8 @@ def builtin_is_number_q(args: List[Any], env: Environment) -> bool:
     return isinstance(arg, Number) and not isinstance(arg, bool)
 
 
-def documentation_is_number_q() -> str:
+@lispy_documentation("is-number?")
+def is_number_q_documentation() -> str:
     """Returns documentation for the is-number? function."""
     return """Function: is-number?
 Arguments: (is-number? value)

@@ -1,10 +1,12 @@
 from lispy.types import LispyList  # Changed List to LispyList
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment  # Added Environment import
+from lispy.functions.decorators import lispy_function, lispy_documentation
 from typing import List, Any  # Added typing imports
 
 
-def builtin_keys(
+@lispy_function("keys")
+def keys(
     args: List[Any], env: Environment
 ):  # Added env parameter and type hint for args
     """Implementation of the (keys map) LisPy function.
@@ -30,7 +32,8 @@ def builtin_keys(
     return LispyList(list(target_map.keys()))  # Changed List to LispyList
 
 
-def documentation_keys() -> str:
+@lispy_documentation("keys")
+def keys_doc() -> str:
     """Returns documentation for the keys function."""
     return """Function: keys
 Arguments: (keys map)

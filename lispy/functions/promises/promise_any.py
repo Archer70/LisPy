@@ -2,9 +2,10 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector
 import threading
 import time
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_promise_any(args, env):
+@lispy_function("promise-any")
+def promise_any(args, env):
     """Resolve with the first promise to resolve, or reject if all reject.
 
     Usage: (promise-any collection)
@@ -98,7 +99,8 @@ def builtin_promise_any(args, env):
     return any_promise
 
 
-def documentation_promise_any() -> str:
+@lispy_documentation("promise-any")
+def promise_any_documentation() -> str:
     """Returns documentation for the promise-any function."""
     return """Function: promise-any
 Arguments: (promise-any collection)

@@ -6,9 +6,10 @@ from lispy.exceptions import EvaluationError
 from lispy.web.app import WebApp
 from lispy.closure import Function
 from lispy.types import Symbol
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_middleware(args, env):
+@lispy_function("middleware", web_safe=False, reason="Network access")
+def middleware(args, env):
     """
     Add middleware to a web application.
     
@@ -104,7 +105,8 @@ def builtin_middleware(args, env):
     return app
 
 
-def documentation_middleware():
+@lispy_documentation("middleware")
+def middleware_documentation():
     """Returns documentation for the middleware function."""
     return """Function: middleware
 Arguments: (middleware app type handler)

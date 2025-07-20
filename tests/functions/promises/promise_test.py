@@ -3,9 +3,9 @@ import time
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
-from lispy.functions.promises.promise import builtin_promise
-from lispy.functions.promises.resolve import builtin_resolve
-from lispy.functions.promises.reject import builtin_reject
+from lispy.functions.promises.promise import promise
+from lispy.functions.promises.resolve import resolve
+from lispy.functions.promises.reject import reject
 from lispy.functions import create_global_env
 
 
@@ -20,7 +20,7 @@ class TestPromiseFunctions(unittest.TestCase):
         def simple_fn(args, env):
             return 42
 
-        result = builtin_promise([simple_fn], self.env)
+        result = promise([simple_fn], self.env)
         self.assertIsInstance(result, LispyPromise)
 
         # Wait for promise to resolve
@@ -35,7 +35,7 @@ class TestPromiseFunctions(unittest.TestCase):
             time.sleep(0.01)
             return "done"
 
-        result = builtin_promise([slow_fn], self.env)
+        result = promise([slow_fn], self.env)
         self.assertIsInstance(result, LispyPromise)
         self.assertEqual(result.state, "pending")
 
@@ -50,7 +50,7 @@ class TestPromiseFunctions(unittest.TestCase):
         def error_fn(args, env):
             raise ValueError("Test error")
 
-        result = builtin_promise([error_fn], self.env)
+        result = promise([error_fn], self.env)
         self.assertIsInstance(result, LispyPromise)
 
         # Wait for promise to reject
@@ -62,14 +62,14 @@ class TestPromiseFunctions(unittest.TestCase):
     def test_promise_wrong_arg_count(self):
         """Test promise with wrong number of arguments."""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise([], self.env)
+            promise([], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'promise' expects 1 argument (function), got 0.",
         )
 
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise([lambda: 1, lambda: 2], self.env)
+            promise([lambda: 1, lambda: 2], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'promise' expects 1 argument (function), got 2.",
@@ -78,14 +78,14 @@ class TestPromiseFunctions(unittest.TestCase):
     def test_promise_non_callable_arg(self):
         """Test promise with non-callable argument."""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise([42], self.env)
+            promise([42], self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: 'promise' argument must be a function, got int.",
         )
 
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise(["string"], self.env)
+            promise(["string"], self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: 'promise' argument must be a function, got str.",
@@ -93,30 +93,30 @@ class TestPromiseFunctions(unittest.TestCase):
 
     def test_resolve_with_value(self):
         """Test resolve with various values."""
-        result = builtin_resolve([42], self.env)
+        result = resolve([42], self.env)
         self.assertIsInstance(result, LispyPromise)
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, 42)
 
-        result = builtin_resolve(["hello"], self.env)
+        result = resolve(["hello"], self.env)
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, "hello")
 
-        result = builtin_resolve([[1, 2, 3]], self.env)
+        result = resolve([[1, 2, 3]], self.env)
         self.assertEqual(result.state, "resolved")
         self.assertEqual(result.value, [1, 2, 3])
 
     def test_resolve_wrong_arg_count(self):
         """Test resolve with wrong number of arguments."""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_resolve([], self.env)
+            resolve([], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'resolve' expects 1 argument (value), got 0.",
         )
 
         with self.assertRaises(EvaluationError) as cm:
-            builtin_resolve([1, 2], self.env)
+            resolve([1, 2], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'resolve' expects 1 argument (value), got 2.",
@@ -124,30 +124,30 @@ class TestPromiseFunctions(unittest.TestCase):
 
     def test_reject_with_error(self):
         """Test reject with various error values."""
-        result = builtin_reject(["error message"], self.env)
+        result = reject(["error message"], self.env)
         self.assertIsInstance(result, LispyPromise)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, "error message")
 
-        result = builtin_reject([404], self.env)
+        result = reject([404], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, 404)
 
-        result = builtin_reject([{"error": "not found"}], self.env)
+        result = reject([{"error": "not found"}], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, {"error": "not found"})
 
     def test_reject_wrong_arg_count(self):
         """Test reject with wrong number of arguments."""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_reject([], self.env)
+            reject([], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'reject' expects 1 argument (error), got 0.",
         )
 
         with self.assertRaises(EvaluationError) as cm:
-            builtin_reject([1, 2], self.env)
+            reject([1, 2], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'reject' expects 1 argument (error), got 2.",
@@ -159,16 +159,16 @@ class TestPromiseFunctions(unittest.TestCase):
         def base_fn(args, env):
             return 10
 
-        promise = builtin_promise([base_fn], self.env)
+        promise_obj = promise([base_fn], self.env)
 
         # Chain with then
-        chained = promise.then(lambda x: x * 2)
+        chained = promise_obj.then(lambda x: x * 2)
 
         # Wait for both to resolve
         time.sleep(0.01)
 
-        self.assertEqual(promise.state, "resolved")
-        self.assertEqual(promise.value, 10)
+        self.assertEqual(promise_obj.state, "resolved")
+        self.assertEqual(promise_obj.value, 10)
         self.assertEqual(chained.state, "resolved")
         self.assertEqual(chained.value, 20)
 
@@ -178,15 +178,15 @@ class TestPromiseFunctions(unittest.TestCase):
         def error_fn(args, env):
             raise ValueError("Test error")
 
-        promise = builtin_promise([error_fn], self.env)
+        promise_obj = promise([error_fn], self.env)
 
         # Handle error with catch
-        handled = promise.catch(lambda e: f"Handled: {e}")
+        handled = promise_obj.catch(lambda e: f"Handled: {e}")
 
         # Wait for both to complete
         time.sleep(0.01)
 
-        self.assertEqual(promise.state, "rejected")
+        self.assertEqual(promise_obj.state, "rejected")
         self.assertEqual(handled.state, "resolved")
         self.assertEqual(handled.value, "Handled: Test error")
 

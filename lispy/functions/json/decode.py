@@ -7,6 +7,7 @@ Converts JSON strings to LisPy data structures.
 import json
 from lispy.exceptions import LisPyError
 from lispy.types import Symbol, Vector
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
 class JSONDecodeError(LisPyError):
@@ -14,7 +15,8 @@ class JSONDecodeError(LisPyError):
     pass
 
 
-def builtin_json_decode(args, env):
+@lispy_function("json-decode")
+def json_decode(args, env):
     """
     Decode a JSON string to LisPy data.
     
@@ -83,7 +85,9 @@ def _convert_from_json(value):
 
 
 # Documentation
-documentation_json_decode = """
+@lispy_documentation("json-decode")
+def json_decode_documentation():
+    return """
 json-decode: Convert JSON string to LisPy data
 
 Usage:

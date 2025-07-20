@@ -51,7 +51,7 @@ class WebSafeEnvironmentTest(unittest.TestCase):
             # Type checking functions
             "is-number?", "is-string?", "is-boolean?", "is-list?", "is-vector?", "is-map?", "is-nil?", "is-function?",
             # String functions
-            "join", "split", "str", "to-str", "to-int", "to-float", "to-bool",
+            "join", "split", "to-str", "to-int", "to-float", "to-bool",
             # Logical functions
             "not",
             # I/O functions (safe ones)

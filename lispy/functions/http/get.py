@@ -7,10 +7,12 @@ import urllib.error
 import threading
 from lispy.types import LispyPromise, Symbol
 from lispy.exceptions import ArityError, EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 from .utils import validate_url_with_message, normalize_headers, create_response_map, HTTPError
 
 
-def builtin_http_get(args, env):
+@lispy_function("http-get", web_safe=False, reason="Network access")
+def http_get(args, env):
     """
     Make an HTTP GET request and return a promise.
     
@@ -96,7 +98,9 @@ def builtin_http_get(args, env):
 
 
 # Documentation
-documentation_http_get = """
+@lispy_documentation("http-get")
+def http_get_documentation():
+    return """
 http-get: Make an HTTP GET request
 
 Usage:

@@ -2,11 +2,13 @@ from lispy.types import LispyList, Vector
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
 from typing import List, Any
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 EXPECTED_TYPES_MSG = "a list, vector, string, or nil"
 
 
-def builtin_first(args: List[Any], env: Environment):
+@lispy_function("first")
+def first(args: List[Any], env: Environment):
     """Implementation of the (first collection) LisPy function.
     Returns the first item of a list, vector, or string. Returns nil for nil or empty collections.
     Usage: (first collection)
@@ -30,7 +32,8 @@ def builtin_first(args: List[Any], env: Environment):
         )
 
 
-def documentation_first() -> str:
+@lispy_documentation("first")
+def first_documentation() -> str:
     """Returns documentation for the first function."""
     return """Function: first
 Arguments: (first collection)

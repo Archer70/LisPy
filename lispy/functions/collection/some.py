@@ -4,6 +4,7 @@ from lispy.closure import Function
 from lispy.exceptions import EvaluationError
 from lispy.evaluator import evaluate
 from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
 def _call_predicate(
@@ -32,23 +33,8 @@ def _call_predicate(
             f"TypeError: First argument to 'some' must be a function, got {type(predicate)}."
         )
 
-
-def builtin_some(args: List[Any], env: Environment) -> Any:
-    """Implementation of the (some collection predicate) LisPy function.
-
-    Returns the first logical true value of applying the predicate to each element
-    in the collection, or nil if no element satisfies the predicate.
-
-    Args:
-        args: List containing exactly two arguments - collection and predicate function
-        env: The current environment
-
-    Returns:
-        The first truthy result of applying predicate to collection elements, or None
-
-    Raises:
-        EvaluationError: If incorrect number of arguments or invalid argument types
-    """
+@lispy_function("some")
+def some(args: List[Any], env: Environment) -> Any:
     if len(args) != 2:
         raise EvaluationError(
             f"SyntaxError: 'some' expects 2 arguments, got {len(args)}."
@@ -82,7 +68,8 @@ def builtin_some(args: List[Any], env: Environment) -> Any:
     return None
 
 
-def documentation_some() -> str:
+@lispy_documentation("some")
+def some_documentation() -> str:
     """Returns documentation for the some function."""
     return """Function: some
 Arguments: (some collection predicate)

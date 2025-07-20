@@ -4,7 +4,7 @@ import unittest
 from lispy.functions import create_global_env
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, Vector, LispyList
-from lispy.functions.promises.reject import builtin_reject
+from lispy.functions.promises.reject import reject
 
 
 class TestReject(unittest.TestCase):
@@ -14,81 +14,81 @@ class TestReject(unittest.TestCase):
 
     def test_reject_with_string_error(self):
         """Test reject with string error messages"""
-        result = builtin_reject(["error message"], self.env)
+        result = reject(["error message"], self.env)
         self.assertIsInstance(result, LispyPromise)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, "error message")
 
-        result = builtin_reject([""], self.env)
+        result = reject([""], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, "")
 
-        result = builtin_reject(["Multi\nline\nerror"], self.env)
+        result = reject(["Multi\nline\nerror"], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, "Multi\nline\nerror")
 
     def test_reject_with_number_error(self):
         """Test reject with numeric error codes"""
-        result = builtin_reject([404], self.env)
+        result = reject([404], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, 404)
 
-        result = builtin_reject([0], self.env)
+        result = reject([0], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, 0)
 
-        result = builtin_reject([-1], self.env)
+        result = reject([-1], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, -1)
 
-        result = builtin_reject([3.14], self.env)
+        result = reject([3.14], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, 3.14)
 
     def test_reject_with_boolean_error(self):
         """Test reject with boolean error values"""
-        result = builtin_reject([False], self.env)
+        result = reject([False], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, False)
 
-        result = builtin_reject([True], self.env)
+        result = reject([True], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, True)
 
     def test_reject_with_nil_error(self):
         """Test reject with nil error value"""
-        result = builtin_reject([None], self.env)
+        result = reject([None], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, None)
 
     def test_reject_with_vector_error(self):
         """Test reject with vector error data"""
         error_vector = Vector(["error", "details", 123])
-        result = builtin_reject([error_vector], self.env)
+        result = reject([error_vector], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, error_vector)
 
         empty_vector = Vector([])
-        result = builtin_reject([empty_vector], self.env)
+        result = reject([empty_vector], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, empty_vector)
 
     def test_reject_with_list_error(self):
         """Test reject with list error data"""
         error_list = LispyList(["error", "type", "validation"])
-        result = builtin_reject([error_list], self.env)
+        result = reject([error_list], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, error_list)
 
     def test_reject_with_dict_error(self):
         """Test reject with dictionary/map error data"""
         error_dict = {"error": "not found", "code": 404, "path": "/api/user"}
-        result = builtin_reject([error_dict], self.env)
+        result = reject([error_dict], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, error_dict)
 
         empty_dict = {}
-        result = builtin_reject([empty_dict], self.env)
+        result = reject([empty_dict], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, empty_dict)
 
@@ -100,14 +100,14 @@ class TestReject(unittest.TestCase):
             "context": {"user": "test", "action": "create"},
             "stack": LispyList(["func1", "func2", "main"])
         }
-        result = builtin_reject([nested_error], self.env)
+        result = reject([nested_error], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, nested_error)
 
     def test_reject_wrong_arg_count_zero(self):
         """Test reject with no arguments"""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_reject([], self.env)
+            reject([], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'reject' expects 1 argument (error), got 0."
@@ -116,14 +116,14 @@ class TestReject(unittest.TestCase):
     def test_reject_wrong_arg_count_many(self):
         """Test reject with too many arguments"""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_reject(["error1", "error2"], self.env)
+            reject(["error1", "error2"], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'reject' expects 1 argument (error), got 2."
         )
 
         with self.assertRaises(EvaluationError) as cm:
-            builtin_reject(["error1", "error2", "error3"], self.env)
+            reject(["error1", "error2", "error3"], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'reject' expects 1 argument (error), got 3."
@@ -131,7 +131,7 @@ class TestReject(unittest.TestCase):
 
     def test_reject_immediate_availability(self):
         """Test that rejected promises are immediately available"""
-        result = builtin_reject(["immediate error"], self.env)
+        result = reject(["immediate error"], self.env)
         
         # Should be immediately rejected, no waiting needed
         self.assertEqual(result.state, "rejected")
@@ -139,7 +139,7 @@ class TestReject(unittest.TestCase):
 
     def test_reject_chain_error_propagation(self):
         """Test reject propagates through promise chains"""
-        result = builtin_reject(["original error"], self.env)
+        result = reject(["original error"], self.env)
         
         # then() should be skipped, error should propagate
         chained = result.then(lambda x: "should not execute")
@@ -148,7 +148,7 @@ class TestReject(unittest.TestCase):
 
     def test_reject_error_handling_compatibility(self):
         """Test reject works with error handling chains"""
-        result = builtin_reject(["test error"], self.env)
+        result = reject(["test error"], self.env)
         
         # Should trigger catch handler
         caught = result.catch(lambda e: f"handled: {e}")
@@ -158,7 +158,7 @@ class TestReject(unittest.TestCase):
     def test_reject_with_exception_object(self):
         """Test reject with actual exception objects"""
         test_exception = ValueError("test exception")
-        result = builtin_reject([test_exception], self.env)
+        result = reject([test_exception], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, test_exception)
 
@@ -167,7 +167,7 @@ class TestReject(unittest.TestCase):
 
     def test_reject_multiple_catch_handlers(self):
         """Test reject with multiple catch handlers in chain"""
-        result = builtin_reject(["original"], self.env)
+        result = reject(["original"], self.env)
         
         # First catch should handle the error
         caught1 = result.catch(lambda e: f"first: {e}")
@@ -180,7 +180,7 @@ class TestReject(unittest.TestCase):
 
     def test_reject_then_catch_chain(self):
         """Test reject in then-catch chains"""
-        result = builtin_reject(["error"], self.env)
+        result = reject(["error"], self.env)
         
         # Complex chain: reject -> then (skipped) -> catch (handles) -> then (executes)
         chain = (result
@@ -196,7 +196,7 @@ class TestReject(unittest.TestCase):
         def error_fn():
             return "error function"
             
-        result = builtin_reject([error_fn], self.env)
+        result = reject([error_fn], self.env)
         self.assertEqual(result.state, "rejected")
         self.assertEqual(result.error, error_fn)
 

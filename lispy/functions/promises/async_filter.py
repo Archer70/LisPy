@@ -1,22 +1,12 @@
-"""
-LisPy async-filter function - Concurrent async filtering following JavaScript patterns.
-
-This function implements JavaScript's Array.filter() + Promise.all() pattern:
-- Applies predicate to each element concurrently (not sequentially)
-- Returns a promise that resolves to an array of elements where predicate was truthy
-- Maintains original array order
-- Fail-fast: if any predicate fails, the whole operation fails
-
-Usage: (async-filter collection predicate)
-"""
-
 from lispy.closure import Function
 from lispy.types import LispyPromise, Vector, List
 from lispy.exceptions import EvaluationError
 import threading
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_async_filter(args, env):
+@lispy_function("async-filter")
+def async_filter(args, env):
     """
     Async filter function - concurrent filtering with Promise.all semantics.
 
@@ -150,7 +140,8 @@ def builtin_async_filter(args, env):
     return result_promise
 
 
-def documentation_async_filter() -> str:
+@lispy_documentation("async-filter")
+def async_filter_documentation() -> str:
     """Returns documentation for the async-filter function."""
     return """Function: async-filter
 Arguments: (async-filter collection predicate)

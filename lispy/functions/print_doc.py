@@ -1,10 +1,12 @@
 from typing import List, Any
 from ..exceptions import EvaluationError
 from ..environment import Environment
-from .doc import builtin_doc
+from .doc import doc
+from .decorators import lispy_function, lispy_documentation
 
 
-def builtin_print_doc(args: List[Any], env: Environment) -> None:
+@lispy_function("print-doc")
+def print_doc(args: List[Any], env: Environment) -> None:
     """Prints documentation string to console. (print-doc doc-string-or-function)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -20,7 +22,7 @@ def builtin_print_doc(args: List[Any], env: Environment) -> None:
 
     # For anything else, try to get documentation using doc function
     try:
-        doc_string = builtin_doc([arg], env)
+        doc_string = doc([arg], env)
         print(doc_string)
         return None
     except EvaluationError as e:
@@ -28,7 +30,8 @@ def builtin_print_doc(args: List[Any], env: Environment) -> None:
         raise EvaluationError(f"Error in 'print-doc': {str(e)}")
 
 
-def documentation_print_doc() -> str:
+@lispy_documentation("print-doc")
+def print_doc_documentation() -> str:
     """Returns documentation for the print-doc function."""
     return """Function: print-doc
 Arguments: (print-doc doc-string-or-function)

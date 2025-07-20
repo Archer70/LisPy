@@ -1,18 +1,12 @@
 from typing import List, Any
-from ...types import Vector, Symbol
-from ...exceptions import EvaluationError
-from ...environment import Environment
+from lispy.types import Vector, Symbol
+from lispy.exceptions import EvaluationError
+from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def builtin_equal_q(args: List[Any], env: Environment) -> bool:
-    """Checks if all arguments are structurally equal.
-
-    Supports deep equality comparison for:
-    - Primitives: numbers, strings, booleans, symbols, nil
-    - Collections: vectors, lists, maps (recursively)
-
-    Returns True only if ALL arguments are equal.
-    """
+@lispy_function("equal?")
+def equal_q(args: List[Any], env: Environment) -> bool:
     if len(args) < 2:
         raise EvaluationError(
             "SyntaxError: 'equal?' requires at least 2 arguments, got {}.".format(
@@ -94,8 +88,8 @@ def _are_equal(a: Any, b: Any) -> bool:
     return a == b
 
 
-def documentation_equal_q() -> str:
-    """Returns documentation for the equal? function."""
+@lispy_documentation("equal?")
+def equal_q_documentation() -> str:
     return """Function: equal?
 Arguments: (equal? value1 value2 ...)
 Description: Tests if all values are structurally equal (deep equality).

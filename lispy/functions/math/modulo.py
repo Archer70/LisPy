@@ -2,15 +2,13 @@ from typing import List, Any, Union
 from ...exceptions import EvaluationError
 from numbers import Number
 from ...environment import Environment
+from ..decorators import lispy_function, lispy_documentation
 
 Numeric = Union[int, float]
 
 
-def builtin_modulo(args: List[Any], env: Environment) -> Numeric:
-    """Calculates the modulo (remainder) of division. (% dividend divisor)
-    Returns the remainder when dividend is divided by divisor.
-    For multiple arguments, applies modulo left-to-right: (% a b c) = (% (% a b) c)
-    """
+@lispy_function("%")
+def modulo(args: List[Any], env: Environment) -> Numeric:
     if len(args) < 2:
         raise EvaluationError("SyntaxError: '%' requires at least two arguments.")
 
@@ -34,8 +32,8 @@ def builtin_modulo(args: List[Any], env: Environment) -> Numeric:
     return result
 
 
-def documentation_modulo() -> str:
-    """Returns documentation for the % (modulo) function."""
+@lispy_documentation("%")
+def modulo_documentation() -> str:
     return """Function: %
 Arguments: (% dividend divisor ...)
 Description: Calculates the modulo (remainder) of division operations.
@@ -54,6 +52,4 @@ Notes:
   - Division by zero raises ZeroDivisionError
   - For multiple arguments, applies left-to-right: (% a b c) = (% (% a b) c)
   - Follows Python modulo semantics for negative numbers
-  - Result sign follows divisor sign in Python
-  - Essential for cyclic operations, remainders, and range wrapping
-  - Useful for determining even/odd, array indexing, etc."""
+  - Useful for checking divisibility and cyclic operations"""

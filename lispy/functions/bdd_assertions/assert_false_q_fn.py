@@ -1,9 +1,11 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError, AssertionFailure
-from ...environment import Environment
+from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def bdd_assert_false_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("assert-false?")
+def assert_false_q(args: List[Any], env: Environment) -> bool:
     """(assert-false? expr)
     Asserts that the expression `expr` evaluates to false.
     Raises AssertionFailure if it is not false. Returns true if the assertion passes.
@@ -23,7 +25,8 @@ def bdd_assert_false_q(args: List[Any], env: Environment) -> bool:
     return True  # Assertion passed
 
 
-def documentation_assert_false_q() -> str:
+@lispy_documentation("assert-false?")
+def assert_false_q_doc() -> str:
     """Returns documentation for the assert-false? function."""
     return """Function: assert-false?
 Arguments: (assert-false? expression)

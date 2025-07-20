@@ -1,6 +1,8 @@
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-def to_float_fn(args, env):
+@lispy_function("to-float")
+def to_float(args, env):
     """Convert a value to a float, if possible.
 
     Usage: (to-float value)
@@ -21,7 +23,8 @@ def to_float_fn(args, env):
             raise EvaluationError(f"TypeError: Cannot convert string '{value}' to float.")
     raise EvaluationError(f"TypeError: Cannot convert {type(value).__name__} to float.")
 
-def documentation_to_float():
+@lispy_documentation("to-float")
+def to_float_documentation():
     return '''Function: to-float
 Arguments: (to-float value)
 Description: Converts a value to a float, if possible. Raises an error if conversion is not possible.

@@ -1,22 +1,22 @@
 """LisPy I/O Functions"""
 
-from .print import builtin_print, documentation_print
-from .println import builtin_println, documentation_println
-from .read_line import builtin_read_line, documentation_read_line
-from .slurp import builtin_slurp, documentation_slurp
-from .spit import builtin_spit, documentation_spit
+from .print import print_fn, print_documentation
+from .println import println, println_documentation
+from .read_line import read_line, read_line_documentation
+from .slurp import slurp, slurp_documentation
+from .spit import spit, spit_documentation
 
 __all__ = [
     # Functions
-    "builtin_print",
-    "builtin_println",
-    "builtin_read_line",
-    "builtin_slurp",
-    "builtin_spit",
+    "print_fn",
+    "println",
+    "read_line",
+    "slurp",
+    "spit",
     # Documentation
-    "documentation_print",
-    "documentation_println",
-    "documentation_read_line",
-    "documentation_slurp",
-    "documentation_spit",
+    "print_documentation",
+    "println_documentation",
+    "read_line_documentation",
+    "slurp_documentation",
+    "spit_documentation",
 ]

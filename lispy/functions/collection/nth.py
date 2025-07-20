@@ -2,9 +2,10 @@ from lispy.types import Vector, LispyList
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
 from typing import List, Any
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def nth_fn(args: List[Any], env: Environment):
+@lispy_function("nth")
+def nth(args: List[Any], env: Environment):
     """Accesses an element from a vector or list by index.
 
     Usage: (nth collection index [default])
@@ -42,7 +43,8 @@ def nth_fn(args: List[Any], env: Environment):
         )
 
 
-def documentation_nth() -> str:
+@lispy_documentation("nth")
+def nth_documentation() -> str:
     """Returns documentation for the nth function."""
     return """Function: nth
 Arguments: (nth collection index [default])

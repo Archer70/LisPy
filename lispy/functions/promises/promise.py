@@ -4,9 +4,10 @@ from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise
 from lispy.closure import Function
 from lispy.evaluator import evaluate
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_promise(args: List[Any], env: Environment) -> LispyPromise:
+@lispy_function("promise")
+def promise(args: List[Any], env: Environment) -> LispyPromise:
     """Creates a promise from a function. (promise function)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -55,7 +56,8 @@ def builtin_promise(args: List[Any], env: Environment) -> LispyPromise:
     return LispyPromise(executor)
 
 
-def documentation_promise() -> str:
+@lispy_documentation("promise")
+def promise_documentation() -> str:
     """Returns documentation for the promise function."""
     return """Function: promise
 Arguments: (promise function)

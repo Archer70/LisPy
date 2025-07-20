@@ -4,6 +4,7 @@ from lispy.closure import Function
 from lispy.exceptions import EvaluationError
 from lispy.evaluator import evaluate
 from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
 def _call_predicate(
@@ -33,7 +34,8 @@ def _call_predicate(
         )
 
 
-def builtin_every_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("every?")
+def every_q(args: List[Any], env: Environment) -> bool:
     """Implementation of the (every? collection predicate) LisPy function.
 
     Returns true if all elements in the collection satisfy the predicate,
@@ -86,7 +88,8 @@ def builtin_every_q(args: List[Any], env: Environment) -> bool:
     return True
 
 
-def documentation_every_q() -> str:
+@lispy_documentation("every?")
+def every_q_documentation() -> str:
     """Returns documentation for the every? function."""
     return """Function: every?
 Arguments: (every? collection predicate)

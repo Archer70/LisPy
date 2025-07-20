@@ -6,10 +6,10 @@ import threading
 from lispy.environment import Environment
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, Vector, LispyList
-from lispy.functions.promises.promise_all import builtin_promise_all
-from lispy.functions.promises.resolve import builtin_resolve
-from lispy.functions.promises.reject import builtin_reject
-from lispy.functions.promises.promise import builtin_promise
+from lispy.functions.promises.promise_all import promise_all
+from lispy.functions.promises.resolve import resolve
+from lispy.functions.promises.reject import reject
+from lispy.functions.promises.promise import promise
 from lispy.functions import create_global_env
 
 
@@ -20,12 +20,12 @@ class TestPromiseAll(unittest.TestCase):
 
     def test_promise_all_with_resolved_promises(self):
         """Test promise-all with pre-resolved promises"""
-        promise1 = builtin_resolve([1], self.env)
-        promise2 = builtin_resolve([2], self.env)
-        promise3 = builtin_resolve([3], self.env)
+        promise1 = resolve([1], self.env)
+        promise2 = resolve([2], self.env)
+        promise3 = resolve([3], self.env)
         
         promises = Vector([promise1, promise2, promise3])
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         self.assertIsInstance(result, LispyPromise)
         
@@ -36,11 +36,11 @@ class TestPromiseAll(unittest.TestCase):
 
     def test_promise_all_with_list_collection(self):
         """Test promise-all with list instead of vector"""
-        promise1 = builtin_resolve([10], self.env)
-        promise2 = builtin_resolve([20], self.env)
+        promise1 = resolve([10], self.env)
+        promise2 = resolve([20], self.env)
         
         promises = LispyList([promise1, promise2])
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         time.sleep(0.01)
         self.assertEqual(result.state, "resolved")
@@ -49,7 +49,7 @@ class TestPromiseAll(unittest.TestCase):
     def test_promise_all_empty_vector(self):
         """Test promise-all with empty vector resolves immediately"""
         empty_vector = Vector([])
-        result = builtin_promise_all([empty_vector], self.env)
+        result = promise_all([empty_vector], self.env)
         
         # Should resolve immediately
         self.assertEqual(result.state, "resolved")
@@ -58,7 +58,7 @@ class TestPromiseAll(unittest.TestCase):
     def test_promise_all_empty_list(self):
         """Test promise-all with empty list resolves immediately"""
         empty_list = LispyList([])
-        result = builtin_promise_all([empty_list], self.env)
+        result = promise_all([empty_list], self.env)
         
         # Should resolve immediately
         self.assertEqual(result.state, "resolved")
@@ -74,11 +74,11 @@ class TestPromiseAll(unittest.TestCase):
             time.sleep(0.01)
             return "result2"
             
-        promise1 = builtin_promise([slow_function_1], self.env)
-        promise2 = builtin_promise([slow_function_2], self.env)
+        promise1 = promise([slow_function_1], self.env)
+        promise2 = promise([slow_function_2], self.env)
         
         promises = Vector([promise1, promise2])
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         # Should be pending initially
         self.assertEqual(result.state, "pending")
@@ -99,11 +99,11 @@ class TestPromiseAll(unittest.TestCase):
             return "slow"
             
         # Order: slow, fast - but fast completes first
-        promise1 = builtin_promise([slow_function], self.env)
-        promise2 = builtin_promise([fast_function], self.env)
+        promise1 = promise([slow_function], self.env)
+        promise2 = promise([fast_function], self.env)
         
         promises = Vector([promise1, promise2])
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         time.sleep(0.05)
         self.assertEqual(result.state, "resolved")
@@ -111,12 +111,12 @@ class TestPromiseAll(unittest.TestCase):
 
     def test_promise_all_fail_fast_behavior(self):
         """Test that promise-all fails fast when any promise rejects"""
-        promise1 = builtin_resolve(["success"], self.env)
-        promise2 = builtin_reject(["error"], self.env)
-        promise3 = builtin_resolve(["also success"], self.env)
+        promise1 = resolve(["success"], self.env)
+        promise2 = reject(["error"], self.env)
+        promise3 = resolve(["also success"], self.env)
         
         promises = Vector([promise1, promise2, promise3])
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         time.sleep(0.01)
         self.assertEqual(result.state, "rejected")
@@ -128,11 +128,11 @@ class TestPromiseAll(unittest.TestCase):
             time.sleep(0.02)
             return "pending result"
             
-        promise1 = builtin_resolve(["immediate"], self.env)
-        promise2 = builtin_promise([pending_function], self.env)
+        promise1 = resolve(["immediate"], self.env)
+        promise2 = promise([pending_function], self.env)
         
         promises = Vector([promise1, promise2])
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         time.sleep(0.03)
         self.assertEqual(result.state, "resolved")
@@ -144,11 +144,11 @@ class TestPromiseAll(unittest.TestCase):
             time.sleep(0.01)
             raise ValueError("async error")
             
-        promise1 = builtin_resolve(["success"], self.env)
-        promise2 = builtin_promise([error_function], self.env)
+        promise1 = resolve(["success"], self.env)
+        promise2 = promise([error_function], self.env)
         
         promises = Vector([promise1, promise2])
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         time.sleep(0.02)
         self.assertEqual(result.state, "rejected")
@@ -158,14 +158,14 @@ class TestPromiseAll(unittest.TestCase):
     def test_promise_all_wrong_arg_count(self):
         """Test promise-all with wrong number of arguments"""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all([], self.env)
+            promise_all([], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'promise-all' expects 1 argument, got 0."
         )
 
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all([Vector([]), Vector([])], self.env)
+            promise_all([Vector([]), Vector([])], self.env)
         self.assertEqual(
             str(cm.exception),
             "SyntaxError: 'promise-all' expects 1 argument, got 2."
@@ -174,14 +174,14 @@ class TestPromiseAll(unittest.TestCase):
     def test_promise_all_invalid_collection_type(self):
         """Test promise-all with invalid collection type"""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all(["not a collection"], self.env)
+            promise_all(["not a collection"], self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: 'promise-all' argument must be a list or vector, got str."
         )
 
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all([42], self.env)
+            promise_all([42], self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: 'promise-all' argument must be a list or vector, got int."
@@ -189,11 +189,11 @@ class TestPromiseAll(unittest.TestCase):
 
     def test_promise_all_non_promise_elements(self):
         """Test promise-all with non-promise elements in collection"""
-        promise1 = builtin_resolve([1], self.env)
+        promise1 = resolve([1], self.env)
         promises = Vector([promise1, "not a promise"])
         
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all([promises], self.env)
+            promise_all([promises], self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: All elements must be promises, got str at position 1."
@@ -204,7 +204,7 @@ class TestPromiseAll(unittest.TestCase):
         promises = Vector([42, "string", {}])
         
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all([promises], self.env)
+            promise_all([promises], self.env)
         self.assertEqual(
             str(cm.exception),
             "TypeError: All elements must be promises, got int at position 0."
@@ -212,9 +212,9 @@ class TestPromiseAll(unittest.TestCase):
 
     def test_promise_all_single_promise(self):
         """Test promise-all with single promise"""
-        promise = builtin_resolve(["single"], self.env)
+        promise = resolve(["single"], self.env)
         promises = Vector([promise])
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         time.sleep(0.01)
         self.assertEqual(result.state, "resolved")
@@ -229,15 +229,15 @@ class TestPromiseAll(unittest.TestCase):
             return inner
             
         # Each promise takes 50ms, but should run concurrently
-        promise1 = builtin_promise([timer_function(50)], self.env)
-        promise2 = builtin_promise([timer_function(50)], self.env)
-        promise3 = builtin_promise([timer_function(50)], self.env)
+        promise1 = promise([timer_function(50)], self.env)
+        promise2 = promise([timer_function(50)], self.env)
+        promise3 = promise([timer_function(50)], self.env)
         
         promises = Vector([promise1, promise2, promise3])
         
         # Measure how long promise-all takes to complete
         start_time = time.time()
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         # Wait for completion
         while result.state == "pending":
@@ -254,14 +254,14 @@ class TestPromiseAll(unittest.TestCase):
 
     def test_promise_all_with_different_value_types(self):
         """Test promise-all with promises that resolve to different types"""
-        promise1 = builtin_resolve([42], self.env)
-        promise2 = builtin_resolve(["string"], self.env)
-        promise3 = builtin_resolve([Vector([1, 2, 3])], self.env)
-        promise4 = builtin_resolve([{"key": "value"}], self.env)
-        promise5 = builtin_resolve([None], self.env)
+        promise1 = resolve([42], self.env)
+        promise2 = resolve(["string"], self.env)
+        promise3 = resolve([Vector([1, 2, 3])], self.env)
+        promise4 = resolve([{"key": "value"}], self.env)
+        promise5 = resolve([None], self.env)
         
         promises = Vector([promise1, promise2, promise3, promise4, promise5])
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         
         time.sleep(0.01)
         self.assertEqual(result.state, "resolved")
@@ -278,11 +278,11 @@ class TestPromiseAll(unittest.TestCase):
             return inner
             
         promises = Vector([
-            builtin_promise([concurrent_function(i)], self.env) 
+            promise([concurrent_function(i)], self.env) 
             for i in range(10)
         ])
         
-        result = builtin_promise_all([promises], self.env)
+        result = promise_all([promises], self.env)
         time.sleep(0.05)
         
         self.assertEqual(result.state, "resolved")

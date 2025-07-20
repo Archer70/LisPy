@@ -4,7 +4,7 @@ from lispy.closure import Function  # For user-defined procedures
 from lispy.exceptions import EvaluationError, ArityError
 from lispy.evaluator import evaluate
 from lispy.environment import Environment
-
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 def _call_reducing_procedure(
     proc: Any, acc: Any, item: Any, env: Environment, evaluate_fn: Callable
@@ -37,8 +37,8 @@ def _call_reducing_procedure(
             f"InternalError: Invalid procedure type in _call_reducing_procedure: {type(proc)}"
         )
 
-
-def builtin_reduce(args: List[Any], env: Environment):
+@lispy_function("reduce")
+def reduce(args: List[Any], env: Environment):
     """Implementation of the (reduce collection procedure [initial-value]) LisPy function."""
     num_args = len(args)
     if not (2 <= num_args <= 3):
@@ -105,7 +105,8 @@ def builtin_reduce(args: List[Any], env: Environment):
     return accumulator
 
 
-def documentation_reduce() -> str:
+@lispy_documentation("reduce")
+def reduce_documentation() -> str:
     """Returns documentation for the reduce function."""
     return """Function: reduce
 Arguments: (reduce collection function [initial-value])

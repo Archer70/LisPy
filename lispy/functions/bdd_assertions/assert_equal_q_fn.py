@@ -1,9 +1,11 @@
 from typing import List, Any
 from lispy.exceptions import EvaluationError, AssertionFailure
-from ...environment import Environment
+from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
 
-def bdd_assert_equal_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("assert-equal?")
+def assert_equal_q(args: List[Any], env: Environment) -> bool:
     """(assert-equal? expected actual)
     Asserts that `actual` is equal to `expected`.
     Raises AssertionFailure if they are not equal. Returns true if equal.
@@ -27,7 +29,8 @@ def bdd_assert_equal_q(args: List[Any], env: Environment) -> bool:
     return True  # Assertion passed
 
 
-def documentation_assert_equal_q() -> str:
+@lispy_documentation("assert-equal?")
+def assert_equal_q_doc() -> str:
     """Returns documentation for the assert-equal? function."""
     return """Function: assert-equal?
 Arguments: (assert-equal? expected actual)

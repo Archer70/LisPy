@@ -1,20 +1,21 @@
-"""Type conversion utilities for LisPy.
+"""LisPy Type Conversion Functions - Now using decorator-based registration"""
 
-This module provides functions for converting between different LisPy types.
-"""
-
-from .to_str import to_str_fn, documentation_str
-from .to_int import to_int_fn, documentation_to_int
-from .to_float import to_float_fn, documentation_to_float
-from .to_bool import to_bool_fn, documentation_to_bool
+# The functions are now automatically registered via decorators
+# Import them to trigger the decorator registration
+from .to_bool import to_bool, to_bool_documentation
+from .to_float import to_float, to_float_documentation
+from .to_int import to_int, to_int_documentation
+from .to_str import to_str, to_str_documentation
 
 __all__ = [
-    'to_str_fn',
-    'to_int_fn',
-    'to_float_fn',
-    'to_bool_fn',
-    'documentation_str',
-    'documentation_to_int',
-    'documentation_to_float',
-    'documentation_to_bool',
+    # Functions (new names)
+    "to_bool",
+    "to_float",
+    "to_int",
+    "to_str",
+    # Documentation (new names)
+    "to_bool_documentation",
+    "to_float_documentation",
+    "to_int_documentation",
+    "to_str_documentation",
 ] 

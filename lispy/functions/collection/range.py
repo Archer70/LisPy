@@ -1,25 +1,11 @@
-"""
-LisPy range function - Generate sequences of numbers.
-
-Usage:
-  (range end)           ; 0 to end-1
-  (range start end)     ; start to end-1
-  (range start end step); start to end-1 with step
-
-Examples:
-  (range 5)        ; => [0 1 2 3 4]
-  (range 2 8)      ; => [2 3 4 5 6 7]
-  (range 0 10 2)   ; => [0 2 4 6 8]
-  (range 10 0 -1)  ; => [10 9 8 7 6 5 4 3 2 1]
-"""
-
 from lispy.types import Vector
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
 from typing import List, Any
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_range(args: List[Any], env: Environment) -> Vector:
+@lispy_function("range")
+def range(args: List[Any], env: Environment) -> Vector:
     """Implementation of the (range ...) LisPy function.
 
     Generates a sequence of numbers as a vector.
@@ -77,7 +63,8 @@ def builtin_range(args: List[Any], env: Environment) -> Vector:
     return Vector(result)
 
 
-def documentation_range() -> str:
+@lispy_documentation("range")
+def range_documentation() -> str:
     """Returns documentation for the range function."""
     return """Function: range
 Arguments: (range end) or (range start end) or (range start end step)

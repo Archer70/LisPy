@@ -13,10 +13,12 @@ Usage: (async-reduce collection reducer initial-value)
 from lispy.closure import Function
 from lispy.types import LispyPromise, Vector, List
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 import threading
 
 
-def builtin_async_reduce(args, env):
+@lispy_function("async-reduce")
+def async_reduce(args, env):
     """
     Async reduce function - sequential reduction with async support.
     
@@ -107,8 +109,8 @@ def builtin_async_reduce(args, env):
     return result_promise
 
 
-def documentation_async_reduce() -> str:
-    """Returns documentation for the async-reduce function."""
+@lispy_documentation("async-reduce")
+def async_reduce_documentation():
     return """Function: async-reduce
 Arguments: (async-reduce collection reducer initial-value)
 Description: Reduces collection to single value using async reducer function, processing sequentially.

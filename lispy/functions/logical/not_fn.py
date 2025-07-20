@@ -1,10 +1,10 @@
 from lispy.exceptions import EvaluationError
 from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 from typing import List, Any
-# from numbers import Number # Not strictly needed as no type check on value itself
 
-
-def builtin_not(args_list: List[Any], env: Environment) -> bool:
+@lispy_function("not")
+def not_fn(args_list: List[Any], env: Environment) -> bool:
     if len(args_list) != 1:
         raise EvaluationError("TypeError: not requires exactly one argument")
     val = args_list[0]
@@ -14,7 +14,8 @@ def builtin_not(args_list: List[Any], env: Environment) -> bool:
     return is_falsy  # This was the bug: it should be True if falsy.
 
 
-def documentation_not() -> str:
+@lispy_documentation("not")
+def not_documentation() -> str:
     """Returns documentation for the not function."""
     return """Function: not
 Arguments: (not value)

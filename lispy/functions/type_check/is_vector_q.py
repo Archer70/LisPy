@@ -1,11 +1,12 @@
 # lispy_project/lispy/functions/type_check/is_vector_q.py
 from typing import List, Any
-from ...types import Vector
-from ...exceptions import EvaluationError
-from ...environment import Environment
+from lispy.types import Vector
+from lispy.exceptions import EvaluationError
+from lispy.environment import Environment
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def builtin_is_vector_q(args: List[Any], env: Environment) -> bool:
+@lispy_function("is-vector?")
+def is_vector_q(args: List[Any], env: Environment) -> bool:
     """Returns true if the argument is a vector, false otherwise. (is-vector? value)"""
     if len(args) != 1:
         raise EvaluationError(
@@ -16,7 +17,8 @@ def builtin_is_vector_q(args: List[Any], env: Environment) -> bool:
     return isinstance(arg, Vector)
 
 
-def documentation_is_vector_q() -> str:
+@lispy_documentation("is-vector?")
+def is_vector_q_documentation() -> str:
     """Returns documentation for the is-vector? function."""
     return """Function: is-vector?
 Arguments: (is-vector? value)

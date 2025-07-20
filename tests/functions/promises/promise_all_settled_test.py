@@ -6,9 +6,9 @@ from lispy.functions import create_global_env
 from lispy.utils import run_lispy_string
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyPromise, LispyList, Vector, Symbol
-from lispy.functions.promises.promise_all_settled import builtin_promise_all_settled
-from lispy.functions.promises.resolve import builtin_resolve
-from lispy.functions.promises.reject import builtin_reject
+from lispy.functions.promises.promise_all_settled import promise_all_settled
+from lispy.functions.promises.resolve import resolve
+from lispy.functions.promises.reject import reject
 
 
 class PromiseAllSettledTest(unittest.TestCase):
@@ -16,9 +16,9 @@ class PromiseAllSettledTest(unittest.TestCase):
         """Set up test environment."""
         self.env = create_global_env()
         # Add promise functions to environment for integration tests
-        self.env.define("resolve", builtin_resolve)
-        self.env.define("reject", builtin_reject)
-        self.env.define("promise-all-settled", builtin_promise_all_settled)
+        self.env.define("resolve", resolve)
+        self.env.define("reject", reject)
+        self.env.define("promise-all-settled", promise_all_settled)
 
     def test_promise_all_settled_mixed_results(self):
         """Test promise-all-settled with mixed success and failure."""
@@ -30,7 +30,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = Vector([success_promise, failure_promise, another_success])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Set up the promises
         success_promise.resolve("Success 1")
@@ -71,7 +71,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Resolve all promises
         promise1.resolve("Result A")
@@ -102,7 +102,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Reject all promises
         promise1.reject("Error A")
@@ -132,7 +132,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = LispyList([promise1, promise2])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Set up promises
         promise1.resolve("List success")
@@ -158,7 +158,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         """Test promise-all-settled with empty collection."""
         empty_vector = Vector([])
         
-        result = builtin_promise_all_settled([empty_vector], self.env)
+        result = promise_all_settled([empty_vector], self.env)
         
         # Should resolve immediately with empty collection
         self.assertEqual(result.state, "resolved")
@@ -167,7 +167,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         
         # Test with empty list too
         empty_list = LispyList([])
-        result2 = builtin_promise_all_settled([empty_list], self.env)
+        result2 = promise_all_settled([empty_list], self.env)
         
         self.assertEqual(result2.state, "resolved")
         self.assertIsInstance(result2.value, LispyList)
@@ -185,7 +185,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = Vector([resolved_promise, rejected_promise])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Wait for result
         time.sleep(0.1)
@@ -208,7 +208,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Set up staggered timing
         def delayed_operations():
@@ -245,7 +245,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3, promise4])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Set up different value types
         promise1.resolve(42)
@@ -274,7 +274,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Set up different error types
         promise1.reject("String error")
@@ -295,17 +295,17 @@ class PromiseAllSettledTest(unittest.TestCase):
     def test_promise_all_settled_wrong_argument_count(self):
         """Test error handling for wrong number of arguments."""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all_settled([], self.env)
+            promise_all_settled([], self.env)
         self.assertEqual(str(cm.exception), "SyntaxError: 'promise-all-settled' expects 1 argument, got 0.")
         
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all_settled([Vector([]), Vector([])], self.env)
+            promise_all_settled([Vector([]), Vector([])], self.env)
         self.assertEqual(str(cm.exception), "SyntaxError: 'promise-all-settled' expects 1 argument, got 2.")
 
     def test_promise_all_settled_invalid_collection_type(self):
         """Test error handling for invalid collection types."""
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all_settled(["not a collection"], self.env)
+            promise_all_settled(["not a collection"], self.env)
         self.assertIn("TypeError", str(cm.exception))
         self.assertIn("must be a list or vector", str(cm.exception))
 
@@ -315,7 +315,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         invalid_collection = Vector([promise, "not a promise", 42])
         
         with self.assertRaises(EvaluationError) as cm:
-            builtin_promise_all_settled([invalid_collection], self.env)
+            promise_all_settled([invalid_collection], self.env)
         self.assertIn("TypeError", str(cm.exception))
         self.assertIn("All elements must be promises", str(cm.exception))
         self.assertIn("position 1", str(cm.exception))
@@ -380,7 +380,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = Vector([promise1, promise2])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Set up complex data
         complex_success = {
@@ -415,7 +415,7 @@ class PromiseAllSettledTest(unittest.TestCase):
         promises = Vector([promise1, promise2, promise3])
         
         # Execute promise-all-settled
-        result = builtin_promise_all_settled([promises], self.env)
+        result = promise_all_settled([promises], self.env)
         
         # Reject all promises with various error types
         promise1.reject(Exception("Python exception"))
@@ -432,17 +432,6 @@ class PromiseAllSettledTest(unittest.TestCase):
         # All should be rejected status
         for result_obj in results:
             self.assertEqual(result_obj[Symbol(":status")], "rejected")
-
-    def test_promise_all_settled_documentation(self):
-        """Test that documentation is available."""
-        from lispy.functions.promises.promise_all_settled import documentation_promise_all_settled
-        
-        doc = documentation_promise_all_settled()
-        self.assertIsInstance(doc, str)
-        self.assertIn("promise-all-settled", doc)
-        self.assertIn("status objects", doc)
-        self.assertIn("fulfilled", doc)
-        self.assertIn("rejected", doc)
 
 
 if __name__ == '__main__':

@@ -1,8 +1,9 @@
 from lispy.exceptions import EvaluationError
 from lispy.types import LispyList, Vector
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-
-def reverse_fn(args, env):
+@lispy_function("reverse")
+def reverse(args, env):
     """Reverse the order of elements in a collection.
 
     Usage: (reverse collection)
@@ -37,8 +38,8 @@ def reverse_fn(args, env):
     else:  # LispyList
         return LispyList(collection[::-1])
 
-
-def documentation_reverse() -> str:
+@lispy_documentation("reverse")
+def reverse_documentation() -> str:
     """Returns documentation for the reverse function."""
     return """Function: reverse
 Arguments: (reverse collection)

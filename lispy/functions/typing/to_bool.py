@@ -1,6 +1,8 @@
 from lispy.exceptions import EvaluationError
+from lispy.functions.decorators import lispy_function, lispy_documentation
 
-def to_bool_fn(args, env):
+@lispy_function("to-bool")
+def to_bool(args, env):
     """Convert a value to a boolean, if possible.
 
     Usage: (to-bool value)
@@ -28,7 +30,8 @@ def to_bool_fn(args, env):
         return len(value) > 0
     raise EvaluationError(f"TypeError: Cannot convert {type(value).__name__} to bool.")
 
-def documentation_to_bool():
+@lispy_documentation("to-bool")
+def to_bool_documentation():
     return '''Function: to-bool
 Arguments: (to-bool value)
 Description: Converts a value to a boolean, if possible. Raises an error if conversion is not possible.
