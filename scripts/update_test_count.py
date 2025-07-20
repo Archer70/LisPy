@@ -6,8 +6,8 @@ This script counts the total number of tests and updates the README.md badge.
 Can be run manually or as part of a git hook.
 
 Usage:
-    python bin/update_test_count.py
-    python bin/update_test_count.py --dry-run    # Show what would change
+    python scripts/update_test_count.py
+    python scripts/update_test_count.py --dry-run    # Show what would change
 """
 
 import argparse
