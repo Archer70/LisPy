@@ -200,7 +200,7 @@ class TestJSONFunctions(unittest.TestCase):
 
         # Then decode it back
         decoded_result = run_lispy_string(
-            f'(json-decode "{encoded_result.replace(' "', '\\" ')}")', self.env
+            f'(json-decode "{encoded_result.replace('"', '\\"')}")', self.env
         )
 
         # Should have the same structure (though vectors might not be identical objects)

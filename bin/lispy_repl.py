@@ -30,7 +30,7 @@ from lispy.lexer import \
     tokenize as lispy_tokenize  # For _check_buffer_completeness
 # Import for dynamic loading of known symbols
 from lispy.special_forms import special_form_handlers
-from lispy.utils import run_lispy_string
+from lispy.utils import run_lispy_string, format_lispy_value_for_display
 
 # from lispy.functions import global_env_vars # This was incorrect, built-ins are in the env itself
 
@@ -283,8 +283,9 @@ class LispyRepl:
                         # We might want to add it explicitly if it was a multi-line that resolved via EOF/Ctrl-D
                         # However, session.prompt already adds to history upon successful read.
                         result = run_lispy_string(final_code_to_run, self.env)
-                        if result is not None:
-                            print(f"=> {result}")
+                        # Always display the result, including nil values
+                        formatted_result = format_lispy_value_for_display(result)
+                        print(f"=> {formatted_result}")
                     except (LexerError, ParseError, EvaluationError) as e:
                         print(f"Error: {e}")
                     except Exception as e:
